@@ -15,6 +15,8 @@
 	end
 	print("Thanks for playing the TBOI REP NEGATIVE [Community Mod] - Currently running version" .. tostring(version))
 	mod.saveTable = mod.saveTable or {}
+	RepMMod.saveTable.MenuData = RepMMod.saveTable.MenuData or {}
+	RepMMod.saveTable.MenuData.StartThumbsUp = RepMMod.saveTable.MenuData.StartThumbsUp or 1
 	mod.saveTable.PlayerData = mod.saveTable.PlayerData or {}
 	mod.saveTable.MusicData = mod.saveTable.MusicData or {}
 	mod.saveTable.MusicData.Music = mod.saveTable.MusicData.Music or {}
@@ -4985,6 +4987,15 @@ local FrostyAchId = Isaac.GetAchievementIdByName("Frosty")
 	mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, mod.OnTearLaunchTFrosty)
 
 --#region Saw Shield
+
+local shieldStates = {
+	IDLE = 0,
+	NO_BOUNCES = 1,
+	BOUNCES = 2,
+	RETURNING = 3,
+	IMPALED = 4
+}
+
 ---@param player EntityPlayer
 ---@param cache CacheFlag | integer
 mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, function(_, player, cache)
@@ -4992,13 +5003,24 @@ mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, function(_, player, cache)
     player:CheckFamiliar(sawShieldFamiliar, num, player:GetCollectibleRNG(mod.RepmTypes.Collectible_SAW_SHIELD), Isaac.GetItemConfig():GetCollectible(mod.RepmTypes.Collectible_SAW_SHIELD))
 end, CacheFlag.CACHE_FAMILIARS)
 
+mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function()
+	for _, shield in ipairs(Isaac.FindByType(3, sawShieldFamiliar)) do
+		shield:ToFamiliar().State = shieldStates.IDLE
+		shield:ToFamiliar().FireCooldown = 0
+		shield.PositionOffset.Y = 0
+		shield.Velocity = Vector.Zero
+		shield:GetSprite():Stop()
+		
+	end
+end)
+
 ---@param fam EntityFamiliar
 mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, function(_,fam)
     fam:ClearEntityFlags(EntityFlag.FLAG_APPEAR)
     fam:RemoveFromDelayed()
     fam:RemoveFromFollowers()
     fam:RemoveFromOrbit()
-    fam.State = 0
+    fam.State = shieldStates.IDLE
     fam:GetSprite().PlaybackSpeed = 0
     local d = fam:GetData()
     d.Bounces = 5
@@ -5039,14 +5061,14 @@ mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, function(_, fam)
             end
         end
     end
-    if fam.State < 2 then
-        if fam.State ~= 1 then
+    if fam.State ~= shieldStates.RETURNING and fam.State ~= shieldStates.IMPALED then
+        if fam.State ~= shieldStates.BOUNCES then
             d.Speed = math.max(0, d.Speed - 0.15)
 			fam.PositionOffset.Y = lerp(fam.PositionOffset.Y, 0, 0.03)
         end
         
-		if fam.PositionOffset.Y >= -8 and fam.Velocity:Length() > 7 then
-			fam.State = 3
+		if fam.PositionOffset.Y >= -8 and fam.Velocity:Length() > 10 and (fam.State == shieldStates.NO_BOUNCES or fam.State == shieldStates.BOUNCES) then
+			fam.State = shieldStates.IMPALED
 			sprite:Play("HitSide", true)
 			sfx:Play(mod.RepmTypes.SFX_SAW_SHIELD_CRASH)
 			d.Speed = 0
@@ -5065,12 +5087,15 @@ mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, function(_, fam)
 
 		if fam.Velocity:Length() < 0.1 then
 			d.ReturnCooldown = math.max(0, d.ReturnCooldown - 1)
+			if fam.State ~= shieldStates.IDLE then
+				fam.State = shieldStates.IDLE
+			end
 		end
         
         fam.Velocity = fam.Velocity:Resized(d.Speed / CollisionWithEntity(fam))
         sprite.PlaybackSpeed = math.min(1.5, d.Speed)
-        if d.Bounces <= 0 and fam.State == 1 then
-            fam.State = 0
+        if d.Bounces <= 0 and fam.State == shieldStates.BOUNCES then
+            fam.State = shieldStates.NO_BOUNCES
         end
         if fam:CollidesWithGrid() then
             if fam.Velocity:Length() > 0.1 then
@@ -5079,21 +5104,21 @@ mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, function(_, fam)
             if d.Bounces > 0 then
                 d.Bounces = d.Bounces - 1
             else
-                d.Speed = d.Speed * 0.65
+                d.Speed = d.Speed * 0.85
             end
         end
         if d.ReturnCooldown <= 0 then
-            fam.State = 2
+            fam.State = shieldStates.RETURNING
         end
         fam.CollisionDamage = 0.3 * d.Speed
-    elseif fam.State == 2 then
+    elseif fam.State == shieldStates.RETURNING then
         local speed = (player.Position - fam.Position):Resized(30)
         fam.Velocity = lerp(fam.Velocity, speed, 0.1)
         fam.PositionOffset.Y = -math.max(0, fam.Velocity:Length())
         fam.CollisionDamage = 0
         fam.GridCollisionClass = EntityGridCollisionClass.GRIDCOLL_WALLS
 	elseif sprite:IsFinished("HitSide") then
-		fam.State = 0
+		fam.State = shieldStates.IDLE
 		sprite.Rotation = 0
 		sprite:Play(sprite:GetDefaultAnimation(), true)
 	end
@@ -5116,12 +5141,11 @@ end, TearFlags.TEAR_BURN)
 ---@param effect EntityEffect
 mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, function(_, effect)
     local shield = effect.SpawnerEntity
-    if not shield or shield:ToFamiliar() and (shield.Variant ~= sawShieldFamiliar or shield:ToFamiliar().State == 3) then
+    if not shield or shield:ToFamiliar() and (shield.Variant ~= sawShieldFamiliar or shield:ToFamiliar().State == shieldStates.IMPALED) then
         effect:Remove()
         return
     end
     shield = shield:ToFamiliar()
-	if shield.State == 3 then effect:Remove() end
     effect.SpriteRotation = shield.Velocity:Length() > 0.2 and (shield.Velocity):GetAngleDegrees() or lerp(effect.SpriteRotation, 90, 0.2)
     effect.SpriteScale = Vector(1.5, 1.5)
     effect.DepthOffset = -1
@@ -5241,11 +5265,14 @@ end, TearFlags.TEAR_SHIELDED)
 ---@return boolean | nil
 mod:AddCallback(ModCallbacks.MC_FAMILIAR_GRID_COLLISION, function(_, fam, gridIdx, grid)
     if fam.Variant == sawShieldFamiliar then
-        if grid and fam.Velocity:Length() > 0.1 and fam.State < 2 then
+        if grid and fam.Velocity:Length() > 0.1 and fam.State < shieldStates.RETURNING and fam.State > shieldStates.IDLE then
             if grid:ToPoop() then
                 grid:Hurt(4)
             end
-            if fam:GetData().CustomShieldFlags > 0 then
+			if grid:ToTNT() then
+				grid:ToTNT():Destroy()
+			end
+            if fam:GetData().CustomShieldFlags and fam:GetData().CustomShieldFlags > 0 then
                 for _,callback in ipairs(Isaac.GetCallbacks("ON_SAW_SHIELD_GRID_COLLISION")) do
                     if callback.Param > 0 and fam:GetData().CustomShieldFlags & callback.Param > 0 then
                         callback.Function(grid, fam:GetDropRNG(), fam, player)
@@ -5266,7 +5293,7 @@ mod:AddCallback(ModCallbacks.MC_PRE_FAMILIAR_COLLISION, function(_, fam, coll, l
             local player = coll:ToPlayer()
             ---@cast player EntityPlayer
             if player:GetHeldEntity() == nil and not player:IsHoldingItem() and player:IsExtraAnimationFinished() and fam.FireCooldown <= 0
-			and fam.State ~= 3 then
+			and fam.State ~= shieldStates.IMPALED then
                 -- Isaac Rebalanced code part from Mom's Bracelet
                 local helper = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.GRID_ENTITY_PROJECTILE_HELPER, 0, fam.Position, Vector.Zero, player)
                 helper.Parent = player
@@ -5301,7 +5328,7 @@ end, sawShieldFamiliar)
 ---@return boolean | nil
 mod:AddCallback(ModCallbacks.MC_POST_FAMILIAR_COLLISION, function(_, fam, coll, low)
     if coll then
-		if fam:GetData().CustomShieldFlags > 0 then
+		if fam:GetData().CustomShieldFlags and fam:GetData().CustomShieldFlags > 0 then
 			for _,callback in ipairs(Isaac.GetCallbacks("ON_SAW_SHIELD_COLLISION")) do
 				if callback.Param > 0 and fam:GetData().CustomShieldFlags & callback.Param > 0 then
 					callback.Function(fam, coll)
@@ -5323,11 +5350,11 @@ mod:AddCallback(ModCallbacks.MC_POST_ENTITY_THROW, function(_, player, ent, vel)
         shl:GetSprite():SetFrame(d.Frame)
         player:GetData().HoldsSawShield = nil
         if vel:Length() > 0.2 then
-            shlData.Speed = 18
-            shl.State = 1
+            shlData.Speed = 25
+            shl.State = shieldStates.BOUNCES
         else
             shlData.Speed = vel:Length()
-            shl.State = 0
+            shl.State = shieldStates.NO_BOUNCES
         end
         shlData.ThrowPlayer = player
         shlData.CustomShieldFlags = 0
@@ -5348,7 +5375,6 @@ mod:AddCallback(ModCallbacks.MC_POST_ENTITY_THROW, function(_, player, ent, vel)
                 end
             end
         end
-        shl.State = vel:Length() > 0.2 and 1 or 0
         shl.PositionOffset = ent.PositionOffset
         ent:Remove()
     end

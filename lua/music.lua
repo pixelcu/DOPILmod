@@ -81,5 +81,6 @@ function mod.ChangeFloorMusicTo(id, id2, change)
 	end
 	if id == MusicManager():GetCurrentMusicID() then
 		Isaac.SetCurrentFloorMusic(id2)
+		MusicManager():Play(id2, Options.MusicVolume)
 	end
 end
