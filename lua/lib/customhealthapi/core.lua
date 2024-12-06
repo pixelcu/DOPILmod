@@ -3,8 +3,8 @@
 
 local version = 0.946
 local root = "lua.lib.customhealthapi."
-local modname = "Custom Health API (Repentance Plus)"
-local modinitials = "R+"
+local modname = "Custom Health API (Repentance Negative)"
+local modinitials = "R-"
 
 CustomHealthAPI = CustomHealthAPI or {}
 

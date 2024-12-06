@@ -80,7 +80,139 @@ function mod.ChangeFloorMusicTo(id, id2, change)
 		id, id2 = id2, id
 	end
 	if id == MusicManager():GetCurrentMusicID() then
-		Isaac.SetCurrentFloorMusic(id2)
 		MusicManager():Play(id2, Options.MusicVolume)
+		Isaac.SetCurrentFloorMusic(id2)
 	end
 end
+
+local ig = ImGui
+
+local music, jingle = MusicTable, JingleTable
+
+if not ig.ElementExists("RepMMod") then
+	ig.CreateMenu("RepMMod", "Repentance-")
+end
+
+if not ig.ElementExists("RepMModSettings") then
+	ig.AddElement("RepMMod", "RepMModSettings", ImGuiElement.MenuItem, RepMMod.GetDSSStr("settings"))
+end
+
+if not ig.ElementExists("RepMModSettingsWindow") then
+	ig.CreateWindow("RepMModSettingsWindow", "Repentance- Settings")
+end
+
+ig.LinkWindowToElement("RepMModSettingsWindow", "RepMModSettings")
+
+if ig.ElementExists("RepMModSettingsTabBar") then
+	ig.RemoveElement("RepMModSettingsTabBar")
+end
+
+ig.AddElement("RepMModSettingsWindow", "RepMModSettingsTabBar", ImGuiElement.TabBar)
+ig.AddElement("RepMModSettingsTabBar", "RepMModSettingsTabMusic", ImGuiElement.Tab, RepMMod.GetDSSStr("music_manager"))
+ig.AddButton("RepMModSettingsTabMusic", "RepMModSettingsTabMusicButtonEnable", RepMMod.GetDSSStr("enable"), function (clickCount)
+	for musicId, name in pairs(music) do
+		RepMMod.saveTable.MusicData.Music[name] = 1
+		mod.ChangeFloorMusicTo(musicId, Isaac.GetMusicIdByName(name), true)
+	end
+	for jingleId, name in pairs(jingle) do
+		RepMMod.saveTable.MusicData.Jingle[name] = 1
+	end
+	mod.StoreSaveData()
+end)
+ig.SetTooltip("RepMModSettingsTabMusicButtonEnable", RepMMod.GetDSSStr("music_button_enable"))
+ig.AddButton("RepMModSettingsTabMusic", "RepMModSettingsTabMusicButtonDisable", RepMMod.GetDSSStr("disable"), function (clickCount)
+	for musicId, name in pairs(music) do
+		RepMMod.saveTable.MusicData.Music[name] = 2
+		mod.ChangeFloorMusicTo(musicId, Isaac.GetMusicIdByName(name), false)
+	end
+	for jingleId, name in pairs(jingle) do
+		RepMMod.saveTable.MusicData.Jingle[name] = 2
+	end
+	mod.StoreSaveData()
+end)
+ig.SetTooltip("RepMModSettingsTabMusicButtonDisable", RepMMod.GetDSSStr("music_button_disable"))
+ig.AddElement("RepMModSettingsTabMusic", "RepMModSettingsTabBarMusicManager", ImGuiElement.TabBar)
+
+ig.AddElement(
+	"RepMModSettingsTabBarMusicManager",
+	"RepMModSettingsTabBarMusicTab",
+	ImGuiElement.Tab,
+	RepMMod.GetDSSStr("music_settings")
+)
+ig.AddElement(
+	"RepMModSettingsTabBarMusicManager",
+	"RepMModSettingsTabBarJingleTab",
+	ImGuiElement.Tab,
+	RepMMod.GetDSSStr("jingle_settings")
+)
+
+
+for musicId, name in pairs(music) do
+	if not RepMMod.saveTable.MusicData.Music[name] then
+		RepMMod.saveTable.MusicData.Music[name] = 1
+	end
+	ig.AddCheckbox(
+		"RepMModSettingsTabBarMusicTab",
+		"RepMModSettingsTabBarMusicTab" .. name:sub(21),
+		name:sub(21),
+		function(newVal)
+			local id, id2 = musicId, Isaac.GetMusicIdByName(name)
+			RepMMod.saveTable.MusicData.Music[name] = newVal and 1 or 2
+			if not newVal then
+				id, id2 = Isaac.GetMusicIdByName(name), musicId
+			end
+			if id == MusicManager():GetCurrentMusicID() then
+				MusicManager():Play(id2, Options.MusicVolume)
+				Isaac.SetCurrentFloorMusic(id2)
+			end
+			mod.StoreSaveData()
+		end,
+		false
+	)
+	ig.AddCallback("RepMModSettingsTabBarMusicTab" .. name:sub(21), ImGuiCallback.Render, function()
+		ig.UpdateData(
+			"RepMModSettingsTabBarMusicTab" .. name:sub(21),
+			ImGuiData.Value,
+			RepMMod.saveTable.MusicData.Music[name] == 1
+		)
+	end)
+end
+
+for jingleId, name in pairs(jingle) do
+	if not RepMMod.saveTable.MusicData.Jingle[name] then
+		RepMMod.saveTable.MusicData.Jingle[name] = 1
+	end
+	ig.AddCheckbox(
+		"RepMModSettingsTabBarJingleTab",
+		"RepMModSettingsTabBarJingleTab" .. name:sub(21),
+		name:sub(21),
+		function(newVal)
+			RepMMod.saveTable.MusicData.Jingle[name] = newVal and 1 or 2
+			mod.StoreSaveData()
+		end,
+		true
+	)
+
+	ig.AddCallback("RepMModSettingsTabBarJingleTab" .. name:sub(21), ImGuiCallback.Render, function()
+		ig.UpdateData(
+			"RepMModSettingsTabBarJingleTab" .. name:sub(21),
+			ImGuiData.Value,
+			RepMMod.saveTable.MusicData.Jingle[name] == 1
+		)
+	end)
+end
+
+ig.AddElement("RepMModSettingsTabBar", "RepMModSettingsTabMisc", ImGuiElement.Tab, RepMMod.GetDSSStr("other_settings"))
+
+ig.AddCheckbox("RepMModSettingsTabMisc", "RepMModSettingsTabMiscHappyStart", RepMMod.GetDSSStr("happy_start"), function(newVal)
+	RepMMod.saveTable.MenuData.StartThumbsUp = newVal and 1 or 2
+	mod.StoreSaveData()
+end, true)
+
+ig.AddCallback("RepMModSettingsTabMiscHappyStart", ImGuiCallback.Render, function()
+	ig.UpdateData(
+		"RepMModSettingsTabMiscHappyStart",
+		ImGuiData.Value,
+		RepMMod.saveTable.MenuData.StartThumbsUp == 1
+	)
+end)

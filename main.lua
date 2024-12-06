@@ -7,7 +7,7 @@
 	RepMMod = mod
 	local json = require("json")
 	local game = Game()
-	local version = ": 1.2a" --added by me (pedro), for making updating version number easier
+	local version = ": 1.2b" --added by me (pedro), for making updating version number easier
 	
 	if not REPENTOGON then
 		error("REPENTOGON not installed, please download REPENTOGON!")
@@ -23,6 +23,7 @@
 	mod.saveTable.MusicData.Jingle = mod.saveTable.MusicData.Jingle or {}
 	local globalRng = RNG()
 	
+	include("lua.lib.translation.dsssettings")
 	include("lua.music")
 	include("lua/lib/customhealthapi/core.lua")
 	include("lua/lib/customhealth.lua")
@@ -4993,7 +4994,6 @@ local shieldStates = {
 	NO_BOUNCES = 1,
 	BOUNCES = 2,
 	RETURNING = 3,
-	IMPALED = 4
 }
 
 ---@param player EntityPlayer
@@ -5010,7 +5010,13 @@ mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function()
 		shield.PositionOffset.Y = 0
 		shield.Velocity = Vector.Zero
 		shield:GetSprite():Stop()
-		
+	end
+end)
+
+mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
+	if not Game():GetLevel():IsAscent() then return end
+	for _, shield in ipairs(Isaac.FindByType(3, sawShieldFamiliar)) do
+		shield:ToFamiliar().FireCooldown = 5
 	end
 end)
 
@@ -5061,29 +5067,11 @@ mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, function(_, fam)
             end
         end
     end
-    if fam.State ~= shieldStates.RETURNING and fam.State ~= shieldStates.IMPALED then
+    if fam.State ~= shieldStates.RETURNING then
         if fam.State ~= shieldStates.BOUNCES then
             d.Speed = math.max(0, d.Speed - 0.15)
 			fam.PositionOffset.Y = lerp(fam.PositionOffset.Y, 0, 0.03)
         end
-        
-		if fam.PositionOffset.Y >= -8 and fam.Velocity:Length() > 10 and (fam.State == shieldStates.NO_BOUNCES or fam.State == shieldStates.BOUNCES) then
-			fam.State = shieldStates.IMPALED
-			sprite:Play("HitSide", true)
-			sfx:Play(mod.RepmTypes.SFX_SAW_SHIELD_CRASH)
-			d.Speed = 0
-			sprite.Rotation = fam.Velocity:GetAngleDegrees()
-			fam.Velocity = Vector.Zero
-			fam.PositionOffset.Y = 0
-			if d.CustomShieldFlags > 0 then
-				for _,callback in pairs(Isaac.GetCallbacks("ON_SAW_SHIELD_CRASH")) do
-					if callback.Param > 0 and d.CustomShieldFlags & callback.Param > 0 then
-						callback.Function(fam, fam:GetDropRNG(), player)
-					end
-				end
-			end
-			return
-		end
 
 		if fam.Velocity:Length() < 0.1 then
 			d.ReturnCooldown = math.max(0, d.ReturnCooldown - 1)
@@ -5110,18 +5098,13 @@ mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, function(_, fam)
         if d.ReturnCooldown <= 0 then
             fam.State = shieldStates.RETURNING
         end
-        fam.CollisionDamage = 0.3 * d.Speed
     elseif fam.State == shieldStates.RETURNING then
         local speed = (player.Position - fam.Position):Resized(30)
         fam.Velocity = lerp(fam.Velocity, speed, 0.1)
         fam.PositionOffset.Y = -math.max(0, fam.Velocity:Length())
-        fam.CollisionDamage = 0
         fam.GridCollisionClass = EntityGridCollisionClass.GRIDCOLL_WALLS
-	elseif sprite:IsFinished("HitSide") then
-		fam.State = shieldStates.IDLE
-		sprite.Rotation = 0
-		sprite:Play(sprite:GetDefaultAnimation(), true)
 	end
+	fam.CollisionDamage = (fam.State ~= shieldStates.IDLE and fam.State ~= shieldStates.RETURNING) and player.Damage * 2 or 0
     d.CollidesWithEntity = false
 end, sawShieldFamiliar)
 
@@ -5141,7 +5124,7 @@ end, TearFlags.TEAR_BURN)
 ---@param effect EntityEffect
 mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, function(_, effect)
     local shield = effect.SpawnerEntity
-    if not shield or shield:ToFamiliar() and (shield.Variant ~= sawShieldFamiliar or shield:ToFamiliar().State == shieldStates.IMPALED) then
+    if not shield or shield:ToFamiliar() and (shield.Variant ~= sawShieldFamiliar) then
         effect:Remove()
         return
     end
@@ -5194,6 +5177,9 @@ mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, function(_, ent, damage, f
                 end
             end
         end
+		if shield:GetDropRNG():RandomInt(25) == 1 then
+			ent:AddBleeding(EntityRef(shield), 150)
+		end
     end
 end)
 
@@ -5224,14 +5210,6 @@ end, TearFlags.TEAR_NEEDLE)
 mod:AddCallback("ON_SAW_SHIELD_DEATH", function(entity, rng, shield, player)
     if rng:RandomFloat() <= 0.1 then
         Isaac.Explode(entity.Position, player, 100)
-        rng:Next()
-    end
-end, TearFlags.TEAR_EXPLOSIVE)
-
-mod:AddCallback("ON_SAW_SHIELD_CRASH", function(shield, rng, player)
-	player = player or shield.Player
-    if rng:RandomFloat() <= 0.1 then
-        Isaac.Explode(shield.Position, player, 100)
         rng:Next()
     end
 end, TearFlags.TEAR_EXPLOSIVE)
@@ -5292,8 +5270,7 @@ mod:AddCallback(ModCallbacks.MC_PRE_FAMILIAR_COLLISION, function(_, fam, coll, l
         if coll:ToPlayer() then
             local player = coll:ToPlayer()
             ---@cast player EntityPlayer
-            if player:GetHeldEntity() == nil and not player:IsHoldingItem() and player:IsExtraAnimationFinished() and fam.FireCooldown <= 0
-			and fam.State ~= shieldStates.IMPALED then
+            if player:GetHeldEntity() == nil and not player:IsHoldingItem() and player:IsExtraAnimationFinished() and fam.FireCooldown <= 0 then
                 -- Isaac Rebalanced code part from Mom's Bracelet
                 local helper = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.GRID_ENTITY_PROJECTILE_HELPER, 0, fam.Position, Vector.Zero, player)
                 helper.Parent = player
@@ -5350,7 +5327,7 @@ mod:AddCallback(ModCallbacks.MC_POST_ENTITY_THROW, function(_, player, ent, vel)
         shl:GetSprite():SetFrame(d.Frame)
         player:GetData().HoldsSawShield = nil
         if vel:Length() > 0.2 then
-            shlData.Speed = 25
+            shlData.Speed = 17
             shl.State = shieldStates.BOUNCES
         else
             shlData.Speed = vel:Length()
