@@ -68,109 +68,7 @@ return function(mod)
 	local DSSInitializerFunction = include("lua.lib.dssmenucore")
 	local dssmod = DSSInitializerFunction(DSSModName, DSSCoreVersion, MenuProvider)
 
-	local strings = {
-		Title = {
-			en = "rep-",
-			es = "rep-",
-		},
-		resume_game = {
-			en = "resume game",
-			ru = "вернуться в игру",
-		},
-		settings = {
-			en = "settings",
-			ru = "настройки",
-		},
-		yes = {
-			en = "yes",
-			ru = "да",
-		},
-		no = {
-			en = "no",
-			ru = "нет",
-		},
-		enable = {
-			en = "enable",
-			ru = "включить",
-		},
-		disable = {
-			en = "disable",
-			ru = "выключить",
-		},
-		enabled = {
-			en = "enabled",
-			ru = "включен",
-		},
-		disabled = {
-			en = "disabled",
-			ru = "выключен",
-		},
-		startTooltip = {
-			en = dssmod.menuOpenToolTip,
-			ru = {
-				strset = {
-					"переключение",
-					"меню",
-					"",
-					"клавиатура:",
-					"[c] или [f1]",
-					"",
-					"контроллер:",
-					"нажатие",
-					"на стик",
-				},
-				fsize = 2,
-			},
-		},
-		thumbs_up = {
-			en = "thumbs up",
-			--ru = "режим рюкзака",
-		},
-		tu_var1 = {
-			en = "on",
-			--ru = "взрывать особые",
-		},
-		tu_var2 = {
-			en = "off",
-			--ru = "бомбы в руки",
-		},
-		music_manager = {
-			en = "music manager",
-			ru = "менеджер музыки",
-		},
-		music_settings = {
-			en = "music settings",
-			ru = "настройки музыки",
-		},
-		jingle_settings = {
-			en = "jingle settings",
-			ru = "настройки джинглов",
-		},
-		enable_all_music = {
-			en = "enable all music and jingles",
-			ru = "включить всю музыку и джинглы",
-		},
-        disable_all_music = {
-			en = "disable all music and jingles",
-			ru = "выключить всю музыку и джинглы",
-		},
-		other_settings = {
-			en = "other settings",
-			ru = "другие настройки"
-		},
-		happy_start = {
-			en = "happy start",
-			ru = "счастливый старт"
-		},
-		music_button_enable = {
-			en = "enables all mod's music and jingles",
-			ru = "включает всю музыку и джинглы из мода",
-		},
-		music_button_disable = {
-			en = "disables all mod's music and jingles",
-			ru = "выключает всю музыку и джинглы из мода",
-		}
-	}
+	local pdg = Isaac.GetPersistentGameData()
 
 	local function InitMusicSettings()
 		local music, _ = RepMMod.GetModdedMusicTable()
@@ -193,7 +91,10 @@ return function(mod)
 					mod.ChangeFloorMusicTo(musicId, Isaac.GetMusicIdByName(name), var == 1)
 				end,
 				tooltip = {
-					strset = RepMMod.SplitString('enable/disable "' .. name:sub(21):lower() .. '" music from this mod', 15),
+					strset = RepMMod.SplitString(
+						'enable/disable "' .. name:sub(21):lower() .. '" music from this mod',
+						15
+					),
 				},
 			}
 			MM[#MM + 1] = { str = "", nosel = true, fsize = 2 }
@@ -221,12 +122,46 @@ return function(mod)
 					RepMMod.saveTable.MusicData.Jingle[name] = var
 				end,
 				tooltip = {
-					strset = RepMMod.SplitString('enable/disable "' .. name:sub(21):lower() .. '" jingle from this mod', 15),
+					strset = RepMMod.SplitString(
+						'enable/disable "' .. name:sub(21):lower() .. '" jingle from this mod',
+						15
+					),
 				},
 			}
 			MM[#MM + 1] = { str = "", nosel = true, fsize = 2 }
 		end
 		return MM
+	end
+
+	local function InitUnlockButtons()
+		local buttons = {}
+		for _,ach in pairs(RepMMod.RepmAchivements) do
+			buttons[#buttons + 1] = {
+				strset = RepMMod.SplitString(ach.Name:lower(), 18),
+				choices = { RepMMod.GetDSSStr("locked"), RepMMod.GetDSSStr("unlocked") },
+				variable = "RepMAchievement"..ach.Name,
+				setting = 1,
+				load = function()
+					local val = pdg:Unlocked(ach.ID) and 2 or 1
+					return val
+				end,
+				store = function(var)
+					if var == 2 then
+						pdg:Unlocked(ach.ID)
+					else
+						Isaac.ExecuteCommand("lockachievement "..ach.ID)
+					end
+				end,
+				tooltip = {
+					strset = RepMMod.SplitString(
+						'unlock/lock ' .. ach.Name:lower(),
+						15
+					),
+				},
+			}
+			buttons[#buttons + 1] = { str = "", nosel = true, fsize = 2 }
+		end
+		return buttons
 	end
 
 	RepMMod.DSSdirectory = {
@@ -252,6 +187,8 @@ return function(mod)
 				{ str = "", nosel = true, fsize = 3 },
 				{ str = RepMMod.GetDSSStr("music_manager"), dest = "music_manager" },
 				{ str = "", nosel = true, fsize = 3 },
+				{ str = RepMMod.GetDSSStr("unlocks"), dest = "unlocks" },
+				{ str = "", nosel = true, fsize = 3 },
 				{
 					str = RepMMod.GetDSSStr("happy_start"),
 					choices = { RepMMod.GetDSSStr("tu_var1"), RepMMod.GetDSSStr("tu_var2") },
@@ -268,6 +205,38 @@ return function(mod)
 				{ str = "", nosel = true, fsize = 3 },
 			},
 			tooltip = RepMMod.GetDSSStr("startTooltip"),
+		},
+		unlocks = {
+			title = RepMMod.GetDSSStr("unlock_manager"),
+			buttons = {
+				{ str = RepMMod.GetDSSStr("unlocks"), dest = "unlocks_sub",
+					tooltip = { strset = { RepMMod.GetDSSStr("unlocks") } },
+				},
+				{ str = "", nosel = true, fsize = 3 },
+				{
+					strset = RepMMod.SplitString(RepMMod.GetDSSStr("unlock"), 21),
+					func = function(button, page, item)
+						for _, ach in pairs(RepMMod.RepmAchivements) do
+							Isaac.GetPersistentGameData():TryUnlock(ach.ID, true)
+						end
+						dssmod.closeMenu(item, false)
+					end,
+				},
+				{ str = "", nosel = true, fsize = 3 },
+				{
+					strset = RepMMod.SplitString(RepMMod.GetDSSStr("lock"), 21),
+					func = function(button, page, item)
+						for _, ach in pairs(RepMMod.RepmAchivements) do
+							Isaac.ExecuteCommand("lockachievement "..ach.ID)
+						end
+						dssmod.closeMenu(item, false)
+					end,
+				},
+			},
+		},
+		unlocks_sub = {
+			title = RepMMod.GetDSSStr("unlocks"),
+			buttons = InitUnlockButtons(),
 		},
 		music_manager = {
 			title = RepMMod.GetDSSStr("music_manager"),
@@ -290,8 +259,8 @@ return function(mod)
 						dssmod.closeMenu(item, false)
 					end,
 				},
-                { str = "", nosel = true, fsize = 2 },
-                {
+				{ str = "", nosel = true, fsize = 2 },
+				{
 					strset = RepMMod.SplitString(RepMMod.GetDSSStr("disable_all_music"), 21),
 					func = function(button, page, item)
 						local music, jingle = mod.GetModdedMusicTable()

@@ -98,7 +98,7 @@ if not ig.ElementExists("RepMModSettings") then
 end
 
 if not ig.ElementExists("RepMModSettingsWindow") then
-	ig.CreateWindow("RepMModSettingsWindow", "Repentance- Settings")
+	ig.CreateWindow("RepMModSettingsWindow", "Repentance- "..RepMMod.GetDSSStr("settings"))
 end
 
 ig.LinkWindowToElement("RepMModSettingsWindow", "RepMModSettings")
@@ -109,27 +109,37 @@ end
 
 ig.AddElement("RepMModSettingsWindow", "RepMModSettingsTabBar", ImGuiElement.TabBar)
 ig.AddElement("RepMModSettingsTabBar", "RepMModSettingsTabMusic", ImGuiElement.Tab, RepMMod.GetDSSStr("music_manager"))
-ig.AddButton("RepMModSettingsTabMusic", "RepMModSettingsTabMusicButtonEnable", RepMMod.GetDSSStr("enable"), function (clickCount)
-	for musicId, name in pairs(music) do
-		RepMMod.saveTable.MusicData.Music[name] = 1
-		mod.ChangeFloorMusicTo(musicId, Isaac.GetMusicIdByName(name), true)
+ig.AddButton(
+	"RepMModSettingsTabMusic",
+	"RepMModSettingsTabMusicButtonEnable",
+	RepMMod.GetDSSStr("enable"),
+	function(clickCount)
+		for musicId, name in pairs(music) do
+			RepMMod.saveTable.MusicData.Music[name] = 1
+			mod.ChangeFloorMusicTo(musicId, Isaac.GetMusicIdByName(name), true)
+		end
+		for jingleId, name in pairs(jingle) do
+			RepMMod.saveTable.MusicData.Jingle[name] = 1
+		end
+		mod.StoreSaveData()
 	end
-	for jingleId, name in pairs(jingle) do
-		RepMMod.saveTable.MusicData.Jingle[name] = 1
-	end
-	mod.StoreSaveData()
-end)
+)
 ig.SetTooltip("RepMModSettingsTabMusicButtonEnable", RepMMod.GetDSSStr("music_button_enable"))
-ig.AddButton("RepMModSettingsTabMusic", "RepMModSettingsTabMusicButtonDisable", RepMMod.GetDSSStr("disable"), function (clickCount)
-	for musicId, name in pairs(music) do
-		RepMMod.saveTable.MusicData.Music[name] = 2
-		mod.ChangeFloorMusicTo(musicId, Isaac.GetMusicIdByName(name), false)
+ig.AddButton(
+	"RepMModSettingsTabMusic",
+	"RepMModSettingsTabMusicButtonDisable",
+	RepMMod.GetDSSStr("disable"),
+	function(clickCount)
+		for musicId, name in pairs(music) do
+			RepMMod.saveTable.MusicData.Music[name] = 2
+			mod.ChangeFloorMusicTo(musicId, Isaac.GetMusicIdByName(name), false)
+		end
+		for jingleId, name in pairs(jingle) do
+			RepMMod.saveTable.MusicData.Jingle[name] = 2
+		end
+		mod.StoreSaveData()
 	end
-	for jingleId, name in pairs(jingle) do
-		RepMMod.saveTable.MusicData.Jingle[name] = 2
-	end
-	mod.StoreSaveData()
-end)
+)
 ig.SetTooltip("RepMModSettingsTabMusicButtonDisable", RepMMod.GetDSSStr("music_button_disable"))
 ig.AddElement("RepMModSettingsTabMusic", "RepMModSettingsTabBarMusicManager", ImGuiElement.TabBar)
 
@@ -145,7 +155,6 @@ ig.AddElement(
 	ImGuiElement.Tab,
 	RepMMod.GetDSSStr("jingle_settings")
 )
-
 
 for musicId, name in pairs(music) do
 	if not RepMMod.saveTable.MusicData.Music[name] then
@@ -204,15 +213,17 @@ end
 
 ig.AddElement("RepMModSettingsTabBar", "RepMModSettingsTabMisc", ImGuiElement.Tab, RepMMod.GetDSSStr("other_settings"))
 
-ig.AddCheckbox("RepMModSettingsTabMisc", "RepMModSettingsTabMiscHappyStart", RepMMod.GetDSSStr("happy_start"), function(newVal)
-	RepMMod.saveTable.MenuData.StartThumbsUp = newVal and 1 or 2
-	mod.StoreSaveData()
-end, true)
+ig.AddCheckbox(
+	"RepMModSettingsTabMisc",
+	"RepMModSettingsTabMiscHappyStart",
+	RepMMod.GetDSSStr("happy_start"),
+	function(newVal)
+		RepMMod.saveTable.MenuData.StartThumbsUp = newVal and 1 or 2
+		mod.StoreSaveData()
+	end,
+	true
+)
 
 ig.AddCallback("RepMModSettingsTabMiscHappyStart", ImGuiCallback.Render, function()
-	ig.UpdateData(
-		"RepMModSettingsTabMiscHappyStart",
-		ImGuiData.Value,
-		RepMMod.saveTable.MenuData.StartThumbsUp == 1
-	)
+	ig.UpdateData("RepMModSettingsTabMiscHappyStart", ImGuiData.Value, RepMMod.saveTable.MenuData.StartThumbsUp == 1)
 end)

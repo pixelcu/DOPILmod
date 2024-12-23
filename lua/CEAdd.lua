@@ -195,7 +195,6 @@ RepMMod:AddCallback(ModCallbacks.MC_USE_CARD, function(_, _, player, flags)
 	else
 		print(Dirt)
 		if game:GetLevel():GetRoomByIdx(NewDirt, -1).Data ~= nil then
-			sfx:Play(Isaac.GetSoundIdByName("hammercard"), 1, 5)
 			game:StartRoomTransition(NewDirt, Direction.NO_DIRECTION, RoomTransitionAnim.TELEPORT, player, -1)
 			if player:HasCollectible(451) then
 				if math.random(1, 10) <= 2 then

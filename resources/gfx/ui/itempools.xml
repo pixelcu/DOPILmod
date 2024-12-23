@@ -4,7 +4,6 @@
 				<Item Name = "strawberry milk" Weight = "2" DecreaseBy = "1" RemoveOn = "0.1" />
 				<Item Name="PROkamikadze" Weight="3" DecreaseBy="0.4" RemoveOn="0.1"/>
 				<Item Name="Book of tails" Weight="4" DecreaseBy="1" RemoveOn="0.1"/>
-				<Item Name = "Cokacola" Weight = "4" DecreaseBy = "1" RemoveOn = "0.1" />
 				<Item Name="Leaky Bucket" Weight="2" DecreaseBy="1" RemoveOn="0.1"/>
 				<Item Name="Pink straw" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
 				<Item Name="Pixelated cube" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
@@ -33,7 +32,6 @@
         <Pool Name="greedShop">               
 				<Item Name="PROkamikadze" Weight="3" DecreaseBy="0.4" RemoveOn="0.1"/>
 				<Item Name = "strawberry milk" Weight = "2" DecreaseBy = "1" RemoveOn = "0.1" />
-				<Item Name = "Cokacola" Weight = "4" DecreaseBy = "1" RemoveOn = "0.1" />
 				<Item Name="Leaky Bucket" Weight="3" DecreaseBy="1" RemoveOn="0.1"/>
 				<Item Name="110V" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
 				<Item Name="Pink straw" Weight="2" DecreaseBy="1" RemoveOn="0.1" />
@@ -59,7 +57,6 @@
                 <Item Name = "Salami" Weight = "3" DecreaseBy = "1" RemoveOn = "0.1"/>
 				<Item Name="PROkamikadze" Weight="3" DecreaseBy="0.4" RemoveOn="0.1"/>
 				<Item Name="Book of tails" Weight="4" DecreaseBy="1" RemoveOn="0.1"/>
-				<Item Name = "Cokacola" Weight = "4" DecreaseBy = "1" RemoveOn = "0.1" />
 				<Item Name="Leaky Bucket" Weight="2" DecreaseBy="1" RemoveOn="0.1"/>
 				<Item Name="Pink straw" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
 				<Item Name="Pixelated cube" Weight="1" DecreaseBy="1" RemoveOn="0.1" />

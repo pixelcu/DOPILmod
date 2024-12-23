@@ -9,6 +9,10 @@
           portrait="BigTemplatePortrait.png" 
           bigportrait="BigTemplatePortrait.png" skinColor="-1"
 		  items="Sim's Axe"
+          damagemodifier="1"
+          speedmodifier="0.3"
+          shotspeedmodifier="-1"
+          luckmodifier="4"
 		  birthright="More axes" />
 	<player hp="6" bombs="1" name="TSim"
 	nameimage="sim_b.png" bigportrait="sim_b_big.png" portrait="sim_b_big.png" skin="character_sim_b.png" skinColor="1" birthright="Crack their bones" 
@@ -26,6 +30,7 @@
           costume="52"
           bigportrait="playerportrait_frosty_b.png" skinColor="2"
 	    birthright="" healthtype = "1"
+        pocketActive="Battered Lighter"
 	    achievement="Frosty_B" bSkinParent="Frosty"/>
       <player name="Tainted Ghost Frosty" skin="character_frosty_g.png" hp="0" armor = "1" bombs="2" 
           nameimage="frostb.png" 
