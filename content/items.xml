@@ -37,9 +37,8 @@
 	<active id="34" name="Battered Lighter" description="Still working" gfx="battered lighter.png" maxcharges = "1" quality="2" />
 	<active id="35" name="Holy Lighter" description="Baptism by fire" gfx="holy lighter.png" maxcharges = "6" chargetype = "normal" quality="2" />
 	<active id="36" name="Portal D6" description="Portal?" gfx="portald6.png" maxcharges = "6" quality="4" />
-	<active id="37" name="Portal D6 " description="Portal?" gfx="portald62.png" maxcharges = "6" quality="4" />
 
-	<passive id="38" name="Saw Shield" cache="familiars" description="Tear them at distance!" tags="offensive" gfx="ShieldSaw.png" quality="3" />
+	<passive id="37" name="Saw Shield" cache="familiars" description="Tear them at distance!" tags="offensive" gfx="ShieldSaw.png" quality="3" />
 <!-- Trinkets -->
 	<trinket name="Micro Amplifier" description="STOP!" gfx="microamplifier.png" />
 	<trinket name="Burnt Clover" description="The treasury is surprising" gfx="Clover.png" />
@@ -47,4 +46,10 @@
 	<trinket name="MORE OPTIONS" description="Why isn't this in the game? :(" gfx="MORE OPTIONS.png" />
 	<trinket name="Hammer" description="Boink!" cache="tearflag" gfx="hammer.png" />
 	<trinket name="Frozen Polaroid" description="They preserved you in ice" gfx="frozen_polaroid.png" />
+	<trinket name="Ice Penny" description="Wealth of chill" gfx="ice penny.png" />
+
+	<null id="250" name="Siren's Singing" persistent="false" cooldown="90" />
+	<null name="Minus Shard" persistent="true" />
+	<null name="Minus Shard Bonus Positive" persistent="true" />
+	<null name="Minus Shard Bonus Negative" persistent="true" />
 </items>

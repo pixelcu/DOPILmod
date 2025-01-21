@@ -14,7 +14,7 @@
           shotspeedmodifier="-1"
           luckmodifier="4"
 		  birthright="More axes" />
-	<player hp="6" bombs="1" name="TSim"
+	<player hp="6" bombs="1" name="Sim"
 	nameimage="sim_b.png" bigportrait="sim_b_big.png" portrait="sim_b_big.png" skin="character_sim_b.png" skinColor="1" birthright="Crack their bones" 
 	bSkinParent="Sim" achievement="BLOCKED!" />
 	<player name="Frosty" skin="character_frosty.png" hp="0" armor = "1" bombs="2" 
@@ -22,6 +22,7 @@
           portrait="playerportrait_frosty.png" 
           bigportrait="playerportrait_frosty.png" skinColor="2"
 		  birthright="It's getting drafty!" 
+          card="14"
 		  achievement="Frosty" />
     <player name="Tainted Frosty" skin="character_frosty_b.png" hp="0" armor = "1" bombs="2" 
           nameimage="frost.png" 
@@ -38,5 +39,6 @@
           costumeSuffix="frostyg" pocketActive=""
           bigportrait="playerportrait_frosty_b.png" skinColor="2"
           birthright="" healthtype = "1" completionparent="Tainted Frosty"
-	    achievement="Frosty_B" hidden="true"  costume="52"/>
+	    achievement="Frosty_B" hidden="true" costume="52"
+        bSkinParent="Frosty"/>
 </players>

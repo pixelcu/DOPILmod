@@ -4,7 +4,6 @@
 				<Item Name="Pro Kamikaze" Weight = "1" DecreaseBy="1" RemoveOn="0.1"/>
 				<Item Name="Book of Tales" Weight = "1" DecreaseBy="1" RemoveOn="0.1"/>
 				<Item Name="Leaky Bucket" Weight = "1" DecreaseBy="1" RemoveOn="0.1"/>
-				<Item Name="Pink straw" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
 				<Item Name="Pixelated cube" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
 				<Item Name = "Deliriums Eye" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
 				<Item Name = "Delirious tech" Weight = "1" DecreaseBy="1" RemoveOn="0.1" />
@@ -38,7 +37,6 @@
 				<Item Name = "Strawberry Milk" Weight = "1" DecreaseBy = "1" RemoveOn = "0.1" />
 				<Item Name="Leaky Bucket" Weight = "1" DecreaseBy="1" RemoveOn="0.1"/>
 				<Item Name="110V" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
-				<Item Name="Pink straw" Weight = "1" DecreaseBy="1" RemoveOn="0.1" />
 				<Item Name = "Salami" Weight = "1" DecreaseBy = "1" RemoveOn = "0.1"/>
 				<Item Name="Book of Tales" Weight = "1" DecreaseBy="1" RemoveOn="0.1"/>
 				<Item Name = "Delirious tech" Weight = "1" DecreaseBy="1" RemoveOn="0.1" />
@@ -65,7 +63,6 @@
 				<Item Name="Pro Kamikaze" Weight = "1" DecreaseBy="1" RemoveOn="0.1"/>
 				<Item Name="Book of Tales" Weight = "1" DecreaseBy="1" RemoveOn="0.1"/>
 				<Item Name="Leaky Bucket" Weight = "1" DecreaseBy="1" RemoveOn="0.1"/>
-				<Item Name="Pink straw" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
 				<Item Name="Pixelated cube" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
 				<Item Name = "Deliriums Eye" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
 				<Item Name = "Delirious tech" Weight="1" DecreaseBy="1" RemoveOn="0.1" />

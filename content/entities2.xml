@@ -1,10 +1,14 @@
 <entities anm2root="gfx/" version="5">
-    <entity anm2path="simaxeactive.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="75" friction="1" id="2" name="Sim Axe Active" numGridCollisionPoints="0" shadowSize="0" stageHP="0" variant="1001">
+    <entity anm2path="simaxeactive.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="75" friction="1" id="1000" name="Sim Axe Active" numGridCollisionPoints="0" shadowSize="0" stageHP="0" variant="2063">
 		<gibs amount="0" blood="0" bone="0" eye="0" gut="0" large="0" />
     </entity>
 	
 	<entity anm2path="familiars/lilbeast.anm2" tags="cansacrifice" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionInterval="14" collisionMass="1" collisionRadius="13" friction="1" id="3" name="Little Beast" numGridCollisionPoints="12" shadowSize="22" stageHP="0" variant="87">
         <gibs amount="0" blood="0" bone="0" eye="0" gut="0" large="0" />
+	</entity>
+
+    <entity anm2path="260.010_Lil Haunt.anm2" baseHP="25" boss="0" nosplit="false" champion="0" collisionDamage="0" collisionMass="0" collisionRadius="13" friction="1" gridCollision="none" id="976" name="Lil Stalker" numGridCollisionPoints="12" portrait="173" shadowSize="11" shutdoors="false " stageHP="0" tags="noreroll" variant="0" bestiaryAnim="FloatChase">
+        <gibs amount="6" blood="1" bone="0" eye="0" gut="0" large="0" />
 	</entity>
 	
     <entity anm2path="dicegar.anm2" reroll="true" baseHP="10" boss="0" champion="1" collisionDamage="1" collisionMass="5" collisionRadius="13" friction="1" id="10" name="Dice Garper" numGridCollisionPoints="12" shadowSize="14" stageHP="10" variant="0" portrait="1">
@@ -25,6 +29,9 @@
         <gibs amount="0" blood="0" bone="0" eye="0" gut="0" large="0" />
     </entity>
 
+    <entity anm2path="items/pick ups/half_frozen_heart.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="5" name="Frozen Heart (half) (REP MIN)" numGridCollisionPoints="24" shadowSize="17" stageHP="0" variant="10" subtype = "1023">
+        <gibs amount="0" blood="0" bone="0" eye="0" gut="0" large="0" />
+    </entity>
 	
 	<entity anm2path="MinusShard.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="5" name="Minus Shard" numGridCollisionPoints="24" shadowSize="16" stageHP="0" variant="300" subtype="1011">
         <preload-snd id="201" />

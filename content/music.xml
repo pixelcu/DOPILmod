@@ -27,7 +27,11 @@
 	<track name="Repentance Negative Scarred Womb" intro="RepentanceNegative/afterbirth/Cicatrix (Scarred Womb) Intro.ogg" path="RepentanceNegative/afterbirth/Cicatrix (Scarred Womb) Loop.ogg" layerintro="RepentanceNegative/afterbirth/Cicatrix (Scarred Womb) Intro silent.ogg" layer="RepentanceNegative/afterbirth/Cicatrix (Scarred Womb) Layer.ogg" loop="true" />
 	<track name="Repentance Negative Blue Womb" intro="RepentanceNegative/afterbirth/Nativitate  (Dead Womb Floor) Intro.ogg" path="RepentanceNegative/afterbirth/Nativitate (Dead Womb Floor) Loop.ogg" layerintro="RepentanceNegative/afterbirth/Nativitate  (Dead Womb Floor) Intro silence.ogg" layer="RepentanceNegative/afterbirth/Nativitate (Dead Womb Floor) Layer.ogg" loop="true" />
 	<track name="Repentance Negative Sheol" intro="RepentanceNegative/Sheol Intro.ogg" path="RepentanceNegative/Sheol.ogg" layerintro="RepentanceNegative/Sheol Layer Intro.ogg" layer="RepentanceNegative/Sheol Layer.ogg" loop="true" />
-	<track name="Repentance Negative Cathedral" intro="RepentanceNegative/Cathedral Intro.ogg" path="RepentanceNegative/Cathedral Chant.ogg" layerintro="RepentanceNegative/Cathedral Layer Intro.ogg" layer="RepentanceNegative/Cathedral Layer.ogg" loop="true" />
+	
+	<!-- Modded Music -->
+	<track name="Repentance Negative Cathedral" path="RepentanceNegative/Cathedral Chant.ogg" loop="true" />
+
+	<!-- Vanilla Music -->
 	<track name="Repentance Negative Dark Room" intro="RepentanceNegative/Dark Room Alt Chapter 6 intro.ogg" path="RepentanceNegative/Dark Room Alt Chapter 6.ogg" loop="true" />
 	<track name="Repentance Negative Chest" intro="RepentanceNegative/Chest Room Intro.ogg" path="RepentanceNegative/Chest Room Chapter 6.ogg" layerintro="RepentanceNegative/Chest Layer Intro.ogg" layer="RepentanceNegative/Chest Layer.ogg" loop="true" />
 	<track name="Repentance Negative Void" path="RepentanceNegative/Void.ogg" loop="true" />
