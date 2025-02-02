@@ -167,7 +167,25 @@ function mod:repmGetPData(player)
 	return mod.saveTable.PlayerData[index]
 end
 
-mod:AddPriorityCallback(ModCallbacks.MC_POST_PICKUP_INIT, CallbackPriority.LATE, function(_, pickup)
+function mod.GetByQuality(min, max, pool, rnd, descrease)
+	local Itempool = Game():GetItemPool()
+    while min >= 0 do
+        local rng = type(rnd) == "number" and RNG(rnd) or rnd
+        rng:Next()
+        for i = 1, 100 do
+            local new = Itempool:GetCollectible(pool, descrease, rng:GetSeed())
+            local data = Isaac.GetItemConfig():GetCollectible(new)
+            if data.Quality and data.Quality >= min and data.Quality <= max then
+                return new
+            end
+            rng:Next()
+            Itempool:ResetCollectible(new)
+        end
+        min = min - 1
+    end
+end
+
+local function doRunInitFirstCallback()
 	local room = Game():GetRoom()
 	local level = Game():GetLevel()
 	local roomDesc = level:GetCurrentRoomDesc()
@@ -175,7 +193,17 @@ mod:AddPriorityCallback(ModCallbacks.MC_POST_PICKUP_INIT, CallbackPriority.LATE,
 	local roomFrameCount = room:GetFrameCount()
 	local visitedCount = roomDesc.VisitedCount
 
-	if roomFrameCount > 0 or visitedCount == 0 then
+	return roomFrameCount > 0 or visitedCount == 0
+end
+
+mod:AddPriorityCallback(ModCallbacks.MC_POST_PICKUP_INIT, CallbackPriority.LATE, function(_, pickup)
+	if doRunInitFirstCallback() then
 		Isaac.RunCallbackWithParam("REPM_PICKUP_INIT_FIRST", pickup.Variant, pickup)
+	end
+end)
+
+mod:AddPriorityCallback(ModCallbacks.MC_POST_SLOT_INIT, CallbackPriority.LATE, function(_, slot)
+	if doRunInitFirstCallback() then
+		Isaac.RunCallbackWithParam("REPM_SLOT_INIT_FIRST", slot.Variant, slot)
 	end
 end)

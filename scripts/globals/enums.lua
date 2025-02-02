@@ -1,6 +1,7 @@
 local mod = RepMMod
 
 mod.RepmAchivements = {}
+mod.RepmChallenges = {}
 
 mod.RepmTypes = {}
 
@@ -18,6 +19,11 @@ mod.RepmAchivements.NUMB_HEART = { ID = Isaac.GetAchievementIdByName("NumbHeart"
 mod.RepmAchivements.ROT = { ID = Isaac.GetAchievementIdByName("RotAch"), Name = "Rot" }
 
 mod.RepmAchivements.FROSTY_B = { ID = Isaac.GetAchievementIdByName("Frosty_B"), Name = "Tainted Frosty" }
+mod.RepmAchivements.FROSTY_B = { ID = Isaac.GetAchievementIdByName("Frosty_B"), Name = "Tainted Frosty" }
+
+-- Challenges
+mod.RepmChallenges.CHALLENGE_LOCUST_KING = Isaac.GetChallengeIdByName("Locust King")
+mod.RepmChallenges.CHALLENGE_TRAFFIC_LIGHT = Isaac.GetChallengeIdByName("Traffic Light")
 
 -- Characters
 mod.RepmTypes.CHARACTER_SIM = Isaac.GetPlayerTypeByName("Sim", false)
@@ -73,7 +79,7 @@ mod.RepmTypes.COLLECTIBLE_PORTAL_D6 = Isaac.GetItemIdByName("Portal D6")
 mod.RepmTypes.TRINKET_POCKET_TECHNOLOGY = Isaac.GetTrinketIdByName("Pocket Technology")
 mod.RepmTypes.TRINKET_MICRO_AMPLIFIER = Isaac.GetTrinketIdByName("Micro Amplifier")
 mod.RepmTypes.TRINKET_FROZEN_POLAROID = Isaac.GetTrinketIdByName("Frozen Polaroid")
-mod.RepmTypes.TRINKET_BURNED_CLOVER = Isaac.GetTrinketIdByName("Burnt Clover")
+mod.RepmTypes.TRINKET_BURNT_CLOVER = Isaac.GetTrinketIdByName("Burnt Clover")
 mod.RepmTypes.TRINKET_MORE_OPTIONS = Isaac.GetTrinketIdByName("MORE OPTIONS")
 mod.RepmTypes.TRINKET_HAMMER = Isaac.GetTrinketIdByName("Hammer")
 mod.RepmTypes.TRINKET_ICE_PENNY = Isaac.GetTrinketIdByName("Ice Penny")
@@ -83,6 +89,8 @@ mod.RepmTypes.NULL_SIRENS_SINGING = Isaac.GetNullItemIdByName("Siren's Singing")
 mod.RepmTypes.NULL_MINUS_SHARD = Isaac.GetNullItemIdByName("Minus Shard")
 mod.RepmTypes.NULL_MINUS_SHARD_POSITIVE_BONUS = Isaac.GetNullItemIdByName("Minus Shard Bonus Positive")
 mod.RepmTypes.NULL_MINUS_SHARD_NEGATIVE_BONUS = Isaac.GetNullItemIdByName("Minus Shard Bonus Negative")
+mod.RepmTypes.NULL_IMPR_REV_STRENTH = Isaac.GetNullItemIdByName("Impoved Rev. Strenght")
+mod.RepmTypes.NULL_HOW_TO_DIG = Isaac.GetNullItemIdByName("How to Dig")
 
 -- Pickups
 mod.RepmTypes.EEE_CHEST = Isaac.GetEntityVariantByName("EEE Chest")
@@ -95,11 +103,11 @@ mod.RepmTypes.CARD_HAMMER_CARD = Isaac.GetCardIdByName("HammerCard")
 -- Pills
 mod.RepmTypes.PILL_EFFECT_GROOVY = Isaac.GetPillEffectByName("Groovy")
 
--- Challenges
-mod.RepmTypes.CHALLENGE_LOCUST_KING = Isaac.GetChallengeIdByName("Locust King")
-
 -- Familiars
 mod.RepmTypes.FAMILIAR_SAW_SHIELD = Isaac.GetEntityVariantByName("Saw Shield")
+
+-- Slots
+mod.RepmTypes.SLOT_FOUNTAIN = Isaac.GetEntityVariantByName("Fountain of Confession")
 
 -- Effects
 mod.RepmTypes.EFFECT_FROSTY_RIFT = Isaac.GetEntityVariantByName("Frosty Rift")
@@ -114,6 +122,7 @@ mod.RepmTypes.SFX_PICKUP_SAW_SHIELD = Isaac.GetSoundIdByName("sh_pickup")
 mod.RepmTypes.SFX_SAW_SHIELD_BOUNCE = Isaac.GetSoundIdByName("sh_bounce")
 mod.RepmTypes.SFX_SAW_SHIELD_CRASH = Isaac.GetSoundIdByName("sh_wall_crash")
 mod.RepmTypes.SFX_SAW_SHIELD_DAMAGE = Isaac.GetSoundIdByName("sh_shredding")
+mod.RepmTypes.SFX_FOUNTAIN = Isaac.GetSoundIdByName("fountain")
 
 -- Other
 mod.sawShieldReturnCooldown = 300

@@ -57,12 +57,15 @@ local function loadData(_, isLoad)
 		mod.saveTable.PlayerData = {}
 		mod.saveTable.PortalD6 = {}
 		mod.saveTable.PortalD6Use = 0
+		mod.saveTable.saveTimer = nil
+		mod.saveTable.RedLightSign = "GreenLight"
 		mod:AnyPlayerDo(function(player)
 			player:AddCacheFlags(CacheFlag.CACHE_ALL)
 			player:EvaluateItems()
 		end)
 		mod.saveTable.SimAxesCollected = 1
 	end
+	Isaac.RunCallback("REPM_RESET_LOCAL_VALUES", isLoad)
     mod.RNG:SetSeed(mod.saveTable.GlobalSeed, 35)
 end
 mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, loadData)

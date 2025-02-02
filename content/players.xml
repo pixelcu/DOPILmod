@@ -29,6 +29,8 @@
           portrait="playerportrait_frosty_b.png" 
           costumeSuffix="frostyb"
           costume="52"
+          luckmodifier="-3"
+          shotspeedmodifier="0.15"
           bigportrait="playerportrait_frosty_b.png" skinColor="2"
 	    birthright="" healthtype = "1"
         pocketActive="Battered Lighter"
@@ -39,6 +41,8 @@
           costumeSuffix="frostyg" pocketActive=""
           bigportrait="playerportrait_frosty_b.png" skinColor="2"
           birthright="" healthtype = "1" completionparent="Tainted Frosty"
+          luckmodifier="-3"
+          shotspeedmodifier="0.15"
 	    achievement="Frosty_B" hidden="true" costume="52"
         bSkinParent="Frosty"/>
 </players>

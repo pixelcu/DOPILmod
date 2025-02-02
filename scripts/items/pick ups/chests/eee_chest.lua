@@ -15,67 +15,58 @@ local function optionsCheck(pickup)
 	end
 end
 
+local payouts = {
+	[1] = { Type = EntityType.ENTITY_PICKUP, Variant = PickupVariant.PICKUP_HEART, SubType = HeartSubType.HEART_FULL },
+	[2] = { Type = EntityType.ENTITY_PICKUP, Variant = PickupVariant.PICKUP_HEART, SubType = HeartSubType.HEART_HALF },
+	[3] = { Type = EntityType.ENTITY_PICKUP, Variant = PickupVariant.PICKUP_HEART, SubType = HeartSubType.HEART_SOUL },
+	[4] = { Type = EntityType.ENTITY_PICKUP, Variant = PickupVariant.PICKUP_TAROTCARD, SubType = 0 },
+	[5] = {
+		Type = EntityType.ENTITY_PICKUP,
+		Variant = PickupVariant.PICKUP_TAROTCARD,
+		SubType = mod.RepmTypes.CARD_MINUS_SHARD,
+	},
+}
+
+mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_UPDATE, function(_, pickup)
+	
+end, mod.RepmTypes.EEE_CHEST)
+
 ---@param pickup EntityPickup
-local function onPrePickupGetLootList(_, pickup, shouldAdvance)
-	if pickup.Variant == mod.RepmTypes.EEE_CHEST then
-		local rng = pickup:GetDropRNG()
+local function onPrePickupGetLootList(_, pickup)
+	if pickup.Variant == mod.RepmTypes.EEE_CHEST and pickup.SubType == ChestSubType.CHEST_CLOSED then
 		local loot = LootList()
+		local rng = RNG(pickup.InitSeed)
 		if rng:RandomFloat() <= 0.1 then
-			--local pedestal =
-			--Isaac.Spawn(5, 100, game:GetItemPool():GetCollectible(ItemPoolType.POOL_ULTRA_SECRET), pickup.Position, Vector.Zero, pickup)
-			--pedestal:GetSprite():ReplaceSpritesheet(5, "gfx/items/pick ups/EEE_pedestal.png")
-			--pedestal:GetSprite():LoadGraphics()
-			--pickup:Remove()
-			loot:PushEntry(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, Game():GetItemPool():GetCollectible(ItemPoolType.POOL_ULTRA_SECRET))
+			loot:PushEntry(
+				EntityType.ENTITY_PICKUP,
+				PickupVariant.PICKUP_COLLECTIBLE,
+				Game():GetItemPool():GetCollectible(ItemPoolType.POOL_ULTRA_SECRET, false, pickup.InitSeed)
+			)
 		else
-			local rolls = 1
-			for i = 1, 2 do
-				if rng:RandomInt(4) > rolls then
-					rolls = rolls + 1
-				end
-			end
+			local rolls = rng:RandomInt(1, 3)
 			if PlayerManager.AnyoneHasTrinket(TrinketType.TRINKET_LUCKY_TOE) then
 				rolls = rolls + 1
 			end
-			local modC = 1
 			if PlayerManager.AnyoneHasCollectible(CollectibleType.COLLECTIBLE_MOMS_KEY) then
-				modC = modC + 1
+				rolls = rolls + rng:RandomInt(1, 2)
 			end
 
 			local overpaid = 0
+
 			for i = 1, rolls do
-				local payout = math.random(5)
-				if payout <= 1 then
-					for i = 1, modC do
-						--Isaac.Spawn(5, PickupVariant.PICKUP_HEART, HeartSubType.HEART_FULL, pickup.Position, Vector.FromAngle(math.random(360)) * 3, nil)
-						loot:PushEntry(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, HeartSubType.HEART_FULL)
-						print("heart full")
+				local payout = payouts[rng:RandomInt(1, 5)]
+
+				if payout.Variant == PickupVariant.PICKUP_TAROTCARD then
+					if payout.SubType == 0 then
+						payout.SubType = rng:RandomInt(56, 77)
 					end
-				elseif payout <= 2 then
-					for i = 1, modC do
-						--Isaac.Spawn(5, 10, HeartSubType.HEART_HALF, pickup.Position, Vector.FromAngle(math.random(360)) * 3, nil)
-						loot:PushEntry(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, HeartSubType.HEART_HALF)
-						print("heart half")
-					end
-				elseif payout <= 3 then
-					for i = 1, modC do
-						--Isaac.Spawn(5, 10, HeartSubType.HEART_DOUBLEPACK, pickup.Position, Vector.FromAngle(math.random(360)) * 3, nil)
-						loot:PushEntry(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, HeartSubType.HEART_DOUBLEPACK)
-						print("heart double")
-					end
-				elseif payout <= 4 then
-					--Isaac.Spawn(5, 300, math.random(56, 77), pickup.Position, Vector.FromAngle(math.random(360)) * 3, nil)
-					local card = math.random(56, 77)
-					loot:PushEntry(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TAROTCARD, card)
 					overpaid = overpaid + 1
-					print(card)
-				elseif payout <= 5 then
-					loot:PushEntry(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TAROTCARD, mod.RepmTypes.CARD_MINUS_SHARD)
-					print("shard")
-					overpaid = overpaid + 1
-					if i + overpaid >= rolls then
-						break
-					end
+				end
+				print(payout.Type.." : "..payout.Variant.." : "..payout.SubType)
+				loot:PushEntry(payout.Type, payout.Variant, payout.SubType)
+
+				if i + overpaid >= rolls then
+					break
 				end
 			end
 		end
@@ -88,54 +79,75 @@ mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_GET_LOOT_LIST, onPrePickupGetLootList
 ---@param player EntityPlayer
 function mod.openEEEChest(pickup, player)
 	optionsCheck(pickup)
-	pickup.SubType = ChestSubType.CHEST_OPENED
 	pickup:GetSprite():Play("Open")
 	for _, item in pairs(pickup:GetLootList():GetEntries()) do
-		--print(item:GetType().." : "..item:GetVariant().." : "..item:GetSubType())
+		print(item:GetType().." : "..item:GetVariant().." : "..item:GetSubType())
 		if item:GetType() == EntityType.ENTITY_PICKUP then
 			if item:GetVariant() == PickupVariant.PICKUP_COLLECTIBLE then
-			local pedestal = Isaac.Spawn(item:GetType(), item:GetVariant(), item:GetSubType(), pickup.Position, Vector.Zero, pickup)
-			pedestal:GetSprite():ReplaceSpritesheet(5, "gfx/items/pick ups/EEE_pedestal.png")
-			pedestal:GetSprite():LoadGraphics()
-			pickup:Remove()
+				pickup.EntityCollisionClass = EntityCollisionClass.ENTCOLL_NONE
+				pickup:Remove()
+				local pedestal =
+					Isaac.Spawn(item:GetType(), item:GetVariant(), item:GetSubType(), pickup.Position, Vector.Zero, nil)
+				pedestal:GetSprite():ReplaceSpritesheet(5, "gfx/items/slots/EEE_pedestal.png", true)
+				pedestal:GetSprite():SetOverlayFrame("Alternates", 5)
+				pedestal:Update()
 			else
-				Isaac.Spawn(item:GetType(), item:GetVariant(), item:GetSubType(), pickup.Position, EntityPickup.GetRandomPickupVelocity(pickup.Position, item:GetRNG(), 0), nil)
+				Isaac.Spawn(
+					item:GetType(),
+					item:GetVariant(),
+					item:GetSubType(),
+					pickup.Position,
+					EntityPickup.GetRandomPickupVelocity(pickup.Position, item:GetRNG(), 0),
+					nil
+				)
 			end
 		end
 	end
+	pickup.SubType = ChestSubType.CHEST_OPENED
 	SFXManager():Play(SoundEffect.SOUND_CHEST_OPEN, 1, 2, false, 1, 0)
+	pickup:UpdatePickupGhosts()
 end
 
 local function chestCollision(_, pickup, collider, _)
-	if not collider:ToPlayer() then
+	if not collider or not collider:ToPlayer() then
 		return
 	end
 	local player = collider:ToPlayer()
 	local sprite = pickup:GetSprite()
-	if pickup.Variant == mod.RepmTypes.EEE_CHEST and pickup.SubType == ChestSubType.CHEST_CLOSED then
+	if pickup.SubType == ChestSubType.CHEST_CLOSED then
 		if sprite:IsPlaying("Appear") then
 			return false
 		end
-		if pickup.Variant == mod.RepmTypes.EEE_CHEST then
-			mod.openEEEChest(pickup, player)
-		end
+		mod.openEEEChest(pickup, player)
 	end
 end
 mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, chestCollision, mod.RepmTypes.EEE_CHEST)
 
 local function chestInit(_, pickup)
-	if pickup.Variant == mod.RepmTypes.EEE_CHEST and pickup.SubType == ChestSubType.CHEST_OPENED then
+	if pickup.SubType == ChestSubType.CHEST_OPENED then
 		pickup:Remove()
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_PICKUP_INIT, chestInit)
+mod:AddCallback(ModCallbacks.MC_POST_PICKUP_INIT, chestInit, mod.RepmTypes.EEE_CHEST)
 
 mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_MORPH, function(_, pickup, eType, Variant, SubType)
-    if pickup.Type == EntityType.ENTITY_PICKUP and pickup.Variant == mod.RepmTypes.EEE_CHEST and pickup.SubType == ChestSubType.CHEST_OPENED then
-        return false
-    end
+	if
+		pickup.Type == EntityType.ENTITY_PICKUP
+		and pickup.Variant == mod.RepmTypes.EEE_CHEST
+		and pickup.SubType == ChestSubType.CHEST_OPENED
+	then
+		return false
+	end
 end)
 
+---@param pickup EntityPickup
+mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS, function(_, pickup)
+	if pickup.Variant == mod.RepmTypes.EEE_CHEST and pickup.SubType == ChestSubType.CHEST_CLOSED then
+		return true
+	end
+end)
+
+---@param pickup EntityPickup
 local function chestSpawn(_, pickup)
 	if Isaac.GetPersistentGameData():Unlocked(RepMMod.RepmAchivements.SIM_LAMB.ID) then
 		if
@@ -143,10 +155,13 @@ local function chestSpawn(_, pickup)
 			and Game():GetLevel():GetStage() ~= LevelStage.STAGE6
 		then
 			local rng = pickup:GetDropRNG()
-			if pickup.Variant == PickupVariant.PICKUP_LOCKEDCHEST and rng:RandomFloat() <= 0.01 or 
-            pickup.Variant == PickupVariant.PICKUP_REDCHEST and rng:RandomFloat() <= 0.25 then
+			if
+				pickup.Variant == PickupVariant.PICKUP_LOCKEDCHEST and rng:RandomFloat() <= 0.01
+				or pickup.Variant == PickupVariant.PICKUP_REDCHEST and rng:RandomFloat() <= 0.25
+			then
 				pickup:Morph(5, mod.RepmTypes.EEE_CHEST, 1, true, true, false)
 				SFXManager():Play(SoundEffect.SOUND_CHEST_DROP, 1, 2, false, 1, 0)
+				pickup:UpdatePickupGhosts()
 			end
 		end
 	end

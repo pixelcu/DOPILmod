@@ -49,17 +49,32 @@ local function PostNewRoom()
 end
 mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, PostNewRoom)
 
+mod:AddCallback(ModCallbacks.MC_PLAYER_GET_ACTIVE_MAX_CHARGE, function(_, item, player, vardata, maxcharge)
+	return maxcharge + vardata
+end, mod.RepmTypes.COLLECTIBLE_AXE_ACTIVE)
+
+mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
+	mod:AnyPlayerDo(function(player)
+		---@cast player EntityPlayer
+		for slot = 0, 2 do
+			if player:GetActiveItem(slot) == mod.RepmTypes.COLLECTIBLE_AXE_ACTIVE then
+				player:SetActiveVarData(0, slot)
+			end
+		end
+	end)
+end)
+
+---@param player EntityPlayer
 local function onUseAxe(_, collectibletype, rng, player, useflags, slot, vardata)
 	if useflags & UseFlag.USE_CARBATTERY ~= 0 then
 		mod:GetData(player).ExtraSpins = mod:GetData(player).ExtraSpins + 1
 	end
 	local weaponType = player:GetWeapon(1):GetWeaponType()
-	local extra = 0
 	if player:GetMultiShotParams(weaponType):GetNumTears() > 1 then
 		mod:GetData(player).ExtraSpins = mod:GetData(player).ExtraSpins + player:GetMultiShotParams(weaponType):GetNumTears()
 	end
-	Isaac.GetItemConfig():GetCollectible(mod.RepmTypes.COLLECTIBLE_AXE_ACTIVE).MaxCharges = Isaac.GetItemConfig()
-		:GetCollectible(mod.RepmTypes.COLLECTIBLE_AXE_ACTIVE).MaxCharges + 25
+	local itemDesc = player:GetActiveItemDesc(slot)
+	player:SetActiveVarData(itemDesc.VarData + 25, slot)
 	SpawnAxe(player)
 end
 

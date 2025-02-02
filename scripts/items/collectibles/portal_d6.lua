@@ -60,7 +60,7 @@ end)
 ---@param slot ActiveSlot | integer
 ---@param customVarData integer
 ---@return boolean
-function mod:PortalUse(item, rng, player, Flags, slot, customVarData)
+local function PortalUse(_, item, rng, player, Flags, slot, customVarData)
 	if mod.saveTable.PortalD6Use ~= 1 then
 		mod.saveTable.PortalD6Use = 1
 		mod.saveTable.PortalD6 = {}
@@ -214,4 +214,4 @@ function mod:PortalUse(item, rng, player, Flags, slot, customVarData)
 		return true
 	end
 end
-RepMMod:AddCallback(ModCallbacks.MC_USE_ITEM, RepMMod.PortalUse, mod.RepmTypes.COLLECTIBLE_PORTAL_D6)
+RepMMod:AddCallback(ModCallbacks.MC_USE_ITEM, PortalUse, mod.RepmTypes.COLLECTIBLE_PORTAL_D6)

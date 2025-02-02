@@ -11,17 +11,24 @@
         <gibs amount="6" blood="1" bone="0" eye="0" gut="0" large="0" />
 	</entity>
 	
-    <entity anm2path="dicegar.anm2" reroll="true" baseHP="10" boss="0" champion="1" collisionDamage="1" collisionMass="5" collisionRadius="13" friction="1" id="10" name="Dice Garper" numGridCollisionPoints="12" shadowSize="14" stageHP="10" variant="0" portrait="1">
-        <gibs amount="0" blood="0" bone="0" eye="0" gut="0" large="0" />
-        <preload-snd id="165" /> <!-- SOUND_ZOMBIE_WALKER_KID -->
-    </entity>
-	
-	<entity anm2path="dicegarbrok.anm2" reroll="true" baseHP="6" boss="0" champion="1" collisionDamage="1" collisionMass="5" collisionRadius="13" friction="1" id="10" name="Broken Dice Garper" numGridCollisionPoints="12" shadowSize="14" stageHP="10" variant="0" portrait="0">
+    <entity anm2path="dicegar.anm2" reroll="true" baseHP="10" boss="0" champion="0" collisionDamage="1" collisionMass="5" collisionRadius="13" friction="1" id="10" name="Dice Garper" numGridCollisionPoints="12" shadowSize="14" stageHP="0" variant="1" subtype="5" portrait="0">
+        <bestiary anim="WalkVert" overlay="Head" transform="0,0,1"/>
         <gibs amount="0" blood="2" bone="0" eye="0" gut="0" large="0" />
         <preload-snd id="165" /> <!-- SOUND_ZOMBIE_WALKER_KID -->
+        <devolve id="10.1.6" weight="0.7" />
+        <devolve id="10.1.0" weight="0.4" />
     </entity>
 	
-    <entity id="27" variant="106" name="Thumper" reroll="true" baseHP="15" stageHP="0" boss="0" champion="1" collisionDamage="0" collisionMass="22" collisionRadius="16" friction="1" numGridCollisionPoints="12" shadowSize="26" portrait="23" anm2path="monsters/NEGA/Thumper.anm2" bestiary="true" bestiaryTransform="0,0,1" bestiaryAnim="Shoot" >
+	<entity anm2path="dicegarbrok.anm2" reroll="true" baseHP="6" boss="0" champion="0" collisionDamage="1" collisionMass="5" collisionRadius="13" friction="1" id="10" name="Broken Dice Garper"  numGridCollisionPoints="12" shadowSize="14" stageHP="0" variant="1" subtype="6" portrait="1">
+        <bestiary anim="WalkVert" overlay="Head" transform="0,0,1"/>
+        <gibs amount="0" blood="2" bone="0" eye="0" gut="0" large="0" />
+        <preload-snd id="165" /> <!-- SOUND_ZOMBIE_WALKER_KID -->
+        <devolve id="5.300.49" weight="0.3" />
+        <devolve id="11.0.0" weight="0.5" />
+    </entity>
+	
+    <entity id="27" variant="106" name="Thumper" reroll="true" baseHP="15" stageHP="0" boss="0" champion="1" collisionDamage="0" collisionMass="22" collisionRadius="16" friction="1" numGridCollisionPoints="12" shadowSize="26" portrait="2" anm2path="monsters/NEGA/Thumper.anm2">
+        <bestiary transform="0,0,1" anim="Shoot" />
         <gibs amount="6" blood="1" bone="1" eye="0" gut="0" large="0" worm="1" />
     </entity>
 	

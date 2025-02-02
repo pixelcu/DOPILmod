@@ -249,6 +249,25 @@ CustomHealthAPI.Library.AddCallback(
 	end
 )
 
+local function whenSpawningCreep_IceHeart(_, player)
+	local pdata = mod:repmGetPData(player)
+	if pdata.isIceheartCrept and game:GetFrameCount() % 3 == 0 then
+		local creep = Isaac.Spawn(1000, 54, 0, player.Position, Vector.Zero, player):ToEffect()
+		creep.Scale = 0.65
+		--creep:SetTimeout(15)
+		creep:Update()
+	end
+end
+mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, whenSpawningCreep_IceHeart)
+
+local function disableCreepRoom()
+	mod:AnyPlayerDo(function(player)
+		local pdata = mod:repmGetPData(player)
+		pdata.isIceheartCrept = nil
+	end)
+end
+mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, disableCreepRoom)
+
 --------------------------------------------------------------------
 
 -------------

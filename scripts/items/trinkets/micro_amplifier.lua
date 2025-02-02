@@ -6,7 +6,7 @@ local function TrinketNewRoom() --Эта функция вызывается п�
 			local data = player:GetData()
 			--local TrinkRNG = player:GetTrinketRNG(1)
 			local TrinkRNG = RNG() --RNG отвечает за неслучайную случайность
-			TrinkRNG:SetSeed(game:GetLevel():GetCurrentRoomDesc().SpawnSeed + player.InitSeed, 35) --Сид, который отвечает за рандом
+			TrinkRNG:SetSeed(Game():GetLevel():GetCurrentRoomDesc().SpawnSeed + player.InitSeed, 35) --Сид, который отвечает за рандом
 			data.PeremenuyEto = 1 << TrinkRNG:RandomInt(6)
 			player:AddCacheFlags(CacheFlag.CACHE_ALL, true)
 		end
@@ -43,7 +43,7 @@ local function CheckTrinketHold(_, player) --Эта функция вызыва�
 	if player:HasTrinket(mod.RepmTypes.TRINKET_MICRO_AMPLIFIER) then
 		if not data.PeremenuyEto then --Если есть брелок, но нет статов, то есть поднятие брелока
 			local TrinkRNG = RNG()
-			TrinkRNG:SetSeed(game:GetLevel():GetCurrentRoomDesc().SpawnSeed + player.InitSeed, 35)
+			TrinkRNG:SetSeed(Game():GetLevel():GetCurrentRoomDesc().SpawnSeed + player.InitSeed, 35)
 			data.PeremenuyEto = 1 << TrinkRNG:RandomInt(6)
 			player:AddCacheFlags(data.PeremenuyEto, true)
 		end

@@ -2,17 +2,13 @@
 <items version="1" gfxroot="gfx/items/" deathanm2="gfx/death_items.anm2">
 <!-- Items -->
     <passive id="2" name="Strawberry Milk" description="Confuse your enemies" gfx="strawberry milk.png" cache="tearcolor" quality="2" /> 
-	<!-- hearts="1" maxhearts="2" soulhearts="3" blackhearts="4" coins="5" keys="6" bombs="7" -->
-	<!-- <passive id="777" name="Pro Backstabber" description="Gentlemen..." gfx="PRObackstabber.png"/> -->
 	<active id="10" name="Book of Tales" description="Zzzz..." gfx="book of tails.png" maxcharges="4" quality="2" />
 	<active id="12" maxcharges="2" description="Well that backfired..." gfx="prokamikadze.png" name="Advanced Kamikaze" quality="4" />
 	<passive id="11" name="Holy shell" description="Help from above!" gfx="holyshell.png" quality="2" />
 	<active id="13" maxcharges="4" description="...with Lyte..." gfx="Curious heart.png" name="Curious Heart" quality="1" />
 
 	<passive id="4" cache="damage" name="Leaky Bucket" description="It oozes..." gfx="leaky bucket.png" quality="3" />
-    <!--<active name="Executioner's Helmet" description="BLOOM AND DOOM!" gfx="doom.png" maxcharges="0"/>-->
 	<passive name="Delirious Tech" description="Mad science" gfx="techdel.png" cache="tearcolor" id="5" quality="4" />
-	<!--<passive id="6" name="Vacuum" description="No one can hear you cry" gfx="Vacume.png" cache="all"/>-->
 	<passive id="15" name = "Minus" description = "Don't you dare take it!" gfx="minus.png" quality="0" />
     <active id="16" name = "Pixelated Cube" description = "Where babies come from"  gfx = "pixelated cube.png" maxcharges="6" quality="1" />
     <passive id="17" name = "110V" description = "High voltage" gfx = "110V.png" quality="1" />
@@ -20,7 +16,7 @@
 	<passive id="19" name = "Flower Tea" description = "Is this calming?" gfx = "flower.png" quality="1" cache="all" hearts="24" />
 	<passive id="20" name="Holy Master Key" description="Eternal roulette" gfx="otmich.png" quality="2" />
 	<passive id="21" name="Sandwich" description="Tasty!" gfx="buter.png" maxhearts="2" cache="all" quality="1" />
-	<!--!!!--><passive id="7" name="Faustian Bargain" description="All stats up! But at what cost?" gfx="golovabarana.png" cache="all" quality="2" />
+	<passive id="7" name="Faustian Bargain" description="All stats up! But at what cost?" gfx="golovabarana.png" cache="all" quality="2" />
 	<passive id="22" name="VHS Cassette" description="Old filter" gfx="vhs.png" cache="all" quality="1" />
 	<active id="23" name = "Bloody Negative" description = "Wrong negative, stupid!"  gfx = "minmin.png" maxcharges="0" cache="all" quality="1" />
 	<active id="24" name="Necronomicon Vol. 3" description="Death serves you" gfx="NEGROMANTIA2.png" maxcharges="4" quality="2" />
@@ -52,4 +48,6 @@
 	<null name="Minus Shard" persistent="true" />
 	<null name="Minus Shard Bonus Positive" persistent="true" />
 	<null name="Minus Shard Bonus Negative" persistent="true" />
+	<null name="Impoved Rev. Strenght" cache="speed"/>
+	<null name="How to Dig" cache="speed flying color" persistent="true" cooldown="630"/>
 </items>

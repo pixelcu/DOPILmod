@@ -1,5 +1,5 @@
 <AnimatedActor>
-	<Info CreatedBy="Unknown" CreatedOn="21.08.2024 11:52:18" Version="11" Fps="30"/>
+	<Info CreatedBy="Unknown" CreatedOn="27.01.2025 21:31:17" Version="12" Fps="30"/>
 	<Content>
 		<Spritesheets>
 			<Spritesheet Path="CharacterMenuAlt.png" Id="0"/>
@@ -10,8 +10,8 @@
 		<Nulls/>
 		<Events/>
 	</Content>
-	<Animations DefaultAnimation="TSim">
-		<Animation Name="TSim" FrameNum="2" Loop="false">
+	<Animations DefaultAnimation="Sim">
+		<Animation Name="Sim" FrameNum="2" Loop="false">
 			<RootAnimation>
 				<Frame XPosition="0" YPosition="0" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/>
 			</RootAnimation>

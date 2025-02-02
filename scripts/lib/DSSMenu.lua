@@ -1,5 +1,5 @@
 return function(mod)
-	local DSSModName = "Dead Sea Scrolls (Repentance-)"
+	local DSSModName = "Repentance-"
 
 	local DSSCoreVersion = 6
 
