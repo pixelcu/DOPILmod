@@ -1,10 +1,10 @@
 local mod = RepMMod
 
 local PixelatedCubeBabiesList = {}
+local config = Isaac.GetItemConfig()
 
-mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function()
-	-- babies list for pixelated cube
-	local config = Isaac.GetItemConfig()
+local function PixelatedCubeUse(_, itemID, rng, player)
+	-- pixelated cube
 	if #PixelatedCubeBabiesList == 0 then
 		for id = 1, config:GetCollectibles().Size do
 			local item = config:GetCollectible(id)
@@ -13,15 +13,11 @@ mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function()
 			end
 		end
 	end
-end)
-
-local function PixelatedCubeUse(_, itemID, rng, player)
-	-- pixelated cube
-	local BabyNumber = PixelatedCubeBabiesList[rng:RanomdInt(1, 30)]
+	local BabyNumber = PixelatedCubeBabiesList[rng:RandomInt(1, 30)]
 	player:GetEffects():AddCollectibleEffect(BabyNumber, false)
-	local BabyNumber = PixelatedCubeBabiesList[rng:RanomdInt(1, 30)]
+	local BabyNumber = PixelatedCubeBabiesList[rng:RandomInt(1, 30)]
 	player:GetEffects():AddCollectibleEffect(BabyNumber, false)
-	local BabyNumber = PixelatedCubeBabiesList[rng:RanomdInt(1, 30)]
+	local BabyNumber = PixelatedCubeBabiesList[rng:RandomInt(1, 30)]
 	player:GetEffects():AddCollectibleEffect(BabyNumber, false)
 	return {
 		Discharge = true,

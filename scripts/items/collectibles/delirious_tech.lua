@@ -85,32 +85,30 @@ mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function()
 end)
 
 local laserTypes = {
-	[0] = CollectibleType.COLLECTIBLE_TECH_X,
-	[1] = CollectibleType.COLLECTIBLE_BRIMSTONE,
-	[2] = CollectibleType.COLLECTIBLE_TECHNOLOGY,
-	[3] = CollectibleType.COLLECTIBLE_TECHNOLOGY_2,
-	[4] = CollectibleType.COLLECTIBLE_TECHNOLOGY_ZERO,
-	[5] = CollectibleType.COLLECTIBLE_TECH_5,
+	[1] = CollectibleType.COLLECTIBLE_TECH_X,
+	[2] = CollectibleType.COLLECTIBLE_BRIMSTONE,
+	[3] = CollectibleType.COLLECTIBLE_TECHNOLOGY,
+	[4] = CollectibleType.COLLECTIBLE_TECHNOLOGY_2,
+	[5] = CollectibleType.COLLECTIBLE_TECHNOLOGY_ZERO,
+	[6] = CollectibleType.COLLECTIBLE_TECH_5,
 }
 
 local function deliriousTechLaserSwitch(_, player)
-	if player:HasCollectible(mod.RepmTypes.COLLECTIBLE_DELIRIOUS_TECH) and Game():GetFrameCount() % 30 == 0 then
-		local rng = player:GetCollectibleRNG(mod.RepmTypes.COLLECTIBLE_DELIRIOUS_TECH)
-		local data = mod:repmGetPData(player)
-		if rng:RandomInt(100) > 94 or data.DelirousTechState == nil then
-			if data.DelirousTechState ~= nil then
-				hiddenItemManager:Remove(player, data.DelirousTechState, hiddenItemManager.kDefaultGroup)
-			end
-			local num = rng:RandomInt(6)
-			local selectedNum = laserTypes[num]
-			data.DelirousTechState = selectedNum
-			hiddenItemManager:Add(player, selectedNum)
-			if not player:HasCollectible(selectedNum, true) then
-				local costConfig = config:GetCollectible(selectedNum)
-				player:RemoveCostume(costConfig)
+	local data = mod:repmGetPData(player)
+	data.DelirousTechState = data.DelirousTechState or {0, 0, 0, 0, 0, 0}
+	if player:HasCollectible(mod.RepmTypes.COLLECTIBLE_DELIRIOUS_TECH) then
+		if Game():GetFrameCount() % 30 == 0 then
+			local rng = player:GetCollectibleRNG(mod.RepmTypes.COLLECTIBLE_DELIRIOUS_TECH)
+			if rng:RandomInt(100) > 94 then
+				data.DelirousTechState = {0, 0, 0, 0, 0, 0}
+				data.DelirousTechState[rng:RandomInt(1, 6)] = 1
 			end
 		end
 	end
+	for k, v in ipairs(data.DelirousTechState) do
+		hiddenItemManager:CheckStack(player, laserTypes[k], v, "RepmDeliriousTech")
+	end
+	hiddenItemManager:HideCostumes("RepmDeliriousTech")
 end
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, deliriousTechLaserSwitch)
 

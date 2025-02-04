@@ -26,7 +26,7 @@ mod:AddCallback(ModCallbacks.MC_USE_ITEM, onBookOfTales, mod.RepmTypes.COLLECTIB
 
 local function onRoom() -- спавн ретро-сокровещницы
 	if PlayerManager.AnyoneHasCollectible(mod.RepmTypes.COLLECTIBLE_BOOK_OF_TALES) then
-		local room = game:GetRoom()
+		local room = Game():GetRoom()
 		if room:GetType() == RoomType.ROOM_DUNGEON then
 			for i = 1, room:GetGridSize() do
 				local gridEntity = room:GetGridEntity(i)
@@ -39,7 +39,7 @@ local function onRoom() -- спавн ретро-сокровещницы
 				end
 			end
 			if room:IsFirstVisit() then
-				local level = game:GetLevel()
+				local level = Game():GetLevel()
 				level:ChangeRoom(level:GetCurrentRoomIndex())
 			end
 		elseif room:GetType() == RoomType.ROOM_DEVIL or room:GetType() == RoomType.ROOM_ANGEL then

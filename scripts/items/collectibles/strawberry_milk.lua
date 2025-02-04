@@ -18,13 +18,13 @@ mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, tearFire_StrawMilk)
 
 local function TearDed_StrawMilk(_, t)
 	if t:GetData().IsStrawMilk then
-		local p = Isaac.Spawn(1000, 53, 0, t.Position, Vector.Zero, t)
+		local p = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_GREEN, 0, t.Position, Vector.Zero, t)
 		local player = t.SpawnerEntity and t.SpawnerEntity:ToPlayer()
 			or t.SpawnerEntity:ToFamiliar() and t.SpawnerEntity.Player
 		if player then
 			p:ToEffect().Scale = math.max(0.5, math.min(3, player.Damage / 15))
-			p:Update()
-			p:Update()
+			--p:Update()
+			--p:Update()
 			p.Color = Color(5.0, 1.0, 5.0, 1.0, 2, 0, 2)
 		end
 	end

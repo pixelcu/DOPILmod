@@ -9,14 +9,14 @@ local function options_Wow_Room()
 		local pos = Isaac.GetFreeNearPosition(spawnPos, 40)
 		local rng = RNG(Game():GetLevel():GetCurrentRoomDesc().SpawnSeed)
 		local seed = Game():GetLevel():GetCurrentRoomDesc().AwardSeed
-		rng:SetSeed(seed, 35)
+		--rng:SetSeed(seed, 35)
 		local ItemId = mod.GetByQuality(3, 4, Itempool:GetPoolForRoom(RoomType.ROOM_SHOP, seed), rng)
 		if ItemId then
 			local obj = Isaac.Spawn(5, 100, ItemId, pos, Vector.Zero, nil):ToPickup()
 			obj:Update()
 
 			obj.Price = 30
-			obj.ShopItemId = -2
+			obj.ShopItemId = -1
 			obj.AutoUpdatePrice = false
 			obj:Update()
 			if PlayerManager.AnyoneHasTrinket(CollectibleType.COLLECTIBLE_STEAM_SALE) then

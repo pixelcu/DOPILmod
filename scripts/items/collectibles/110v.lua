@@ -13,10 +13,10 @@ local function OnRoomClear(_, rng)
 end
 mod:AddPriorityCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, CallbackPriority.EARLY, OnRoomClear)
 
-mod:AddPriorityCallback(ModCallbacks.MC_USE_ITEM, CallbackPriority.LATE, function(_, col, rng, player)
+mod:AddPriorityCallback(ModCallbacks.MC_USE_ITEM, CallbackPriority.EARLY, function(_, col, rng, player, flags, slot)
 	--110V damage on using active part
 	if player:HasCollectible(mod.RepmTypes.COLLECTIBLE_110V) then
-		local maxCharge = Isaac.GetItemConfig():GetCollectible(player:GetActiveItem(0)).MaxCharges
+		local maxCharge = Isaac.GetItemConfig():GetCollectible(player:GetActiveItem(slot)).MaxCharges
 		if maxCharge == 2 or maxCharge == 3 then
 			player:TakeDamage(
 				1,

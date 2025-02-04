@@ -89,7 +89,7 @@ local function AxeSpin(_, axe)
 	local data = mod:GetData(player)
 	local blackList = mod:GetData(axe)
 	local sprite = axe:GetSprite()
-
+	data.ExtraSpins = data.ExtraSpins or 0
 	-- We are going to use this table as a way to make sure enemies are only hurt once in a swing.
 	-- This line will either set the hit blacklist to itself, or create one if it doesn't exist.
 	blackList.HitBlacklist = blackList.HitBlacklist or {}

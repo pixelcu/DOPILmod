@@ -61,7 +61,11 @@ local function onCuriousHeart(_, _, rng, player)
 			nil
 		)
 	end
-	return true
+	return {
+		Discharge = true,
+		Remove = false,
+		ShowAnim = true,
+	}
 end
 
 mod:AddCallback(ModCallbacks.MC_USE_ITEM, onCuriousHeart, mod.RepmTypes.COLLECTIBLE_CURIOUS_HEART) -- , mod.Anm, Items.ID_Anm

@@ -19,10 +19,10 @@ mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, function(_, tear)
 	if
 		player:HasCollectible(mod.RepmTypes.COLLECTIBLE_DILIRIUM_EYE)
 		and not familiarTear
-		and (game:GetFrameCount() > data.DiliriumEyeLastActivateFrame + 1)
+		and (Game():GetFrameCount() > data.DiliriumEyeLastActivateFrame + 1)
 	then
 		local DelEyeVariant = math.random(1, 5)
-		data.DiliriumEyeLastActivateFrame = game:GetFrameCount()
+		data.DiliriumEyeLastActivateFrame = Game():GetFrameCount()
 		if DelEyeVariant == 1 then
 			if player:GetFireDirection() == 0 then
 				local ShootDirection =

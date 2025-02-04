@@ -211,7 +211,11 @@ local function PortalUse(_, item, rng, player, Flags, slot, customVarData)
         end
         RepMMod.saveTable.PortalD6 = {}
 		--Isaac.GetItemConfig():GetCollectible(mod.RepmTypes.COLLECTIBLE_PORTAL_D6).MaxCharges = 10
-		return true
+		return {
+            Discharge = true,
+            Remove = false,
+            ShowAnim = true,
+        }
 	end
 end
 RepMMod:AddCallback(ModCallbacks.MC_USE_ITEM, PortalUse, mod.RepmTypes.COLLECTIBLE_PORTAL_D6)

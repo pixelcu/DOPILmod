@@ -11,13 +11,13 @@ local function RedButtonUse(_, item, rng, p, flags, slot, customVData)
 	local roomEntities = Isaac.GetRoomEntities()
 	for _, entity in ipairs(roomEntities) do
 		if entity:IsActiveEnemy() and entity:IsVulnerableEnemy() then
-			for i = 1, math.random(3, 5) do
+			for i = 1, rng:RandomInt(3, 5) do
 				local flame = Isaac.Spawn(
 					EntityType.ENTITY_EFFECT,
 					EffectVariant.RED_CANDLE_FLAME,
 					0,
 					p.Position,
-					Vector(math.random(-10, 10), math.random(-10, 10)),
+					RandomVector():Resized(10),
 					p
 				)
 				flame.CollisionDamage = 5
