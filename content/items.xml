@@ -30,8 +30,8 @@
 	<passive id = "8" name="Siren Horns" description="Come hither" gfx="Siren Horns.png" tags="baby" quality="3" />
 	<passive id="32" name="Strong Spirit" description="Let's settle this!" gfx="SSItem.png" quality="2"/>
 	<active id="33" name="How To Dig" description="Time to dig!" gfx="how to dig.png" maxcharges = "3" quality="2" />
-	<active id="34" name="Battered Lighter" description="Still working" gfx="battered lighter.png" maxcharges = "1" quality="2" />
-	<active id="35" name="Holy Lighter" description="Baptism by fire" gfx="holy lighter.png" maxcharges = "6" chargetype = "normal" quality="2" />
+	<active id="34" name="Battered Lighter" description="Still working" gfx="battered lighter.png" hidden="true" maxcharges = "1" quality="2" />
+	<active id="35" name="Holy Lighter" description="Baptism by fire" gfx="holy lighter.png" maxcharges = "6" hidden="true" chargetype = "normal" quality="2" />
 	<active id="36" name="Portal D6" description="Portal?" gfx="portald6.png" maxcharges = "6" quality="4" />
 
 	<passive id="37" name="Saw Shield" cache="familiars" description="Tear them at distance!" tags="offensive" gfx="ShieldSaw.png" quality="3" />
@@ -41,7 +41,7 @@
 	<trinket name="Pocket Technology" description="Like tech...but...not?" gfx="PocketTechology.png" />
 	<trinket name="MORE OPTIONS" description="Why isn't this in the game? :(" gfx="MORE OPTIONS.png" />
 	<trinket name="Hammer" description="Boink!" cache="tearflag" gfx="hammer.png" />
-	<trinket name="Frozen Polaroid" description="They preserved you in ice" gfx="frozen_polaroid.png" />
+	<trinket name="Frozen Polaroid" description="They preserved you in ice" hidden="true" gfx="frozen_polaroid.png" />
 	<trinket name="Ice Penny" description="Wealth of chill" gfx="ice penny.png" />
 
 	<null id="250" name="Siren's Singing" persistent="false" cooldown="90" />

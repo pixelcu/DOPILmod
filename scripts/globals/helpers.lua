@@ -169,17 +169,20 @@ end
 
 function mod.GetByQuality(min, max, pool, rnd, descrease)
 	local Itempool = Game():GetItemPool()
+	descrease = type(descrease) ~= "nil" and descrease or true
     while min >= 0 do
         local rng = type(rnd) == "number" and RNG(rnd) or rnd
         rng:Next()
         for i = 1, 100 do
-            local new = Itempool:GetCollectible(pool, descrease, rng:GetSeed())
+            local new = Itempool:GetCollectible(pool, false, rng:GetSeed())
             local data = Isaac.GetItemConfig():GetCollectible(new)
             if data.Quality and data.Quality >= min and data.Quality <= max then
+				if descrease then
+					Itempool:RemoveCollectible(new)
+				end
                 return new
             end
             rng:Next()
-            Itempool:ResetCollectible(new)
         end
         min = min - 1
     end

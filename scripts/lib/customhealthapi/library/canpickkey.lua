@@ -18,7 +18,6 @@ function CustomHealthAPI.Helper.CanPickKey(player, key)
 	end
 	
 	if typ == CustomHealthAPI.Enums.HealthTypes.RED then
-		print("eh?")
 		return CustomHealthAPI.Helper.CanPickRed(player, key)
 	elseif typ == CustomHealthAPI.Enums.HealthTypes.SOUL then
 		return CustomHealthAPI.Helper.CanPickSoul(player, key)
@@ -50,7 +49,7 @@ function CustomHealthAPI.Helper.CanPickRed(player, key)
 		end
 	end
 	
-	if CustomHealthAPI.PersistentData.CharactersThatCantHaveRedHealth[player:GetPlayerType()] then
+	if CustomHealthAPI.Helper.PlayerIsRedHealthless(player, true) then
 		return false
 	end
 	
@@ -165,7 +164,7 @@ function CustomHealthAPI.Helper.CanPickContainer(player, key)
 			return CustomHealthAPI.PersistentData.OverriddenFunctions.CanPickBoneHearts(player)
 		elseif CustomHealthAPI.PersistentData.HealthDefinitions[key].KindContained == CustomHealthAPI.Enums.HealthKinds.NONE then
 			return CustomHealthAPI.PersistentData.GetHeartLimit(player) > 0
-		elseif CustomHealthAPI.Helper.PlayerIsKeeper(player) then
+		elseif CustomHealthAPI.Helper.PlayerHasCoinHealth(player) then
 			return CustomHealthAPI.PersistentData.GetHeartLimit(player) - math.ceil(CustomHealthAPI.PersistentData.GetMaxHearts / 2) > 0
 		else
 			return false

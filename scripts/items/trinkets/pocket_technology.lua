@@ -6,7 +6,7 @@ mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, function(_, entity, amount, fla
             local npc = entity:ToNPC()
 
             if npc:IsChampion() or (npc:IsBoss() and npc:GetBossColorIdx() >= 0) then
-                local mul = PlayerManager.GetTotalTrinketMultiplier(mod.RepmTypes.TRINKET_POCKET_TECHNOLOGY)
+                local mul = 1.5 + PlayerManager.GetTotalTrinketMultiplier(mod.RepmTypes.TRINKET_POCKET_TECHNOLOGY) * 0.5
                 return {Damage = amount * math.max(1, mul), DamageFlags = flag, DamageCountdown = countdown}
             end
         end

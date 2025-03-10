@@ -4,7 +4,7 @@ local function onPlayerUpdate_Like(_, player)
 	if
 		player:HasCollectible(mod.RepmTypes.COLLECTIBLE_LIKE)
 		and player:GetSprite():GetAnimation() == "Happy"
-		and player:GetSprite():GetFrame() == 6
+		and player:GetSprite():GetFrame() == 0
 	then
 		local pdata = mod:repmGetPData(player)
 		pdata.Like_AllBonus = (pdata.Like_AllBonus or 0) + 0.5

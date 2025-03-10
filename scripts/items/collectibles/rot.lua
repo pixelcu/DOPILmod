@@ -3,7 +3,7 @@ local mod = RepMMod
 mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function()
 	mod:AnyPlayerDo(function(player)
 		---@type {GasesCountDown: number}
-		local Data = mod:GetData(player)
+		local data = mod:GetData(player)
 		if player:HasCollectible(mod.RepmTypes.COLLECTIBLE_ROT) then
 			data.GasesCountDown = 240
 		end

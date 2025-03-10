@@ -5,10 +5,10 @@ local game = Game()
 local function OnBossDefeat_Frosty(_, rng, spawn)
 	if
 		not pgd:Unlocked(mod.RepmAchivements.FROSTY.ID)
-		and pgd:Unlocked(635)
+		and pgd:Unlocked(Achievement.STRANGE_DOOR)
 		and game:GetRoom():GetType() == RoomType.ROOM_BOSS
 		and game:GetLevel():GetStage() == 1
-		and game:GetLevel():GetStageType() <= 2
+		and game:GetLevel():GetStageType() <= StageType.STAGETYPE_AFTERBIRTH
 		and mod.saveTable.repm_picSpawned ~= true
 	then
 		local spawnPos = game:GetRoom():FindFreePickupSpawnPosition(game:GetRoom():GetCenterPos())
@@ -24,7 +24,7 @@ local function onFrostyInit(_, player)
 	if player:GetPlayerType() == mod.RepmTypes.CHARACTER_FROSTY then
 		player:AddSoulHearts(-1)
 		CustomHealthAPI.Library.AddHealth(player, "HEART_ICE", 6, true)
-		if not Isaac.GetPersistentGameData():Unlocked(mod.RepmAchivements.DEATH_CARD.ID) then
+		if not pgd:Unlocked(mod.RepmAchivements.DEATH_CARD.ID) then
 			player:RemovePocketItem(PillCardSlot.PRIMARY)
 		end
 	end

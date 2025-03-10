@@ -2,11 +2,19 @@ local mod = RepMMod
 local game = Game()
 local hiddenItemManager = require("scripts.lib.hidden_item_manager")
 
+local function CanDropOtherTrinket(t1, t2, isMatchStick)
+	return t1 == mod.RepmTypes.TRINKET_FROZEN_POLAROID
+	and (t2 == TrinketType.TRINKET_TICK and isMatchStick or t2 ~= TrinketType.TRINKET_TICK)
+	or t2 == mod.RepmTypes.TRINKET_FROZEN_POLAROID
+	and (t1 == TrinketType.TRINKET_TICK and isMatchStick or t1 ~= TrinketType.TRINKET_TICK)
+end
+
 local function stickyTrinket(_, pickup, collider, low)
 	if not collider:ToPlayer() or not collider:ToPlayer():HasTrinket(mod.RepmTypes.TRINKET_FROZEN_POLAROID) then
 		return nil
 	end
 	local player = collider:ToPlayer()
+	---@cast player EntityPlayer
 	if
 		player:GetTrinket(0) ~= mod.RepmTypes.TRINKET_FROZEN_POLAROID
 		and player:GetTrinket(1) ~= mod.RepmTypes.TRINKET_FROZEN_POLAROID
@@ -15,35 +23,18 @@ local function stickyTrinket(_, pickup, collider, low)
 	end
 
 	if player:GetMaxTrinkets() > 1 then
-		if player:GetTrinket(0) == mod.RepmTypes.TRINKET_FROZEN_POLAROID and player:GetTrinket(1) ~= 0 then
-			local trinketDrop = player:GetTrinket(1)
-			player:TryRemoveTrinket(trinketDrop)
-			Isaac.Spawn(
-				EntityType.ENTITY_PICKUP,
-				PickupVariant.PICKUP_TRINKET,
-				trinketDrop,
-				player.Position,
-				Vector(0, 0),
-				nil
-			)
-			return nil
-		elseif player:GetTrinket(1) == mod.RepmTypes.TRINKET_FROZEN_POLAROID and player:GetTrinket(0) ~= 0 then
-			local trinketDrop = player:GetTrinket(0)
-			player:TryRemoveTrinket(trinketDrop)
-			Isaac.Spawn(
-				EntityType.ENTITY_PICKUP,
-				PickupVariant.PICKUP_TRINKET,
-				trinketDrop,
-				player.Position,
-				Vector(0, 0),
-				nil
-			)
+		local t1 = player:GetTrinket(0)
+		local t2 = player:GetTrinket(1)
+		if t1 ~= 0 and t2 ~= 0 and CanDropOtherTrinket(t1, t2, pickup.SubType == TrinketType.TRINKET_MATCH_STICK)  then
+			player:TryRemoveTrinket(mod.RepmTypes.TRINKET_FROZEN_POLAROID)
+			player:DropTrinket(player.Position, true)
+			player:AddTrinket(mod.RepmTypes.TRINKET_FROZEN_POLAROID, false)
 			return nil
 		else
-			return nil
+			return pickup:IsShopItem()
 		end
 	else
-		return false
+		return pickup:IsShopItem()
 	end
 end
 mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, stickyTrinket, PickupVariant.PICKUP_TRINKET)
@@ -171,13 +162,7 @@ local function checkEntityForChampionizing(entity)
 end
 
 local function OnEntitySpawn_Polar(_, npc)
-	local chosenPlayer
-	mod:AnyPlayerDo(function(player)
-		if player:HasTrinket(mod.RepmTypes.TRINKET_FROZEN_POLAROID) then
-			chosenPlayer = player
-		end
-	end)
-	if chosenPlayer ~= nil then
+	if PlayerManager.AnyoneHasTrinket ~= mod.RepmTypes.TRINKET_FROZEN_POLAROID then
 		if checkEntityForChampionizing(npc) == true then
 			npc:MakeChampion(mod.RNG:GetSeed())
 		end

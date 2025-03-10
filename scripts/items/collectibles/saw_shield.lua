@@ -216,7 +216,7 @@ mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, function(_, ent, damage, f
 		and source.Entity.Type == EntityType.ENTITY_FAMILIAR
 		and source.Entity.Variant == mod.RepmTypes.FAMILIAR_SAW_SHIELD
 	then
-		sfx:Play(mod.RepmTypes.SFX_SAW_SHIELD_DAMAGE, 1, 0)
+		SFXManager():Play(mod.RepmTypes.SFX_SAW_SHIELD_DAMAGE, 1, 0)
 		local shield = source.Entity:ToFamiliar()
 		local player = shield:GetData().ThrowPlayer or shield.Player
 		--ent:AddBleeding(source, 30)
@@ -375,7 +375,7 @@ mod:AddCallback(ModCallbacks.MC_PRE_FAMILIAR_COLLISION, function(_, fam, coll, l
 				end
 				helperSp:LoadGraphics()
 				fam:Remove()
-				sfx:Play(mod.RepmTypes.SFX_PICKUP_SAW_SHIELD, 0.7, 0)
+				SFXManager():Play(mod.RepmTypes.SFX_PICKUP_SAW_SHIELD, 0.7, 0)
 				return true
 			end
 		end

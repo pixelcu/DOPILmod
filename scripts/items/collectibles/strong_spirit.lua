@@ -5,8 +5,20 @@ mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
 		local pData = mod:repmGetPData(player)
 		pData.RepSSDamageBoost = nil
 		pData.RepSSDamageD = nil
+		if mod:GetData(player).StrongSpiritSS then
+			mod:GetData(player).StrongSpiritSS:SetDamaged(false)
+		end
 		player:AddCacheFlags(CacheFlag.CACHE_DAMAGE | CacheFlag.CACHE_COLOR, true)
 	end)
+end)
+
+mod:AddPriorityCallback(ModCallbacks.MC_POST_GAME_STARTED, CallbackPriority.LATE * 3, function(_, continue)
+	if continue then
+		mod:AnyPlayerDo(function(player)
+			local pData = mod:repmGetPData(player)
+			mod:GetData(player).StrongSpiritSS:SetDamaged(pData.RepSSDamageD or false)
+		end)
+	end
 end)
 
 ---@param player EntityPlayer
@@ -38,11 +50,11 @@ local function StrongSpiritUpdate(_, player)
 		local data = mod:GetData(player)
 		if data.StrongSpiritSS == nil then
 			data.StrongSpiritSS = setmetatable({
-				Render = function(self, pos, crop_min, crop_max)
+				Render = function(self, pos, offset, crop_min, crop_max)
+					self.spr.Offset = offset or Vector.Zero
 					crop_min = crop_min or Vector.Zero
 					crop_max = crop_max or Vector.Zero
-					self.spr:Update()
-					if self.spr:IsFinished("Fade") then
+					if self.spr:IsFinished("Fade") and self.Damage == true then
 						return
 					end
 					if self.Damage == true then
@@ -56,6 +68,12 @@ local function StrongSpiritUpdate(_, player)
 						self.spr:Render(pos, crop_min, crop_max)
 					end
 				end,
+				SetDamaged = function(self, state)
+					self.Damage = state
+				end,
+				Update = function(self)
+					self.spr:Update()
+				end,
 			}, {
 				__call = function(self)
 					local c = setmetatable({
@@ -66,6 +84,7 @@ local function StrongSpiritUpdate(_, player)
 				end,
 			})()
 		end
+		data.StrongSpiritSS:Update()
 	end
 end
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, StrongSpiritUpdate)
@@ -85,13 +104,12 @@ mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, function(_, player, amount, Dam
 			return
 		end
 		Data.RepSSDamaged = true
-		--Data.StrongSpiritSS.Sprite:Play("Damaged", true)
+		mod:GetData(player).StrongSpiritSS:SetDamaged(true)
 		Game():ShakeScreen(50)
 		player:UseActiveItem(CollectibleType.COLLECTIBLE_BOOK_OF_SHADOWS, false, false, true, false, -1, 0)
 		player:AddHearts(4)
 		player:AddSoulHearts(2)
 		Data.RepSSDamageBoost = 600
-		Data.RepSSDamaged = true
 		player:AddCacheFlags(CacheFlag.CACHE_DAMAGE | CacheFlag.CACHE_COLOR, true)
 		--print(Data.RepSSDamageBoost)
 		return false
@@ -100,8 +118,8 @@ end, EntityType.ENTITY_PLAYER)
 
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_RENDER, function(_, player)
 	local Data = mod:GetData(player)
-	local pData = mod:repmGetPData(player)
-	if Data ~= nil and Data.StrongSpiritSS ~= nil and pData.RepSSDamageBoost then
-		Data.StrongSpiritSS:Render(Isaac.WorldToScreen(player.Position))
+	if Data ~= nil and Data.StrongSpiritSS ~= nil  then
+		Data.StrongSpiritSS.spr.Scale = player:GetSprite().Scale * player.Size / 10
+		Data.StrongSpiritSS:Render(Isaac.WorldToScreen(player.Position), Vector(0, 12))
 	end
 end)

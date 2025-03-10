@@ -142,7 +142,8 @@ end)
 
 ---@param pickup EntityPickup
 mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS, function(_, pickup)
-	if pickup.Variant == mod.RepmTypes.EEE_CHEST and pickup.SubType == ChestSubType.CHEST_CLOSED then
+	if pickup.Variant == mod.RepmTypes.EEE_CHEST and pickup.SubType == ChestSubType.CHEST_CLOSED
+	and PlayerManager.AnyoneHasCollectible(CollectibleType.COLLECTIBLE_GUPPYS_EYE) then
 		return true
 	end
 end)

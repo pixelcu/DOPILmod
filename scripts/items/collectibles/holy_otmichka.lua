@@ -1,11 +1,11 @@
 local mod = RepMMod
 local game = Game()
 
-local function onUpdate_Otmichka()
-	local spawnpos = game:GetRoom():FindFreeTilePosition(game:GetRoom():GetCenterPos(), 400)
+local function onUpdate_Otmichka(_, rng, spawnpos)
+	local spawnpos = game:GetRoom():FindFreeTilePosition(spawnpos, 400)
 
 	if PlayerManager.AnyoneHasCollectible(mod.RepmTypes.COLLECTIBLE_HOLY_OTMICHKA) then
-		if math.random(1, 7) == 5 then
+		if rng:RandomInt(1, 7) == 5 then
 			Isaac.Spawn(
 				EntityType.ENTITY_PICKUP,
 				PickupVariant.PICKUP_ETERNALCHEST,

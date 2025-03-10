@@ -213,7 +213,7 @@ if EID then
 	)
 	EID:addCollectible(
 		mod.RepmTypes.COLLECTIBLE_FRIENDLY_ROCKS,
-		"Friendly Stone Dips will have a 20% chance to spawn out of rocks when they are broken",
+		"Friendly Stone Dips will have a 40% chance to spawn out of rocks when they are broken",
 		"Friendly Rocks"
 	)
 	EID:addCollectible(mod.RepmTypes.COLLECTIBLE_NUMB_HEART, "On use, adds 1 frozen heart", "Numb Heart")
@@ -383,7 +383,7 @@ if EID then
 	)
 	EID:addCollectible(
 		mod.RepmTypes.COLLECTIBLE_FRIENDLY_ROCKS,
-		"Дружелюбные камни-какашки, могут появится из разрушенных камней с вероятностью 20%",
+		"Дружелюбные камни-какашки, могут появится из разрушенных камней с вероятностью 40%",
 		"Дружелюбные камни",
 		"ru"
 	)

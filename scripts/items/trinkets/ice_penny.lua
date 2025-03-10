@@ -32,7 +32,7 @@ function PostCollisionWithIcePenny(_, coin, collider, low)
 					EntityType.ENTITY_PICKUP,
 					PickupVariant.PICKUP_HEART,
 					heart,
-					game:GetRoom():FindFreePickupSpawnPosition(coin.Position),
+					Game():GetRoom():FindFreePickupSpawnPosition(coin.Position),
 					Vector.Zero,
 					nil
 				)
