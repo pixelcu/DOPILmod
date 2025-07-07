@@ -1,17 +1,17 @@
-local mod = RepMMod
+local Mod = RepMMod
 local spawnPos = Vector(500, 140)
 
 local function options_Wow_Room()
 	local room = Game():GetRoom()
 
 	if room:GetType() == RoomType.ROOM_SHOP then
-		if PlayerManager.AnyoneHasTrinket(mod.RepmTypes.TRINKET_MORE_OPTIONS) and room:IsFirstVisit() then
+		if PlayerManager.AnyoneHasTrinket(Mod.RepmTypes.TRINKET_MORE_OPTIONS) and room:IsFirstVisit() then
 			local Itempool = Game():GetItemPool()
 			local pos = Isaac.GetFreeNearPosition(spawnPos, 40)
 			local rng = RNG(Game():GetLevel():GetCurrentRoomDesc().SpawnSeed)
 			local seed = Game():GetLevel():GetCurrentRoomDesc().AwardSeed
 			--rng:SetSeed(seed, 35)
-			local ItemId = mod.GetByQuality(3, 4, Itempool:GetPoolForRoom(RoomType.ROOM_SHOP, seed), rng)
+			local ItemId = Mod.GetByQuality(3, 4, Itempool:GetPoolForRoom(RoomType.ROOM_SHOP, seed), rng)
 			if ItemId then
 				local obj = Isaac.Spawn(5, 100, ItemId, pos, Vector.Zero, nil):ToPickup()
 				
@@ -25,7 +25,7 @@ local function options_Wow_Room()
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, options_Wow_Room)
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, options_Wow_Room)
 
 ---@param pickup EntityPickup
 ---@param player EntityPlayer
@@ -41,4 +41,4 @@ local function MOPurchase(_, pickup, player, money)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_PICKUP_SHOP_PURCHASE, MOPurchase)
+Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_SHOP_PURCHASE, MOPurchase)

@@ -1,4 +1,4 @@
-local mod = RepMMod
+local Mod = RepMMod
 
 LASER_DURATION = 15
 
@@ -13,10 +13,10 @@ local function renderCharge(_, player)
 		HolyShellChargeBar:Render(Isaac.WorldToScreen(player.Position) + offset + Vector(5, -10))
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_PLAYER_RENDER, renderCharge)
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_RENDER, renderCharge)
 
 local function onUpdate(_, player)
-	local data = mod:GetData(player)
+	local data = Mod:GetData(player)
 	if data.HolyshellFrame == nil then
 		data.HolyshellFrame = 0
 	end
@@ -25,7 +25,7 @@ local function onUpdate(_, player)
 	end
 
 	--заряд
-	if player:HasCollectible(mod.RepmTypes.COLLECTIBLE_HOLY_SHELL) then
+	if player:HasCollectible(Mod.RepmTypes.COLLECTIBLE_HOLY_SHELL) then
 		--player.FireDelay = player.MaxFireDelay -- стопает стрельбу
 		if player:GetFireDirection() > -1 and data.HolyshellCool == 0 then
 			-- заряд
@@ -48,7 +48,7 @@ local function onUpdate(_, player)
 					)
 					HolyLaser.TearFlags = player.TearFlags
 					HolyLaser.CollisionDamage = player.Damage * 0.5
-					mod:GetData(HolyLaser).HolyShellLaser = true
+					Mod:GetData(HolyLaser).HolyShellLaser = true
 				end
 				data.HolyshellCool = LASER_DURATION * 2
 			else
@@ -59,14 +59,14 @@ local function onUpdate(_, player)
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, onUpdate)
+Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, onUpdate)
 
 local function postDamageHolyLaser(_, entity, collider, low)
 	if collider and collider:IsVulnerableEnemy() then
-		if mod:GetData(entity).HolyShellLaser then
+		if Mod:GetData(entity).HolyShellLaser then
 
 		end
 	end
 end
 
---mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, onUpdate)
+--Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, onUpdate)

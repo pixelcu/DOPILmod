@@ -1,7 +1,7 @@
-local mod = RepMMod
+local Mod = RepMMod
 
 local function updateCache_Kozol(_, player, cacheFlag)
-	if player:HasCollectible(mod.RepmTypes.COLLECTIBLE_DEAL_OF_THE_DEATH) then
+	if player:HasCollectible(Mod.RepmTypes.COLLECTIBLE_DEAL_OF_THE_DEATH) then
 		if cacheFlag == CacheFlag.CACHE_DAMAGE then
 			player.Damage = player.Damage + 1
 		end
@@ -9,7 +9,7 @@ local function updateCache_Kozol(_, player, cacheFlag)
 			player.CanFly = true
 		end
 		if cacheFlag == CacheFlag.CACHE_FIREDELAY then
-			player.MaxFireDelay = mod.TearsUp(player.MaxFireDelay, 2)
+			player.MaxFireDelay = Mod.TearsUp(player.MaxFireDelay, 2)
 		end
 		if cacheFlag == CacheFlag.CACHE_SHOTSPEED then
 			player.ShotSpeed = player.ShotSpeed - 0.1
@@ -25,20 +25,20 @@ local function updateCache_Kozol(_, player, cacheFlag)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, updateCache_Kozol)
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, updateCache_Kozol)
 
-mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function ()
-    mod:AnyPlayerDo(function(player)
-        if player:HasCollectible(mod.RepmTypes.COLLECTIBLE_DEAL_OF_THE_DEATH) then
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function ()
+    Mod:AnyPlayerDo(function(player)
+        if player:HasCollectible(Mod.RepmTypes.COLLECTIBLE_DEAL_OF_THE_DEATH) then
             player:GetEffects():AddCollectibleEffect(CollectibleType.COLLECTIBLE_HOLY_MANTLE)
         end
     end)
 end)
 
-mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, function(_, ent, amount, flag)
+Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, function(_, ent, amount, flag)
 	if
 		ent:ToPlayer()
-		and ent:ToPlayer():HasCollectible(mod.RepmTypes.COLLECTIBLE_DEAL_OF_THE_DEATH)
+		and ent:ToPlayer():HasCollectible(Mod.RepmTypes.COLLECTIBLE_DEAL_OF_THE_DEATH)
 		and flag & DamageFlag.DAMAGE_NO_PENALTIES == 0
 	then
 		ent:Kill()

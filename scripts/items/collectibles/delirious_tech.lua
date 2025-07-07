@@ -1,14 +1,15 @@
-local mod = RepMMod
-local hiddenItemManager = require("scripts.lib.hidden_item_manager")
+local Mod = RepMMod
+local hiddenItemManager = Mod.hiddenItemManager
+local SaveManager = Mod.saveManager
 
 local function LazerColor(_, player, cacheFlag)
 	if cacheFlag == CacheFlag.CACHE_TEARCOLOR then
-		if player:HasCollectible(mod.RepmTypes.COLLECTIBLE_DELIRIOUS_TECH) then
+		if player:HasCollectible(Mod.RepmTypes.COLLECTIBLE_DELIRIOUS_TECH) then
 			player.LaserColor = Color(0, 0, 0, 1, 215, 95, 25)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, LazerColor, CacheFlag.CACHE_TEARCOLOR)
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, LazerColor, CacheFlag.CACHE_TEARCOLOR)
 
 local tech1Flags = {
 	TearFlags.TEAR_SLOW,
@@ -63,8 +64,8 @@ local function tearFire_Diltech(_, t)
 	local d = t:GetData()
 	local player = t.SpawnerEntity
 		and (t.SpawnerEntity:ToPlayer() or t.SpawnerEntity:ToFamiliar() and t.SpawnerEntity.Player)
-	if player:HasCollectible(mod.RepmTypes.COLLECTIBLE_DELIRIOUS_TECH) then
-		local rng = player:GetCollectibleRNG(mod.RepmTypes.COLLECTIBLE_DELIRIOUS_TECH)
+	if player:HasCollectible(Mod.RepmTypes.COLLECTIBLE_DELIRIOUS_TECH) then
+		local rng = player:GetCollectibleRNG(Mod.RepmTypes.COLLECTIBLE_DELIRIOUS_TECH)
 		local chance = rng:RandomInt(50)
 		if chance >= 25 then
 			local lazer = player:FireTechLaser(t.Position, 0, t.Velocity, false, true, player)
@@ -75,11 +76,11 @@ local function tearFire_Diltech(_, t)
 		t:Remove()
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, tearFire_Diltech)
+Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, tearFire_Diltech)
 
-mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function()
-	mod:AnyPlayerDo(function(p)
-		mod:GetData(p).TBOIREP_Minus_DilliriumTech = p:GetCollectibleRNG(mod.RepmTypes.COLLECTIBLE_DELIRIOUS_TECH)
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function()
+	Mod:AnyPlayerDo(function(p)
+		Mod:GetData(p).TBOIREP_Minus_DilliriumTech = p:GetCollectibleRNG(Mod.RepmTypes.COLLECTIBLE_DELIRIOUS_TECH)
 			:RandomInt(2) + 1
 	end)
 end)
@@ -94,11 +95,11 @@ local laserTypes = {
 }
 
 local function deliriousTechLaserSwitch(_, player)
-	local data = mod:repmGetPData(player)
+	local data = Mod:RunSave(player)
 	data.DelirousTechState = data.DelirousTechState or {0, 0, 0, 0, 0, 0}
-	if player:HasCollectible(mod.RepmTypes.COLLECTIBLE_DELIRIOUS_TECH) then
+	if player:HasCollectible(Mod.RepmTypes.COLLECTIBLE_DELIRIOUS_TECH) then
 		if Game():GetFrameCount() % 30 == 0 then
-			local rng = player:GetCollectibleRNG(mod.RepmTypes.COLLECTIBLE_DELIRIOUS_TECH)
+			local rng = player:GetCollectibleRNG(Mod.RepmTypes.COLLECTIBLE_DELIRIOUS_TECH)
 			if rng:RandomInt(100) > 94 then
 				data.DelirousTechState = {0, 0, 0, 0, 0, 0}
 				data.DelirousTechState[rng:RandomInt(1, 6)] = 1
@@ -110,11 +111,11 @@ local function deliriousTechLaserSwitch(_, player)
 	end
 	hiddenItemManager:HideCostumes("RepmDeliriousTech")
 end
-mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, deliriousTechLaserSwitch)
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, deliriousTechLaserSwitch)
 
 local function checkLaser_DelTech(_, laser)
-	local player = mod:getPlayerFromKnifeLaser(laser)
-	local pdata = player and mod:repmGetPData(player)
+	local player = Mod:getPlayerFromKnifeLaser(laser)
+	local pdata = player and Mod:RunSave(player)
 	local data = laser:GetData()
 	local var = laser.Variant
 	local subt = laser.SubType
@@ -124,21 +125,21 @@ local function checkLaser_DelTech(_, laser)
 	end
 
 	if player and not ignoreLaserVar then
-		if player:HasCollectible(mod.RepmTypes.COLLECTIBLE_DELIRIOUS_TECH) then
-			--local rng = player:GetCollectibleRNG(mod.RepmTypes.COLLECTIBLE_DELIRIOUS_TECH)
+		if player:HasCollectible(Mod.RepmTypes.COLLECTIBLE_DELIRIOUS_TECH) then
+			--local rng = player:GetCollectibleRNG(Mod.RepmTypes.COLLECTIBLE_DELIRIOUS_TECH)
 			--if laser.Type == EntityType.ENTITY_EFFECT and laser.Variant == EffectVariant.BRIMSTONE_SWIRL then
 			--end
 			data.RandomizeDelLaserEffect = true
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_LASER_INIT, checkLaser_DelTech)
-mod:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, checkLaser_DelTech, EffectVariant.BRIMSTONE_BALL)
-mod:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, checkLaser_DelTech, EffectVariant.BRIMSTONE_SWIRL)
+Mod:AddCallback(ModCallbacks.MC_POST_LASER_INIT, checkLaser_DelTech)
+Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, checkLaser_DelTech, EffectVariant.BRIMSTONE_BALL)
+Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, checkLaser_DelTech, EffectVariant.BRIMSTONE_SWIRL)
 
 local function updateLasersPlayer_DelTech(_, player)
 	local lasers = Isaac.FindByType(EntityType.ENTITY_LASER)
-	local rng = player:GetCollectibleRNG(mod.RepmTypes.COLLECTIBLE_DELIRIOUS_TECH)
+	local rng = player:GetCollectibleRNG(Mod.RepmTypes.COLLECTIBLE_DELIRIOUS_TECH)
 	for i = 1, #lasers do
 		local laser = lasers[i]
 		if laser:GetData().RandomizeDelLaserEffect == true then
@@ -165,4 +166,4 @@ local function updateLasersPlayer_DelTech(_, player)
 	--end
 	--end
 end
-mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, updateLasersPlayer_DelTech)
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, updateLasersPlayer_DelTech)

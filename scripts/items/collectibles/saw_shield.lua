@@ -1,4 +1,4 @@
-local mod = RepMMod
+local Mod = RepMMod
 
 local shieldStates = {
 	IDLE = 0,
@@ -26,7 +26,7 @@ local customShieldFlags = {
 	[CollectibleType.COLLECTIBLE_LOST_CONTACT] = TearFlags.TEAR_SHIELDED,
 }
 
-function mod:AddCustomSawShieldFlag(collectible, flag)
+function Mod:AddCustomSawShieldFlag(collectible, flag)
 	if not customShieldFlags[collectible] then
 		customShieldFlags[collectible] = 0
 	end
@@ -35,20 +35,20 @@ end
 
 ---@param player EntityPlayer
 ---@param cache CacheFlag | integer
-mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, function(_, player, cache)
-	local num = (player:HasCollectible(mod.RepmTypes.COLLECTIBLE_SAW_SHIELD) and player:GetData().HoldsSawShield == nil)
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, function(_, player, cache)
+	local num = (player:HasCollectible(Mod.RepmTypes.COLLECTIBLE_SAW_SHIELD) and player:GetData().HoldsSawShield == nil)
 			and 1
 		or 0
 	player:CheckFamiliar(
-		mod.RepmTypes.FAMILIAR_SAW_SHIELD,
+		Mod.RepmTypes.FAMILIAR_SAW_SHIELD,
 		num,
-		player:GetCollectibleRNG(mod.RepmTypes.COLLECTIBLE_SAW_SHIELD),
-		Isaac.GetItemConfig():GetCollectible(mod.RepmTypes.COLLECTIBLE_SAW_SHIELD)
+		player:GetCollectibleRNG(Mod.RepmTypes.COLLECTIBLE_SAW_SHIELD),
+		Isaac.GetItemConfig():GetCollectible(Mod.RepmTypes.COLLECTIBLE_SAW_SHIELD)
 	)
 end, CacheFlag.CACHE_FAMILIARS)
 
-mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function()
-	for _, shield in ipairs(Isaac.FindByType(3, mod.RepmTypes.FAMILIAR_SAW_SHIELD)) do
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function()
+	for _, shield in ipairs(Isaac.FindByType(3, Mod.RepmTypes.FAMILIAR_SAW_SHIELD)) do
 		shield:ToFamiliar().State = shieldStates.IDLE
 		shield:ToFamiliar().FireCooldown = 0
 		shield.PositionOffset.Y = 0
@@ -57,17 +57,17 @@ mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function()
 	end
 end)
 
-mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
 	if not Game():GetLevel():IsAscent() then
 		return
 	end
-	for _, shield in ipairs(Isaac.FindByType(3, mod.RepmTypes.FAMILIAR_SAW_SHIELD)) do
+	for _, shield in ipairs(Isaac.FindByType(3, Mod.RepmTypes.FAMILIAR_SAW_SHIELD)) do
 		shield:ToFamiliar().FireCooldown = 5
 	end
 end)
 
 ---@param fam EntityFamiliar
-mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, function(_, fam)
+Mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, function(_, fam)
 	fam:ClearEntityFlags(EntityFlag.FLAG_APPEAR)
 	fam:RemoveFromDelayed()
 	fam:RemoveFromFollowers()
@@ -75,15 +75,15 @@ mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, function(_, fam)
 	fam.State = shieldStates.IDLE
 	fam:GetSprite().PlaybackSpeed = 0
 	local d = fam:GetData()
-	d.Bounces = mod.sawShieldBounces
+	d.Bounces = Mod.sawShieldBounces
 	d.CollidesWithEntity = false
 	d.Speed = d.Speed or 0
-	d.ReturnCooldown = mod.sawShieldReturnCooldown
+	d.ReturnCooldown = Mod.sawShieldReturnCooldown
 	d.CustomShieldFlags = d.CustomShieldFlags or 0
 	d.ThrowPlayer = d.ThrowPlayer or fam.Player
 	fam.EntityCollisionClass = EntityCollisionClass.ENTCOLL_ALL
 	fam.GridCollisionClass = EntityGridCollisionClass.GRIDCOLL_NOPITS
-end, mod.RepmTypes.FAMILIAR_SAW_SHIELD)
+end, Mod.RepmTypes.FAMILIAR_SAW_SHIELD)
 
 local function CollisionWithEntity(fam)
 	return fam:GetData().CollidesWithEntity and 2 or 1
@@ -91,7 +91,7 @@ end
 
 ---@param shield EntityFamiliar
 ---@param player any
-mod:AddCallback("ON_SAW_SHIELD_UPDATE", function(shield, player)
+Mod:AddCallback("ON_SAW_SHIELD_UPDATE", function(shield, player)
 	if shield.FrameCount % shield:GetDropRNG():RandomInt(2, 5) == 0 then
 		local eff = Isaac.Spawn(
 			EntityType.ENTITY_EFFECT,
@@ -108,7 +108,7 @@ mod:AddCallback("ON_SAW_SHIELD_UPDATE", function(shield, player)
 end, TearFlags.TEAR_GISH)
 
 ---@param fam EntityFamiliar
-mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, function(_, fam)
+Mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, function(_, fam)
 	local sprite = fam:GetSprite()
 	local d = fam:GetData()
 	local player = d.ThrowPlayer or fam.Player
@@ -123,7 +123,7 @@ mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, function(_, fam)
 	if fam.State ~= shieldStates.RETURNING then
 		if fam.State ~= shieldStates.BOUNCES then
 			d.Speed = math.max(0, d.Speed - 0.15)
-			fam.PositionOffset.Y = mod.Lerp(fam.PositionOffset.Y, 0, 0.03)
+			fam.PositionOffset.Y = Mod.Lerp(fam.PositionOffset.Y, 0, 0.03)
 		end
 
 		if fam.Velocity:Length() < 0.1 then
@@ -140,7 +140,7 @@ mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, function(_, fam)
 		end
 		if fam:CollidesWithGrid() then
 			if fam.Velocity:Length() > 0.1 then
-				SFXManager():Play(mod.RepmTypes.SFX_SAW_SHIELD_BOUNCE, 0.7, 0)
+				SFXManager():Play(Mod.RepmTypes.SFX_SAW_SHIELD_BOUNCE, 0.7, 0)
 			end
 			if d.Bounces > 0 then
 				d.Bounces = d.Bounces - 1
@@ -153,46 +153,46 @@ mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, function(_, fam)
 		end
 	elseif fam.State == shieldStates.RETURNING then
 		local speed = (player.Position - fam.Position):Resized(30)
-		fam.Velocity = mod.Lerp(fam.Velocity, speed, 0.1)
+		fam.Velocity = Mod.Lerp(fam.Velocity, speed, 0.1)
 		fam.PositionOffset.Y = -math.max(0, fam.Velocity:Length())
 		fam.GridCollisionClass = EntityGridCollisionClass.GRIDCOLL_WALLS
 	end
 	fam.CollisionDamage = (fam.State ~= shieldStates.IDLE and fam.State ~= shieldStates.RETURNING) and player.Damage * 2
 		or 0
 	d.CollidesWithEntity = false
-end, mod.RepmTypes.FAMILIAR_SAW_SHIELD)
+end, Mod.RepmTypes.FAMILIAR_SAW_SHIELD)
 
 ---@param shield EntityFamiliar
 ---@param sprite Sprite
-mod:AddCallback("ON_SAW_SHIELD_RENDER", function(shield, sprite)
+Mod:AddCallback("ON_SAW_SHIELD_RENDER", function(shield, sprite)
 	sprite.Color:SetColorize(0, 1, 0, 1.2)
 end, TearFlags.TEAR_POISON)
 
 ---@param shield EntityFamiliar
-mod:AddCallback("ON_SAW_SHIELD_INIT", function(shield)
-	local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, mod.RepmTypes.EFFECT_SAW_SHIELD_FIRE, 0, shield.Position, Vector.Zero, shield)
+Mod:AddCallback("ON_SAW_SHIELD_INIT", function(shield)
+	local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, Mod.RepmTypes.EFFECT_SAW_SHIELD_FIRE, 0, shield.Position, Vector.Zero, shield)
 		:ToEffect()
 	effect.Parent = shield
 	effect:FollowParent(shield)
 end, TearFlags.TEAR_BURN)
 
 ---@param effect EntityEffect
-mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, function(_, effect)
+Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, function(_, effect)
 	local shield = effect.SpawnerEntity
-	if not shield or shield:ToFamiliar() and (shield.Variant ~= mod.RepmTypes.FAMILIAR_SAW_SHIELD) then
+	if not shield or shield:ToFamiliar() and (shield.Variant ~= Mod.RepmTypes.FAMILIAR_SAW_SHIELD) then
 		effect:Remove()
 		return
 	end
 	shield = shield:ToFamiliar()
 	effect.SpriteRotation = shield.Velocity:Length() > 0.2 and (shield.Velocity):GetAngleDegrees()
-		or mod.Lerp(effect.SpriteRotation, 90, 0.2)
+		or Mod.Lerp(effect.SpriteRotation, 90, 0.2)
 	effect.SpriteScale = Vector(1.5, 1.5)
 	effect.DepthOffset = -1
 	--effect.SpriteOffset = Vector(0, -5)
-end, mod.RepmTypes.EFFECT_SAW_SHIELD_FIRE)
+end, Mod.RepmTypes.EFFECT_SAW_SHIELD_FIRE)
 
 ---@param fam EntityFamiliar
-mod:AddCallback(ModCallbacks.MC_POST_FAMILIAR_RENDER, function(_, fam, offset)
+Mod:AddCallback(ModCallbacks.MC_POST_FAMILIAR_RENDER, function(_, fam, offset)
 	local famSprite = fam:GetSprite()
 	local d = fam:GetData()
 	if d.CustomShieldFlags and d.CustomShieldFlags > 0 then
@@ -202,21 +202,21 @@ mod:AddCallback(ModCallbacks.MC_POST_FAMILIAR_RENDER, function(_, fam, offset)
 			end
 		end
 	end
-end, mod.RepmTypes.FAMILIAR_SAW_SHIELD)
+end, Mod.RepmTypes.FAMILIAR_SAW_SHIELD)
 
 ---@param ent Entity
 ---@param damage integer
 ---@param flags DamageFlag | integer
 ---@param source EntityRef
 ---@param cd integer
-mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, function(_, ent, damage, flags, source, cd)
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, function(_, ent, damage, flags, source, cd)
 	if
 		source
 		and source.Entity
 		and source.Entity.Type == EntityType.ENTITY_FAMILIAR
-		and source.Entity.Variant == mod.RepmTypes.FAMILIAR_SAW_SHIELD
+		and source.Entity.Variant == Mod.RepmTypes.FAMILIAR_SAW_SHIELD
 	then
-		SFXManager():Play(mod.RepmTypes.SFX_SAW_SHIELD_DAMAGE, 1, 0)
+		SFXManager():Play(Mod.RepmTypes.SFX_SAW_SHIELD_DAMAGE, 1, 0)
 		local shield = source.Entity:ToFamiliar()
 		local player = shield:GetData().ThrowPlayer or shield.Player
 		--ent:AddBleeding(source, 30)
@@ -244,38 +244,38 @@ mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, function(_, ent, damage, f
 	end
 end)
 
-mod:AddCallback("ON_SAW_SHIELD_HIT", function(entity, rng, shield, player)
+Mod:AddCallback("ON_SAW_SHIELD_HIT", function(entity, rng, shield, player)
 	entity:AddPoison(EntityRef(player), 30, player.Damage / 4)
 end, TearFlags.TEAR_POISON)
 
-mod:AddCallback("ON_SAW_SHIELD_HIT", function(entity, rng, shield, player)
+Mod:AddCallback("ON_SAW_SHIELD_HIT", function(entity, rng, shield, player)
 	entity:AddSlowing(EntityRef(player), 30, 0.2, Color(0.3, 0.3, 0.3, 1))
 end, TearFlags.TEAR_GISH)
 
-mod:AddCallback("ON_SAW_SHIELD_HIT", function(entity, rng, shield, player)
+Mod:AddCallback("ON_SAW_SHIELD_HIT", function(entity, rng, shield, player)
 	entity:AddBurn(EntityRef(player), 30, player.Damage / 4)
 end, TearFlags.TEAR_BURN)
 
-mod:AddCallback("ON_SAW_SHIELD_HIT", function(entity, rng, shield, player)
+Mod:AddCallback("ON_SAW_SHIELD_HIT", function(entity, rng, shield, player)
 	entity:AddSlowing(EntityRef(player), 30, 0.5, Color(0.9, 0.9, 0.9, 1))
 end, TearFlags.TEAR_SLOW)
 
-mod:AddCallback("ON_SAW_SHIELD_HIT", function(entity, rng, shield, player)
+Mod:AddCallback("ON_SAW_SHIELD_HIT", function(entity, rng, shield, player)
 	entity:AddMagnetized(EntityRef(player), 30)
 end, TearFlags.TEAR_MAGNETIZE)
 
-mod:AddCallback("ON_SAW_SHIELD_HIT", function(entity, rng, shield, player)
+Mod:AddCallback("ON_SAW_SHIELD_HIT", function(entity, rng, shield, player)
 	entity:AddBleeding(EntityRef(player), 10)
 end, TearFlags.TEAR_NEEDLE)
 
-mod:AddCallback("ON_SAW_SHIELD_DEATH", function(entity, rng, shield, player)
+Mod:AddCallback("ON_SAW_SHIELD_DEATH", function(entity, rng, shield, player)
 	if rng:RandomFloat() <= 0.1 then
 		Isaac.Explode(entity.Position, player, 100)
 		rng:Next()
 	end
 end, TearFlags.TEAR_EXPLOSIVE)
 
-mod:AddCallback("ON_SAW_SHIELD_DEATH", function(entity, rng, shield, player)
+Mod:AddCallback("ON_SAW_SHIELD_DEATH", function(entity, rng, shield, player)
 	if rng:RandomFloat() <= 0.2 then
 		for _, angle in ipairs({ 0, 90, 180, 270 }) do
 			local laser = EntityLaser.ShootAngle(
@@ -292,13 +292,13 @@ mod:AddCallback("ON_SAW_SHIELD_DEATH", function(entity, rng, shield, player)
 	end
 end, TearFlags.TEAR_BRIMSTONE_BOMB)
 
-mod:AddCallback("ON_SAW_SHIELD_GRID_COLLISION", function(grid, rng, shield, player)
+Mod:AddCallback("ON_SAW_SHIELD_GRID_COLLISION", function(grid, rng, shield, player)
 	if rng:RandomFloat() <= 0.2 then
 		grid:Destroy(true)
 	end
 end, TearFlags.TEAR_ACID)
 
-mod:AddCallback("ON_SAW_SHIELD_COLLISION", function(shield, entity)
+Mod:AddCallback("ON_SAW_SHIELD_COLLISION", function(shield, entity)
 	if entity:ToProjectile() then
 		entity:Die()
 	end
@@ -308,8 +308,8 @@ end, TearFlags.TEAR_SHIELDED)
 ---@param gridIdx integer
 ---@param grid GridEntity
 ---@return boolean | nil
-mod:AddCallback(ModCallbacks.MC_FAMILIAR_GRID_COLLISION, function(_, fam, gridIdx, grid)
-	if fam.Variant == mod.RepmTypes.FAMILIAR_SAW_SHIELD then
+Mod:AddCallback(ModCallbacks.MC_FAMILIAR_GRID_COLLISION, function(_, fam, gridIdx, grid)
+	if fam.Variant == Mod.RepmTypes.FAMILIAR_SAW_SHIELD then
 		if
 			grid
 			and fam.Velocity:Length() > 0.1
@@ -337,7 +337,7 @@ end)
 ---@param coll Entity
 ---@param low boolean
 ---@return boolean | nil
-mod:AddCallback(ModCallbacks.MC_PRE_FAMILIAR_COLLISION, function(_, fam, coll, low)
+Mod:AddCallback(ModCallbacks.MC_PRE_FAMILIAR_COLLISION, function(_, fam, coll, low)
 	if coll then
 		if coll:ToPlayer() then
 			local player = coll:ToPlayer()
@@ -363,7 +363,7 @@ mod:AddCallback(ModCallbacks.MC_PRE_FAMILIAR_COLLISION, function(_, fam, coll, l
 				player:TryHoldEntity(helper)
 				player:GetData().HoldsSawShield = {
 					Type = 3,
-					Variant = mod.RepmTypes.FAMILIAR_SAW_SHIELD,
+					Variant = Mod.RepmTypes.FAMILIAR_SAW_SHIELD,
 					Frame = famSp:GetFrame(),
 				}
 				helperSp:Load(famSp:GetFilename(), true)
@@ -375,7 +375,7 @@ mod:AddCallback(ModCallbacks.MC_PRE_FAMILIAR_COLLISION, function(_, fam, coll, l
 				end
 				helperSp:LoadGraphics()
 				fam:Remove()
-				SFXManager():Play(mod.RepmTypes.SFX_PICKUP_SAW_SHIELD, 0.7, 0)
+				SFXManager():Play(Mod.RepmTypes.SFX_PICKUP_SAW_SHIELD, 0.7, 0)
 				return true
 			end
 		end
@@ -384,13 +384,13 @@ mod:AddCallback(ModCallbacks.MC_PRE_FAMILIAR_COLLISION, function(_, fam, coll, l
 			and coll:IsVulnerableEnemy()
 			and fam.Velocity:Length() > 0.1
 	end
-end, mod.RepmTypes.FAMILIAR_SAW_SHIELD)
+end, Mod.RepmTypes.FAMILIAR_SAW_SHIELD)
 
 ---@param fam EntityFamiliar
 ---@param coll Entity
 ---@param low boolean
 ---@return boolean | nil
-mod:AddCallback(ModCallbacks.MC_POST_FAMILIAR_COLLISION, function(_, fam, coll, low)
+Mod:AddCallback(ModCallbacks.MC_POST_FAMILIAR_COLLISION, function(_, fam, coll, low)
 	if coll then
 		if fam:GetData().CustomShieldFlags and fam:GetData().CustomShieldFlags > 0 then
 			for _, callback in ipairs(Isaac.GetCallbacks("ON_SAW_SHIELD_COLLISION")) do
@@ -400,15 +400,15 @@ mod:AddCallback(ModCallbacks.MC_POST_FAMILIAR_COLLISION, function(_, fam, coll, 
 			end
 		end
 	end
-end, mod.RepmTypes.FAMILIAR_SAW_SHIELD)
+end, Mod.RepmTypes.FAMILIAR_SAW_SHIELD)
 
 ---@param player EntityPlayer
 ---@param ent Entity
 ---@param vel Vector
-mod:AddCallback(ModCallbacks.MC_POST_ENTITY_THROW, function(_, player, ent, vel)
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_THROW, function(_, player, ent, vel)
 	local d = player:GetData().HoldsSawShield
-	if d ~= nil and d.Type == EntityType.ENTITY_FAMILIAR and d.Variant == mod.RepmTypes.FAMILIAR_SAW_SHIELD then
-		local shl = Isaac.Spawn(EntityType.ENTITY_FAMILIAR, mod.RepmTypes.FAMILIAR_SAW_SHIELD, 0, ent.Position, vel, player)
+	if d ~= nil and d.Type == EntityType.ENTITY_FAMILIAR and d.Variant == Mod.RepmTypes.FAMILIAR_SAW_SHIELD then
+		local shl = Isaac.Spawn(EntityType.ENTITY_FAMILIAR, Mod.RepmTypes.FAMILIAR_SAW_SHIELD, 0, ent.Position, vel, player)
 			:ToFamiliar()
 		shl.FireCooldown = 40
 		local shlData = shl:GetData()

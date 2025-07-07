@@ -1,4 +1,4 @@
-local mod = RepMMod
+local Mod = RepMMod
 local game = Game()
 local sfx = SFXManager()
 
@@ -8,32 +8,32 @@ local sirenRenderedPosition = Vector(21, -12)
 
 ---@param player EntityPlayer
 local function renderSirenCharge(_, player)
-	if player:HasCollectible(mod.RepmTypes.COLLECTIBLE_SIREN_HORNS) then
-		local data = mod:GetData(player)
+	if player:HasCollectible(Mod.RepmTypes.COLLECTIBLE_SIREN_HORNS) then
+		local data = Mod:GetData(player)
 		data.RepM_SirenChargeFrames = data.RepM_SirenChargeFrames or 0
 		SirenHud:SetCharge(data.RepM_SirenChargeFrames, sirenframesToCharge)
 		SirenHud:Render(Isaac.WorldToScreen(player.Position) + sirenRenderedPosition)
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_PLAYER_RENDER, renderSirenCharge)
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_RENDER, renderSirenCharge)
 
 ---@param player EntityPlayer
 local function waitFireSiren(_, player)
-	local data = mod:GetData(player)
+	local data = Mod:GetData(player)
 	data.RepM_SirenChargeFrames = data.RepM_SirenChargeFrames or 0
-	if player:HasCollectible(mod.RepmTypes.COLLECTIBLE_SIREN_HORNS) then
+	if player:HasCollectible(Mod.RepmTypes.COLLECTIBLE_SIREN_HORNS) then
 		local aim = player:GetAimDirection()
 		local isAim = aim:Length() > 0.01
 		local effects = player:GetEffects()
 
-		if isAim and not effects:HasNullEffect(mod.RepmTypes.NULL_SIRENS_SINGING) then
+		if isAim and not effects:HasNullEffect(Mod.RepmTypes.NULL_SIRENS_SINGING) then
 			data.RepM_SirenChargeFrames = (data.RepM_SirenChargeFrames or 0) + 1
 		elseif not game:IsPaused() then
 			if data.RepM_SirenChargeFrames >= sirenframesToCharge then
 				sfx:Play(SoundEffect.SOUND_SIREN_SING, 1, 0)
 				local entities = Isaac.GetRoomEntities()
-				local sirenRNG = player:GetCollectibleRNG(mod.RepmTypes.COLLECTIBLE_SIREN_HORNS)
-				effects:AddNullEffect(mod.RepmTypes.NULL_SIRENS_SINGING, true, 1)
+				local sirenRNG = player:GetCollectibleRNG(Mod.RepmTypes.COLLECTIBLE_SIREN_HORNS)
+				effects:AddNullEffect(Mod.RepmTypes.NULL_SIRENS_SINGING, true, 1)
 				for i, entity in ipairs(entities) do
 					if
 						entity:IsVulnerableEnemy()
@@ -57,8 +57,8 @@ local function waitFireSiren(_, player)
 		--data.repM_fireSiren = game:GetFrameCount() + 90
 		sfx:Play(SoundEffect.SOUND_SIREN_SING, 1, 0)
 		local entities = Isaac.GetRoomEntities()
-		local sirenRNG = player:GetCollectibleRNG(mod.RepmTypes.COLLECTIBLE_SIREN_HORNS)
-		player:GetEffects():AddNullEffect(mod.RepmTypes.NULL_SIRENS_SINGING)
+		local sirenRNG = player:GetCollectibleRNG(Mod.RepmTypes.COLLECTIBLE_SIREN_HORNS)
+		player:GetEffects():AddNullEffect(Mod.RepmTypes.NULL_SIRENS_SINGING)
 		for i, entity in ipairs(entities) do
 			if
 				entity:IsVulnerableEnemy()
@@ -74,19 +74,19 @@ local function waitFireSiren(_, player)
 		data.repM_fireSiren = nil
 	end
 
-	if player:GetEffects():HasNullEffect(mod.RepmTypes.NULL_SIRENS_SINGING) then
+	if player:GetEffects():HasNullEffect(Mod.RepmTypes.NULL_SIRENS_SINGING) then
 		if game:GetFrameCount() % 5 == 0 and game:GetFrameCount() ~= data.repM_fireSirenLastFrame then
 			Isaac.Spawn(1000, EffectVariant.SIREN_RING, 0, player.Position, Vector.Zero, nil)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, waitFireSiren)
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, waitFireSiren)
 
 ---@param entity EntityNPC
 local function charmDeath(_, entity)
 	if entity:HasEntityFlags(EntityFlag.FLAG_CHARM) then
-		mod:AnyPlayerDo(function(player)
-			if player:HasCollectible(mod.RepmTypes.COLLECTIBLE_SIREN_HORNS) then
+		Mod:AnyPlayerDo(function(player)
+			if player:HasCollectible(Mod.RepmTypes.COLLECTIBLE_SIREN_HORNS) then
 				for k, familiar in pairs(Isaac.FindByType(EntityType.ENTITY_FAMILIAR)) do
 					if GetPtrHash(familiar:ToFamiliar().Player) == GetPtrHash(player) then
 						--todo code
@@ -105,7 +105,7 @@ local function charmDeath(_, entity)
 		end)
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, charmDeath)
+Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, charmDeath)
 
 ---@param ent EntityLaser | EntityTear | EntityProjectile
 local function charmBuff(_, ent)
@@ -122,5 +122,5 @@ for _, callback in ipairs({
 	ModCallbacks.MC_POST_FAMILIAR_FIRE_PROJECTILE,
 	ModCallbacks.MC_POST_FAMILIAR_FIRE_TECH_LASER,
 }) do
-	mod:AddCallback(callback, charmBuff)
+	Mod:AddCallback(callback, charmBuff)
 end

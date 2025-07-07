@@ -1,4 +1,4 @@
-local mod = RepMMod
+local Mod = RepMMod
 
 local function optionsCheck(pickup)
 	if pickup.OptionsPickupIndex and pickup.OptionsPickupIndex > 0 then
@@ -23,17 +23,17 @@ local payouts = {
 	[5] = {
 		Type = EntityType.ENTITY_PICKUP,
 		Variant = PickupVariant.PICKUP_TAROTCARD,
-		SubType = mod.RepmTypes.CARD_MINUS_SHARD,
+		SubType = Mod.RepmTypes.CARD_MINUS_SHARD,
 	},
 }
 
-mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_UPDATE, function(_, pickup)
+Mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_UPDATE, function(_, pickup)
 	
-end, mod.RepmTypes.EEE_CHEST)
+end, Mod.RepmTypes.EEE_CHEST)
 
 ---@param pickup EntityPickup
 local function onPrePickupGetLootList(_, pickup)
-	if pickup.Variant == mod.RepmTypes.EEE_CHEST and pickup.SubType == ChestSubType.CHEST_CLOSED then
+	if pickup.Variant == Mod.RepmTypes.EEE_CHEST and pickup.SubType == ChestSubType.CHEST_CLOSED then
 		local loot = LootList()
 		local rng = RNG(pickup.InitSeed)
 		if rng:RandomFloat() <= 0.1 then
@@ -73,11 +73,11 @@ local function onPrePickupGetLootList(_, pickup)
 		return loot
 	end
 end
-mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_GET_LOOT_LIST, onPrePickupGetLootList)
+Mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_GET_LOOT_LIST, onPrePickupGetLootList)
 
 ---@param pickup EntityPickup
 ---@param player EntityPlayer
-function mod.openEEEChest(pickup, player)
+function Mod.openEEEChest(pickup, player)
 	optionsCheck(pickup)
 	pickup:GetSprite():Play("Open")
 	for _, item in pairs(pickup:GetLootList():GetEntries()) do
@@ -118,22 +118,22 @@ local function chestCollision(_, pickup, collider, _)
 		if sprite:IsPlaying("Appear") then
 			return false
 		end
-		mod.openEEEChest(pickup, player)
+		Mod.openEEEChest(pickup, player)
 	end
 end
-mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, chestCollision, mod.RepmTypes.EEE_CHEST)
+Mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, chestCollision, Mod.RepmTypes.EEE_CHEST)
 
 local function chestInit(_, pickup)
 	if pickup.SubType == ChestSubType.CHEST_OPENED then
 		pickup:Remove()
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_PICKUP_INIT, chestInit, mod.RepmTypes.EEE_CHEST)
+Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_INIT, chestInit, Mod.RepmTypes.EEE_CHEST)
 
-mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_MORPH, function(_, pickup, eType, Variant, SubType)
+Mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_MORPH, function(_, pickup, eType, Variant, SubType)
 	if
 		pickup.Type == EntityType.ENTITY_PICKUP
-		and pickup.Variant == mod.RepmTypes.EEE_CHEST
+		and pickup.Variant == Mod.RepmTypes.EEE_CHEST
 		and pickup.SubType == ChestSubType.CHEST_OPENED
 	then
 		return false
@@ -141,8 +141,8 @@ mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_MORPH, function(_, pickup, eType, Var
 end)
 
 ---@param pickup EntityPickup
-mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS, function(_, pickup)
-	if pickup.Variant == mod.RepmTypes.EEE_CHEST and pickup.SubType == ChestSubType.CHEST_CLOSED
+Mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS, function(_, pickup)
+	if pickup.Variant == Mod.RepmTypes.EEE_CHEST and pickup.SubType == ChestSubType.CHEST_CLOSED
 	and PlayerManager.AnyoneHasCollectible(CollectibleType.COLLECTIBLE_GUPPYS_EYE) then
 		return true
 	end
@@ -160,11 +160,11 @@ local function chestSpawn(_, pickup)
 				pickup.Variant == PickupVariant.PICKUP_LOCKEDCHEST and rng:RandomFloat() <= 0.01
 				or pickup.Variant == PickupVariant.PICKUP_REDCHEST and rng:RandomFloat() <= 0.25
 			then
-				pickup:Morph(5, mod.RepmTypes.EEE_CHEST, 1, true, true, false)
+				pickup:Morph(5, Mod.RepmTypes.EEE_CHEST, 1, true, true, false)
 				SFXManager():Play(SoundEffect.SOUND_CHEST_DROP, 1, 2, false, 1, 0)
 				pickup:UpdatePickupGhosts()
 			end
 		end
 	end
 end
-mod:AddCallback("REPM_PICKUP_INIT_FIRST", chestSpawn)
+Mod:AddCallback("REPM_PICKUP_INIT_FIRST", chestSpawn)

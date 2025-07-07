@@ -1,5 +1,5 @@
 
-local mod = RepMMod
+local Mod = RepMMod
 
 local function onUseNumbHeart(_, collectible, thisRng, player, useflags, activeslot, customvardata)
 	CustomHealthAPI.Library.AddHealth(player, "HEART_ICE", 2, true)
@@ -10,4 +10,4 @@ local function onUseNumbHeart(_, collectible, thisRng, player, useflags, actives
 		ShowAnim = true,
 	}
 end
-mod:AddCallback(ModCallbacks.MC_USE_ITEM, onUseNumbHeart, mod.RepmTypes.COLLECTIBLE_NUMB_HEART)
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, onUseNumbHeart, Mod.RepmTypes.COLLECTIBLE_NUMB_HEART)

@@ -1,4 +1,4 @@
-local mod = RepMMod
+local Mod = RepMMod
 
 local tsunFlyVar = Isaac.GetEntityVariantByName("Tsun_Fly")
 local tsunOrbitDistance = Vector(30.0, 30.0)
@@ -9,18 +9,18 @@ local whiteColor = Color(1, 1, 1, 1, 0, 0, 0)
 whiteColor:SetColorize(1, 1, 1, 1)
 whiteColor:SetTint(20, 20, 20, 2)
 
-mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, function(_, player, cache_flag)
-	local familiar_count = player:GetCollectibleNum(mod.RepmTypes.COLLECTIBLE_TSUNDERE_FLY) * 2
-	player:CheckFamiliar(tsunFlyVar, familiar_count, player:GetCollectibleRNG(mod.RepmTypes.COLLECTIBLE_TSUNDERE_FLY))
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, function(_, player, cache_flag)
+	local familiar_count = player:GetCollectibleNum(Mod.RepmTypes.COLLECTIBLE_TSUNDERE_FLY) * 2
+	player:CheckFamiliar(tsunFlyVar, familiar_count, player:GetCollectibleRNG(Mod.RepmTypes.COLLECTIBLE_TSUNDERE_FLY))
 end, CacheFlag.CACHE_FAMILIARS)
 
-mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, function(_, orbital)
+Mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, function(_, orbital)
 	orbital.OrbitDistance = tsunOrbitDistance
 	orbital.OrbitSpeed = tsunOrbitSpeed
 	orbital:AddToOrbit(tsunOrbitLayer)
 end, tsunFlyVar)
 
-mod:AddCallback(ModCallbacks.MC_PRE_FAMILIAR_COLLISION, function(_, familiar, collider, low)
+Mod:AddCallback(ModCallbacks.MC_PRE_FAMILIAR_COLLISION, function(_, familiar, collider, low)
 	if collider:IsVulnerableEnemy() then
 		local player = familiar.Player
 		if player and player:HasCollectible(CollectibleType.COLLECTIBLE_BFFS) then
@@ -47,7 +47,7 @@ mod:AddCallback(ModCallbacks.MC_PRE_FAMILIAR_COLLISION, function(_, familiar, co
 	end
 end, tsunFlyVar)
 
-mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, function(_, orbital)
+Mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, function(_, orbital)
 	orbital.OrbitDistance = tsunOrbitDistance
 	orbital.OrbitSpeed = tsunOrbitSpeed
 	local center_pos = (orbital.Player.Position + orbital.Player.Velocity) + tsunCenterOffset
@@ -55,7 +55,7 @@ mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, function(_, orbital)
 	orbital.Velocity = orbit_pos - orbital.Position
 end, tsunFlyVar)
 
-mod:AddCallback(ModCallbacks.MC_PRE_TEAR_COLLISION, function(_, tear, collider, low)
+Mod:AddCallback(ModCallbacks.MC_PRE_TEAR_COLLISION, function(_, tear, collider, low)
 	if tear:GetData().RepMinusWillFreeze == true and collider:IsVulnerableEnemy() and not collider:IsBoss() then
 		collider:AddEntityFlags(EntityFlag.FLAG_ICE)
 		tear.CollisionDamage = 9999

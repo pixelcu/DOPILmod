@@ -1,7 +1,7 @@
-local mod = RepMMod
+local Mod = RepMMod
 
 local function updateCache_FlowTea(_, player, cacheFlag)
-	if player:HasCollectible(mod.RepmTypes.COLLECTIBLE_FLOWER_TEA) then
+	if player:HasCollectible(Mod.RepmTypes.COLLECTIBLE_FLOWER_TEA) then
 		if cacheFlag == CacheFlag.CACHE_DAMAGE then
 			player.Damage = player.Damage + 0.60
 		end
@@ -13,4 +13,4 @@ local function updateCache_FlowTea(_, player, cacheFlag)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, updateCache_FlowTea)
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, updateCache_FlowTea)

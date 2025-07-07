@@ -1,10 +1,11 @@
-local mod = RepMMod
+local Mod = RepMMod
+local SaveManager = Mod.saveManager
 
 local function useBatteredLighter(_, collectibletype, rng, player, useflags, slot, vardata)
 	local fireplaces = Isaac.FindInRadius(player.Position, 150)
 	local fireplacesTotal = Isaac.FindByType(33)
-	local pdata = mod:repmGetPData(player)
-	SFXManager():Play(mod.RepmTypes.SFX_LIGHTER)
+	local pdata = Mod:RunSave(player)
+	SFXManager():Play(Mod.RepmTypes.SFX_LIGHTER)
 	for i, place in ipairs(fireplacesTotal) do
 		if place.Position:Distance(player.Position) < 100 then
 			local pos = place.Position
@@ -30,4 +31,4 @@ local function useBatteredLighter(_, collectibletype, rng, player, useflags, slo
 		ShowAnim = true,
 	}
 end
-mod:AddCallback(ModCallbacks.MC_USE_ITEM, useBatteredLighter, mod.RepmTypes.COLLECTIBLE_BATTERED_LIGHTER)
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, useBatteredLighter, Mod.RepmTypes.COLLECTIBLE_BATTERED_LIGHTER)

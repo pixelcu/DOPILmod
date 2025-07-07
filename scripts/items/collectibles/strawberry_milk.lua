@@ -1,4 +1,4 @@
-local mod = RepMMod
+local Mod = RepMMod
 
 local PinkColor = Color(1, 1, 1, 1, 0, 0, 0, 5, 0.5, 2, 1)
 
@@ -6,7 +6,7 @@ local function tearFire_StrawMilk(_, t)
 	local d = t:GetData()
 	local player = t.SpawnerEntity
 		and (t.SpawnerEntity:ToPlayer() or t.SpawnerEntity:ToFamiliar() and t.SpawnerEntity.Player)
-	if player:HasCollectible(mod.RepmTypes.COLLECTIBLE_STRAWBERRY_MILK) then
+	if player:HasCollectible(Mod.RepmTypes.COLLECTIBLE_STRAWBERRY_MILK) then
 		d.IsStrawMilk = true
 
 		if math.random(1, 8) == 8 then
@@ -14,7 +14,7 @@ local function tearFire_StrawMilk(_, t)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, tearFire_StrawMilk)
+Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, tearFire_StrawMilk)
 
 local function TearDed_StrawMilk(_, t)
 	if t:GetData().IsStrawMilk then
@@ -29,11 +29,11 @@ local function TearDed_StrawMilk(_, t)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, TearDed_StrawMilk, EntityType.ENTITY_TEAR)
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, TearDed_StrawMilk, EntityType.ENTITY_TEAR)
 
 local function TearColor_StrawMilk(_, player, cache)
-	if player:HasCollectible(mod.RepmTypes.COLLECTIBLE_STRAWBERRY_MILK) then
+	if player:HasCollectible(Mod.RepmTypes.COLLECTIBLE_STRAWBERRY_MILK) then
 		player.TearColor = PinkColor
 	end
 end
-mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, TearColor_StrawMilk, CacheFlag.CACHE_TEARCOLOR)
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, TearColor_StrawMilk, CacheFlag.CACHE_TEARCOLOR)

@@ -1,39 +1,39 @@
 local strings = {
 	Title = {
-		en = "rep-",
-		es = "rep-",
+		en = "Rep-",
+		es = "Rep-",
 	},
 	resume_game = {
-		en = "resume game",
-		ru = "вернуться в игру",
+		en = "Resume game",
+		ru = "Вернуться в игру",
 	},
 	settings = {
-		en = "settings",
-		ru = "настройки",
+		en = "Settings",
+		ru = "Настройки",
 	},
 	yes = {
-		en = "yes",
-		ru = "да",
+		en = "Yes",
+		ru = "Да",
 	},
 	no = {
-		en = "no",
-		ru = "нет",
+		en = "No",
+		ru = "Нет",
 	},
 	enable = {
-		en = "enable",
-		ru = "включить",
+		en = "Enable",
+		ru = "Включить",
 	},
 	disable = {
-		en = "disable",
-		ru = "выключить",
+		en = "Disable",
+		ru = "Выключить",
 	},
 	enabled = {
-		en = "enabled",
-		ru = "включен",
+		en = "Enabled",
+		ru = "Включен",
 	},
 	disabled = {
-		en = "disabled",
-		ru = "выключен",
+		en = "Disabled",
+		ru = "Выключен",
 	},
 	startTooltip = {
 		en = DeadSeaScrollsMenu and DeadSeaScrollsMenu.menuOpenToolTip or {
@@ -56,82 +56,84 @@ local strings = {
 		},
 	},
 	unlock_manager = {
-		en = "unlock manager",
-		ru = "менеджер анлоков"
+		en = "Unlock manager",
+		ru = "Mенеджер анлоков"
 	},
 	unlocks = {
-		en = "unlocks",
-		ru = "анлоки"
+		en = "Unlocks",
+		ru = "Анлоки"
 	},
 	unlocked = {
-		en = "unlocked",
-		ru = "разблокировано"
+		en = "Unlocked",
+		ru = "Разблокировано"
 	},
 	locked = {
-		en = "locked",
-		ru = "заблокировано"
+		en = "Locked",
+		ru = "Заблокировано"
 	},
 	unlock = {
-		en = "unlock all",
-		ru = "разблокировать все"
+		en = "Unlock all",
+		ru = "Разблокировать все"
 	},
 	lock = {
-		en = "lock all",
-		ru = "заблокировать все"
+		en = "Lock all",
+		ru = "Заблокировать все"
 	},
 	thumbs_up = {
-		en = "thumbs up",
+		en = "Thumbs up",
 		--ru = "режим рюкзака",
 	},
 	tu_var1 = {
-		en = "on",
+		en = "On",
 		--ru = "взрывать особые",
 	},
 	tu_var2 = {
-		en = "off",
+		en = "Off",
 		--ru = "бомбы в руки",
 	},
 	music_manager = {
-		en = "music manager",
-		ru = "менеджер музыки",
+		en = "Music manager",
+		ru = "Менеджер музыки",
 	},
 	music_settings = {
-		en = "music settings",
-		ru = "настройки музыки",
+		en = "Music settings",
+		ru = "Настройки музыки",
 	},
 	jingle_settings = {
-		en = "jingle settings",
-		ru = "настройки джинглов",
+		en = "Jingle settings",
+		ru = "Настройки джинглов",
 	},
 	enable_all_music = {
-		en = "enable all music and jingles",
-		ru = "включить всю музыку и джинглы",
+		en = "Enable all music and jingles",
+		ru = "Включить всю музыку и джинглы",
 	},
 	disable_all_music = {
-		en = "disable all music and jingles",
-		ru = "выключить всю музыку и джинглы",
+		en = "Disable all music and jingles",
+		ru = "Выключить всю музыку и джинглы",
 	},
 	other_settings = {
-		en = "other settings",
-		ru = "другие настройки",
+		en = "Other settings",
+		ru = "Другие настройки",
 	},
 	happy_start = {
-		en = "happy start",
-		ru = "счастливый старт",
+		en = "Happy start",
+		ru = "Счастливый старт",
 	},
 	music_button_enable = {
-		en = "enables all mod's music and jingles",
-		ru = "включает всю музыку и джинглы из мода",
+		en = "Enables all mod's music and jingles",
+		ru = "Включает всю музыку и джинглы из мода",
 	},
 	music_button_disable = {
-		en = "disables all mod's music and jingles",
-		ru = "выключает всю музыку и джинглы из мода",
+		en = "Disables all mod's music and jingles",
+		ru = "Выключает всю музыку и джинглы из мода",
 	},
 }
 
-function RepMMod.GetDSSStr(str)
+function RepMMod.GetDSSStr(str, lower)
+	lower = lower == nil and true or lower
 	local tmpstr = strings
-	return tmpstr[str] and (tmpstr[str][Options.Language] or tmpstr[str].en) or str
+	local returnstr = tmpstr[str] and (tmpstr[str][Options.Language] or tmpstr[str].en) or str
+	return (lower and type(returnstr) == "string") and returnstr:lower() or returnstr
 end
 
 function RepMMod.SplitString(str, size)

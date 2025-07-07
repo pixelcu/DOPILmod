@@ -1,172 +1,181 @@
-return function(mod)
-	local DSSModName = "Repentance-"
+local Mod = RepMMod
 
-	local DSSCoreVersion = 6
+local DSSModName = "Repentance-"
 
-	local MenuProvider = {}
+local DSSCoreVersion = 6
 
-	function MenuProvider.SaveSaveData()
-		mod.StoreSaveData()
-	end
+local MenuProvider = {}
 
-	function MenuProvider.GetPaletteSetting()
-		return mod.GetMenuSaveData().MenuPalette
-	end
+local SaveManager = Mod.saveManager
 
-	function MenuProvider.SavePaletteSetting(var)
-		mod.GetMenuSaveData().MenuPalette = var
-	end
+function MenuProvider.SaveSaveData()
+	Mod:SaveGameData()
+end
 
-	function MenuProvider.GetGamepadToggleSetting()
-		return mod.GetMenuSaveData().GamepadToggle
-	end
+function MenuProvider.GetPaletteSetting()
+	local dssSave = SaveManager.GetDeadSeaScrollsSave()
+	return dssSave and dssSave.MenuPalette or nil
+end
 
-	function MenuProvider.SaveGamepadToggleSetting(var)
-		mod.GetMenuSaveData().GamepadToggle = var
-	end
+function MenuProvider.SavePaletteSetting(var)
+	local dssSave = SaveManager.GetDeadSeaScrollsSave()
+	dssSave.MenuPalette = var
+end
 
-	function MenuProvider.GetMenuKeybindSetting()
-		return mod.GetMenuSaveData().MenuKeybind
-	end
+function MenuProvider.GetGamepadToggleSetting()
+	local dssSave = SaveManager.GetDeadSeaScrollsSave()
+	return dssSave and dssSave.GamepadToggle or nil
+end
 
-	function MenuProvider.SaveMenuKeybindSetting(var)
-		mod.GetMenuSaveData().MenuKeybind = var
-	end
+function MenuProvider.SaveGamepadToggleSetting(var)
+	local dssSave = SaveManager.GetDeadSeaScrollsSave()
+	dssSave.GamepadToggle = var
+end
 
-	function MenuProvider.GetMenuHintSetting()
-		return mod.GetMenuSaveData().MenuHint
-	end
+function MenuProvider.GetMenuKeybindSetting()
+	local dssSave = SaveManager.GetDeadSeaScrollsSave()
+	return dssSave and dssSave.MenuKeybind or nil
+end
 
-	function MenuProvider.SaveMenuHintSetting(var)
-		mod.GetMenuSaveData().MenuHint = var
-	end
+function MenuProvider.SaveMenuKeybindSetting(var)
+	local dssSave = SaveManager.GetDeadSeaScrollsSave()
+	dssSave.MenuKeybind = var
+end
 
-	function MenuProvider.GetMenuBuzzerSetting()
-		return mod.GetMenuSaveData().MenuBuzzer
-	end
+function MenuProvider.GetMenuHintSetting()
+	local dssSave = SaveManager.GetDeadSeaScrollsSave()
+	return dssSave and dssSave.MenuHint or nil
+end
 
-	function MenuProvider.SaveMenuBuzzerSetting(var)
-		mod.GetMenuSaveData().MenuBuzzer = var
-	end
+function MenuProvider.SaveMenuHintSetting(var)
+	local dssSave = SaveManager.GetDeadSeaScrollsSave()
+	dssSave.MenuHint = var
+end
 
-	function MenuProvider.GetMenusNotified()
-		return mod.GetMenuSaveData().MenusNotified
-	end
+function MenuProvider.GetMenuBuzzerSetting()
+	local dssSave = SaveManager.GetDeadSeaScrollsSave()
+	return dssSave and dssSave.MenuBuzzer or nil
+end
 
-	function MenuProvider.SaveMenusNotified(var)
-		mod.GetMenuSaveData().MenusNotified = var
-	end
+function MenuProvider.SaveMenuBuzzerSetting(var)
+	local dssSave = SaveManager.GetDeadSeaScrollsSave()
+	dssSave.MenuBuzzer = var
+end
 
-	function MenuProvider.GetMenusPoppedUp()
-		return mod.GetMenuSaveData().MenusPoppedUp
-	end
+function MenuProvider.GetMenusNotified()
+	local dssSave = SaveManager.GetDeadSeaScrollsSave()
+	return dssSave and dssSave.MenusNotified or nil
+end
 
-	function MenuProvider.SaveMenusPoppedUp(var)
-		mod.GetMenuSaveData().MenusPoppedUp = var
-	end
+function MenuProvider.SaveMenusNotified(var)
+	local dssSave = SaveManager.GetDeadSeaScrollsSave()
+	dssSave.MenusNotified = var
+end
 
-	local DSSInitializerFunction = include("scripts.lib.dssmenucore")
-	local dssmod = DSSInitializerFunction(DSSModName, DSSCoreVersion, MenuProvider)
+function MenuProvider.GetMenusPoppedUp()
+	local dssSave = SaveManager.GetDeadSeaScrollsSave()
+	return dssSave and dssSave.MenusPoppedUp or nil
+end
 
-	local pdg = Isaac.GetPersistentGameData()
+function MenuProvider.SaveMenusPoppedUp(var)
+	local dssSave = SaveManager.GetDeadSeaScrollsSave()
+	dssSave.MenusPoppedUp = var
+end
 
-	local function InitMusicSettings()
-		local music, _ = RepMMod.GetModdedMusicTable()
-		local MM = {}
+local DSSInitializerFunction = include("scripts.lib.dssmenucore")
+local dssmod = DSSInitializerFunction(DSSModName, DSSCoreVersion, MenuProvider)
 
-		for musicId, name in pairs(music) do
-			if not RepMMod.saveTable.MusicData.Music[name] then
-				RepMMod.saveTable.MusicData.Music[name] = 1
-			end
-			MM[#MM + 1] = {
-				strset = RepMMod.SplitString(name:sub(21):lower(), 18),
-				choices = { RepMMod.GetDSSStr("enabled"), RepMMod.GetDSSStr("disabled") },
-				variable = name,
-				setting = 1,
-				load = function()
-					return RepMMod.saveTable.MusicData.Music[name] or 1
-				end,
-				store = function(var)
-					RepMMod.saveTable.MusicData.Music[name] = var
-					mod.ChangeFloorMusicTo(musicId, Isaac.GetMusicIdByName(name), var == 1)
-				end,
-				tooltip = {
-					strset = RepMMod.SplitString(
-						'enable/disable "' .. name:sub(21):lower() .. '" music from this mod',
-						15
-					),
-				},
-			}
-			MM[#MM + 1] = { str = "", nosel = true, fsize = 2 }
+local pdg = Isaac.GetPersistentGameData()
+
+local function InitMusicSettings()
+	local music, _ = Mod.GetModdedMusicTable()
+	local MM = {}
+	local musicData = Mod.GetModdedMusicData()
+	for musicId, name in pairs(music) do
+		if not musicData.Music[name] then
+			musicData.Music[name] = 1
 		end
-		return MM
+		MM[#MM + 1] = {
+			strset = Mod.SplitString(name:sub(21):lower(), 18),
+			choices = { Mod.GetDSSStr("enabled"), Mod.GetDSSStr("disabled") },
+			variable = name,
+			setting = 1,
+			load = function()
+				return musicData.Music[name] or 1
+			end,
+			store = function(var)
+				musicData.Music[name] = var
+				Mod.ChangeFloorMusicTo(musicId, Isaac.GetMusicIdByName(name), var == 1)
+			end,
+			tooltip = {
+				strset = Mod.SplitString('enable/disable "' .. name:sub(21):lower() .. '" music from this mod', 15),
+			},
+		}
+		MM[#MM + 1] = { str = "", nosel = true, fsize = 2 }
 	end
+	return MM
+end
 
-	local function InitJingleSettings()
-		local music, jingle = mod.GetModdedMusicTable()
-		local MM = {}
-
-		for jingleId, name in pairs(jingle) do
-			if not RepMMod.saveTable.MusicData.Jingle[name] then
-				RepMMod.saveTable.MusicData.Jingle[name] = 1
-			end
-			MM[#MM + 1] = {
-				strset = RepMMod.SplitString(name:sub(21):lower(), 18),
-				choices = { RepMMod.GetDSSStr("enabled"), RepMMod.GetDSSStr("disabled") },
-				variable = name,
-				setting = 1,
-				load = function()
-					return RepMMod.saveTable.MusicData.Jingle[name] or 1
-				end,
-				store = function(var)
-					RepMMod.saveTable.MusicData.Jingle[name] = var
-				end,
-				tooltip = {
-					strset = RepMMod.SplitString(
-						'enable/disable "' .. name:sub(21):lower() .. '" jingle from this mod',
-						15
-					),
-				},
-			}
-			MM[#MM + 1] = { str = "", nosel = true, fsize = 2 }
+local function InitJingleSettings()
+	local music, jingle = Mod.GetModdedMusicTable()
+	local MM = {}
+	local musicData = Mod.GetModdedMusicData()
+	for jingleId, name in pairs(jingle) do
+		if not musicData.Jingle[name] then
+			musicData.Jingle[name] = 1
 		end
-		return MM
+		MM[#MM + 1] = {
+			strset = Mod.SplitString(name:sub(21):lower(), 18),
+			choices = { Mod.GetDSSStr("enabled"), Mod.GetDSSStr("disabled") },
+			variable = name,
+			setting = 1,
+			load = function()
+				return musicData.Jingle[name] or 1
+			end,
+			store = function(var)
+				musicData.Jingle[name] = var
+			end,
+			tooltip = {
+				strset = Mod.SplitString('enable/disable "' .. name:sub(21):lower() .. '" jingle from this mod', 15),
+			},
+		}
+		MM[#MM + 1] = { str = "", nosel = true, fsize = 2 }
 	end
+	return MM
+end
 
-	local function InitUnlockButtons()
-		local buttons = {}
-		for _,ach in pairs(RepMMod.RepmAchivements) do
-			buttons[#buttons + 1] = {
-				strset = RepMMod.SplitString(ach.Name:lower(), 18),
-				choices = { RepMMod.GetDSSStr("locked"), RepMMod.GetDSSStr("unlocked") },
-				variable = "RepMAchievement"..ach.Name,
-				setting = 1,
-				load = function()
-					local val = pdg:Unlocked(ach.ID) and 2 or 1
-					return val
-				end,
-				store = function(var)
-					if var == 2 then
-						pdg:Unlocked(ach.ID)
-					else
-						Isaac.ExecuteCommand("lockachievement "..ach.ID)
-					end
-				end,
-				tooltip = {
-					strset = RepMMod.SplitString(
-						'unlock/lock ' .. ach.Name:lower(),
-						15
-					),
-				},
-			}
-			buttons[#buttons + 1] = { str = "", nosel = true, fsize = 2 }
-		end
-		return buttons
+local function InitUnlockButtons()
+	local buttons = {}
+	for _, ach in pairs(Mod.RepmAchivements) do
+		buttons[#buttons + 1] = {
+			strset = Mod.SplitString(ach.Name:lower(), 18),
+			choices = { Mod.GetDSSStr("locked"), Mod.GetDSSStr("unlocked") },
+			variable = "RepMAchievement" .. ach.Name,
+			setting = 1,
+			load = function()
+				local val = pdg:Unlocked(ach.ID) and 2 or 1
+				return val
+			end,
+			store = function(var)
+				if var == 2 then
+					pdg:Unlocked(ach.ID)
+				else
+					Isaac.ExecuteCommand("lockachievement " .. ach.ID)
+				end
+			end,
+			tooltip = {
+				strset = Mod.SplitString("unlock/lock " .. ach.Name:lower(), 15),
+			},
+		}
+		buttons[#buttons + 1] = { str = "", nosel = true, fsize = 2 }
 	end
+	return buttons
+end
 
-	RepMMod.DSSdirectory = {
+local function InitMenu()
+	local menu = {
 		main = {
-			title = RepMMod.GetDSSStr("Title"),
+			title = Mod.GetDSSStr("Title"),
 			format = {
 				Panels = {
 					{
@@ -181,42 +190,21 @@ return function(mod)
 					},
 				},
 			},
-
-			buttons = {
-				{ str = RepMMod.GetDSSStr("resume_game"), action = "resume" },
-				{ str = "", nosel = true, fsize = 3 },
-				{ str = RepMMod.GetDSSStr("music_manager"), dest = "music_manager" },
-				{ str = "", nosel = true, fsize = 3 },
-				{ str = RepMMod.GetDSSStr("unlocks"), dest = "unlocks" },
-				{ str = "", nosel = true, fsize = 3 },
-				{
-					str = RepMMod.GetDSSStr("happy_start"),
-					choices = { RepMMod.GetDSSStr("tu_var1"), RepMMod.GetDSSStr("tu_var2") },
-					variable = "StartThumbsUp",
-					setting = 1,
-					load = function()
-						return RepMMod.saveTable.MenuData.StartThumbsUp or 1
-					end,
-					store = function(var)
-						RepMMod.saveTable.MenuData.StartThumbsUp = var
-						RepMMod.saveTable.SpelunkersPackEffectType = var
-					end,
-				},
-				{ str = "", nosel = true, fsize = 3 },
-			},
-			tooltip = RepMMod.GetDSSStr("startTooltip"),
+			tooltip = Mod.GetDSSStr("startTooltip"),
 		},
 		unlocks = {
-			title = RepMMod.GetDSSStr("unlock_manager"),
+			title = Mod.GetDSSStr("unlock_manager"),
 			buttons = {
-				{ str = RepMMod.GetDSSStr("unlocks"), dest = "unlocks_sub",
-					tooltip = { strset = { RepMMod.GetDSSStr("unlocks") } },
+				{
+					str = Mod.GetDSSStr("unlocks"),
+					dest = "unlocks_sub",
+					tooltip = { strset = { Mod.GetDSSStr("unlocks") } },
 				},
 				{ str = "", nosel = true, fsize = 3 },
 				{
-					strset = RepMMod.SplitString(RepMMod.GetDSSStr("unlock"), 21),
+					strset = Mod.SplitString(Mod.GetDSSStr("unlock"), 21),
 					func = function(button, page, item)
-						for _, ach in pairs(RepMMod.RepmAchivements) do
+						for _, ach in pairs(Mod.RepmAchivements) do
 							Isaac.GetPersistentGameData():TryUnlock(ach.ID, true)
 						end
 						dssmod.closeMenu(item, false)
@@ -224,10 +212,10 @@ return function(mod)
 				},
 				{ str = "", nosel = true, fsize = 3 },
 				{
-					strset = RepMMod.SplitString(RepMMod.GetDSSStr("lock"), 21),
+					strset = Mod.SplitString(Mod.GetDSSStr("lock"), 21),
 					func = function(button, page, item)
-						for _, ach in pairs(RepMMod.RepmAchivements) do
-							Isaac.ExecuteCommand("lockachievement "..ach.ID)
+						for _, ach in pairs(Mod.RepmAchivements) do
+							Isaac.ExecuteCommand("lockachievement " .. ach.ID)
 						end
 						dssmod.closeMenu(item, false)
 					end,
@@ -235,41 +223,43 @@ return function(mod)
 			},
 		},
 		unlocks_sub = {
-			title = RepMMod.GetDSSStr("unlocks"),
+			title = Mod.GetDSSStr("unlocks"),
 			buttons = InitUnlockButtons(),
 		},
 		music_manager = {
-			title = RepMMod.GetDSSStr("music_manager"),
+			title = Mod.GetDSSStr("music_manager"),
 			buttons = {
-				{ str = RepMMod.GetDSSStr("music_settings"), dest = "music_settings" },
+				{ str = Mod.GetDSSStr("music_settings"), dest = "music_settings" },
 				{ str = "", nosel = true, fsize = 2 },
-				{ str = RepMMod.GetDSSStr("jingle_settings"), dest = "jingle_settings" },
+				{ str = Mod.GetDSSStr("jingle_settings"), dest = "jingle_settings" },
 				{ str = "", nosel = true, fsize = 2 },
 				{
-					strset = RepMMod.SplitString(RepMMod.GetDSSStr("enable_all_music"), 21),
+					strset = Mod.SplitString(Mod.GetDSSStr("enable_all_music"), 21),
 					func = function(button, page, item)
-						local music, jingle = mod.GetModdedMusicTable()
+						local music, jingle = Mod.GetModdedMusicTable()
+						local musicData = Mod.GetModdedMusicData()
 						for musicId, name in pairs(music) do
-							RepMMod.saveTable.MusicData.Music[name] = 1
-							mod.ChangeFloorMusicTo(musicId, Isaac.GetMusicIdByName(name), true)
+							musicData.Music[name] = 1
+							Mod.ChangeFloorMusicTo(musicId, Isaac.GetMusicIdByName(name), true)
 						end
 						for jingleId, name in pairs(jingle) do
-							RepMMod.saveTable.MusicData.Jingle[name] = 1
+							musicData.Jingle[name] = 1
 						end
 						dssmod.closeMenu(item, false)
 					end,
 				},
 				{ str = "", nosel = true, fsize = 2 },
 				{
-					strset = RepMMod.SplitString(RepMMod.GetDSSStr("disable_all_music"), 21),
+					strset = Mod.SplitString(Mod.GetDSSStr("disable_all_music"), 21),
 					func = function(button, page, item)
-						local music, jingle = mod.GetModdedMusicTable()
+						local music, jingle = Mod.GetModdedMusicTable()
+						local musicData = Mod.GetModdedMusicData()
 						for musicId, name in pairs(music) do
-							RepMMod.saveTable.MusicData.Music[name] = 2
-							mod.ChangeFloorMusicTo(musicId, Isaac.GetMusicIdByName(name), false)
+							musicData.Music[name] = 2
+							Mod.ChangeFloorMusicTo(musicId, Isaac.GetMusicIdByName(name), false)
 						end
 						for jingleId, name in pairs(jingle) do
-							RepMMod.saveTable.MusicData.Jingle[name] = 2
+							musicData.Jingle[name] = 2
 						end
 						dssmod.closeMenu(item, false)
 					end,
@@ -278,15 +268,15 @@ return function(mod)
 			tooltip = { strset = { "manage music", "and jingles" } },
 		},
 		music_settings = {
-			title = RepMMod.GetDSSStr("music_settings"),
+			title = Mod.GetDSSStr("music_settings"),
 			buttons = InitMusicSettings(),
 		},
 		jingle_settings = {
-			title = RepMMod.GetDSSStr("jingle_settings"),
+			title = Mod.GetDSSStr("jingle_settings"),
 			buttons = InitJingleSettings(),
 		},
 		warpzone = {
-			title = RepMMod.GetDSSStr("settings"),
+			title = Mod.GetDSSStr("settings"),
 			buttons = {
 				dssmod.gamepadToggleButton,
 				dssmod.menuKeybindButton,
@@ -294,8 +284,48 @@ return function(mod)
 		},
 	}
 
+	local buttons = {
+		
+			{ str = Mod.GetDSSStr("resume_game"), action = "resume" },
+			{ str = "", nosel = true, fsize = 3 },
+			{ str = Mod.GetDSSStr("music_manager"), dest = "music_manager" },
+			{ str = "", nosel = true, fsize = 3 },
+			{ str = Mod.GetDSSStr("unlocks"), dest = "unlocks" },
+			{ str = "", nosel = true, fsize = 3 },
+			{
+				str = Mod.GetDSSStr("happy_start"),
+				choices = { Mod.GetDSSStr("tu_var1"), Mod.GetDSSStr("tu_var2") },
+				variable = "StartThumbsUp",
+				setting = 1,
+				load = function()
+					return Mod:GetDefaultFileSave("StartThumbsUp") or 1
+				end,
+				store = function(var)
+					Mod:AddDefaultFileSave("StartThumbsUp", var)
+				end,
+			},
+			{ str = "", nosel = true, fsize = 3 },
+		
+	}
+	if SoundtrackSongList then
+		table.remove(buttons, 3)
+		table.remove(buttons, 3)
+		menu["music_manager"] = nil
+		menu["music_settings"] = nil
+		menu["jingle_settings"] = nil
+	end
+
+	menu.main.buttons = buttons
+
+	return menu
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_MODS_LOADED, function()
+
+	Mod.DSSdirectory = InitMenu()
+
 	local RepMdirectorykey = {
-		Item = RepMMod.DSSdirectory.main,
+		Item = Mod.DSSdirectory.main,
 		Main = "main",
 		Idle = false,
 		MaskAlpha = 1,
@@ -308,8 +338,8 @@ return function(mod)
 		Run = dssmod.runMenu,
 		Open = dssmod.openMenu,
 		Close = dssmod.closeMenu,
-		Directory = RepMMod.DSSdirectory,
+		Directory = Mod.DSSdirectory,
 		DirectoryKey = RepMdirectorykey,
 		UseSubMenu = true,
 	})
-end
+end)

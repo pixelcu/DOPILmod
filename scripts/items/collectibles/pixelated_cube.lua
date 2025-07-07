@@ -1,4 +1,4 @@
-local mod = RepMMod
+local Mod = RepMMod
 
 local PixelatedCubeBabiesList = {}
 local config = Isaac.GetItemConfig()
@@ -26,4 +26,4 @@ local function PixelatedCubeUse(_, itemID, rng, player)
 	}
 end
 
-mod:AddCallback(ModCallbacks.MC_USE_ITEM, PixelatedCubeUse, mod.RepmTypes.COLLECTIBLE_PIXELATED_CUBE)
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, PixelatedCubeUse, Mod.RepmTypes.COLLECTIBLE_PIXELATED_CUBE)

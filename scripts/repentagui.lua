@@ -1,58 +1,8 @@
+local Mod = RepMMod
+local SaveManager = Mod.saveManager
+
 local ig = ImGui
-local prefix = "Repentance Negative "
-local json = require("json")
-
-local MusicTable = {
-	[Music.MUSIC_CELLAR] = prefix .. "Cellar",
-	[Music.MUSIC_BURNING_BASEMENT] = prefix .. "Burning Basement",
-	[Music.MUSIC_CAVES] = prefix .. "Caves",
-	[Music.MUSIC_DEPTHS] = prefix .. "Depths",
-	[Music.MUSIC_CATHEDRAL] = prefix .. "Cathedral",
-	[Music.MUSIC_WOMB_UTERO] = prefix .. "Womb/Utero",
-	[Music.MUSIC_BOSS] = prefix .. "Boss",
-	[Music.MUSIC_BOSS2] = prefix .. "Boss (alternate)",
-	[Music.MUSIC_BOSS_OVER] = prefix .. "Boss Room (empty)",
-	[Music.MUSIC_SHOP_ROOM] = prefix .. "Shop Room",
-	[Music.MUSIC_ARCADE_ROOM] = prefix .. "Arcade Room",
-	[Music.MUSIC_DOWNPOUR] = prefix .. "Downpour",
-	[Music.MUSIC_BOSS3] = prefix .. "Boss (alternate alternate)",
-	[Music.MUSIC_DOWNPOUR_REVERSE] = prefix .. "Downpour (reversed)",
-	[Music.MUSIC_TITLE_REPENTANCE] = prefix .. "Main Menu",
-}
-
-local JingleTable = {
-	[Music.MUSIC_JINGLE_BOSS_OVER] = prefix .. "Boss Death (jingle)",
-	[Music.MUSIC_JINGLE_SECRETROOM_FIND] = prefix .. "Secret Room Find (jingle)",
-	[Music.MUSIC_JINGLE_TREASUREROOM_ENTRY_1] = prefix .. "Treasure Room Entry (jingle) 2",
-	[Music.MUSIC_JINGLE_BOSS_OVER2] = prefix .. "Boss Death Alternate (jingle)",
-	[Music.MUSIC_JINGLE_BOSS_OVER3] = prefix .. "Boss Death Alternate Alternate (jingle)",
-}
-
-local music, jingle = MusicTable, JingleTable
-
-if RepMMod:HasData() then
-	local save = json.decode(RepMMod:LoadData())
-	if save.MusicData then
-		RepMMod.saveTable.MusicData = save.MusicData
-	end
-end
-
-function RepMMod.GetModdedMusicTable()
-	return MusicTable, JingleTable
-end
-
-function RepMMod.ChangeFloorMusicTo(id, id2, change)
-	if StageAPI and StageAPI.InOverriddenStage() then
-		return
-	end
-	if not change then
-		id, id2 = id2, id
-	end
-	if id == MusicManager():GetCurrentMusicID() then
-		MusicManager():Play(id2, Options.MusicVolume)
-		Isaac.SetCurrentFloorMusic(id2)
-	end
-end
+local root = "RepMMod"
 
 local function IsNumber(t)
 	return t and type(t) == "number"
@@ -138,93 +88,19 @@ local function AddElements(parentId, id, elems)
 	end
 end
 
-local imguiFuncs = {
-	AddText = function(txt, wraped)
-		return function(parentId, id)
-			ig.AddText(parentId, txt, wraped or false, MakeElementName(parentId, id))
-		end
-	end,
-	AddInputText = function(txt, default, description, callback)
-		return function(parentId, id)
-			ig.AddInputText(parentId, MakeElementName(parentId, id), txt, callback, description or "", default)
-		end
-	end,
-	AddCombobox = function(label, func, options, selIndex, isSlider)
-		return function(parentId, id)
-			ig.AddCombobox(parentId, MakeElementName(parentId, id), label, func, options, selIndex, isSlider)
-		end
-	end,
-	AddCheckbox = function(...)
-		local d = ...
-		return function(parentId, id)
-			ig.AddCheckbox(parentId, MakeElementName(parentId, id), d)
-		end
-	end,
-	AddInputInteger = function(...)
-		local d = ...
-		return function(parentId, id)
-			ig.AddInputInteger(parentId, MakeElementName(parentId, id), d)
-		end
-	end,
-	SetTextColor = function(r, g, b, a, idx)
-		return function(parentId, id)
-			if idx == nil then
-				idx = tonumber(id - 1)
-			end
-			ig.SetTextColor(MakeElementName(parentId, id), r, g, b, a)
-		end
-	end,
-	SetHelpMarker = function(txt, idx)
-		return function(parentId, id)
-			if idx == nil then
-				idx = tonumber(id - 1)
-			end
-			ig.SetHelpmarker(MakeElementName(parentId, idx), txt)
-		end
-	end,
-	SetTooltip = function(txt, idx)
-		return function(parentId, id)
-			if idx == nil then
-				idx = tonumber(id - 1)
-			end
-			ig.SetTooltip(MakeElementName(parentId, idx), txt)
-		end
-	end,
-	AddButton = function(label, isSmall, callback)
-		return function(parentId, id)
-			ig.AddButton(parentId, MakeElementName(parentId, id), label or "Button", callback, isSmall or false)
-		end
-	end,
-	AddCallback = function(type, func, idx)
-		return function(parentId, id)
-			if idx == nil then
-				idx = tonumber(id - 1)
-			end
-			ig.AddCallback(MakeElementName(parentId, idx), type, func)
-		end
-	end,
-}
-
 local function InitAchievementMenu()
-	local tab = {}
-	table.insert(
-		tab,
-		imguiFuncs.AddButton(RepMMod.GetDSSStr("unlock"), false, function(clickCount)
-			for _, ach in pairs(RepMMod.RepmAchivements) do
+	return {function(parentID, id)
+		ig.AddButton(parentID, MakeElementName(parentID, id, "unlock"), Mod.GetDSSStr("unlock", false), function()
+			for _, ach in pairs(Mod.RepmAchivements) do
 				Isaac.GetPersistentGameData():TryUnlock(ach.ID, true)
 			end
-		end)
-	)
-	table.insert(
-		tab,
-		imguiFuncs.AddButton(RepMMod.GetDSSStr("lock"), false, function(clickCount)
-			for _, ach in pairs(RepMMod.RepmAchivements) do
+		end, true)
+		ig.AddButton(parentID, MakeElementName(parentID, id, "lock"), Mod.GetDSSStr("lock", false), function()
+			for _, ach in pairs(Mod.RepmAchivements) do
 				Isaac.ExecuteCommand("lockachievement " .. ach.ID)
 			end
-		end)
-	)
-	table.insert(tab, function(parentID, id)
-		for name, ach in pairs(RepMMod.RepmAchivements) do
+		end, true)
+		for name, ach in pairs(Mod.RepmAchivements) do
 			ig.AddCheckbox(parentID, MakeElementName(parentID, id, ach.Name), ach.Name, function(newVal)
 				if newVal then
 					Isaac.GetPersistentGameData():TryUnlock(ach.ID, false)
@@ -240,167 +116,175 @@ local function InitAchievementMenu()
 				)
 			end)
 		end
+	end}
+end
+
+local debugValues = {
+	["Traffic Light"] = function()
+		if SaveManager.IsLoaded() then
+			return Mod:RunSave().RedLightSign
+		else
+			return "null"
+		end
+	end,
+	["Traffic Light Cooldown"] = function()
+		if SaveManager.IsLoaded() then
+			return Mod:RunSave().saveTimer
+		else
+			return "null"
+		end
+	end,
+}
+
+local function InitDebugArgs()
+	local tab = {}
+	table.insert(tab, function(parentID, id)
+		for name, val in pairs(debugValues) do
+			ig.AddText(parentID, name .. ": " .. tostring(val()), false, MakeElementName(parentID, name))
+			ig.AddCallback(MakeElementName(parentID, name), ImGuiCallback.Render, function()
+				ig.UpdateData(MakeElementName(parentID, name), ImGuiData.Label, name .. ": " .. tostring(val()))
+			end)
+		end
 	end)
+
 	return tab
 end
 
-local menus = {
-	["Music"] = {
-		[RepMMod.GetDSSStr("music_manager")] = {
-			imguiFuncs.AddButton(RepMMod.GetDSSStr("enable"), false, function(clickCount)
-				for musicId, name in pairs(music) do
-					RepMMod.saveTable.MusicData.Music[name] = 1
-					RepMMod.ChangeFloorMusicTo(musicId, Isaac.GetMusicIdByName(name), true)
-				end
-				for jingleId, name in pairs(jingle) do
-					RepMMod.saveTable.MusicData.Jingle[name] = 1
-				end
-				RepMMod.StoreSaveData()
-			end),
-			imguiFuncs.SetHelpMarker(RepMMod.GetDSSStr("music_button_enable")),
-			imguiFuncs.AddButton(RepMMod.GetDSSStr("disable"), false, function(clickCount)
-				for musicId, name in pairs(music) do
-					RepMMod.saveTable.MusicData.Music[name] = 2
-					RepMMod.ChangeFloorMusicTo(musicId, Isaac.GetMusicIdByName(name), false)
-				end
-				for jingleId, name in pairs(jingle) do
-					RepMMod.saveTable.MusicData.Jingle[name] = 2
-				end
-				RepMMod.StoreSaveData()
-			end),
-			imguiFuncs.SetHelpMarker(RepMMod.GetDSSStr("music_button_disable")),
-			[RepMMod.GetDSSStr("music_settings")] = {
-				function(parentId, idx)
-					for musicId, name in pairs(music) do
-						if not RepMMod.saveTable.MusicData.Music[name] then
-							RepMMod.saveTable.MusicData.Music[name] = 1
-						end
-						ig.AddCheckbox(
-							parentId,
-							MakeElementName(parentId, idx, name:sub(21)),
-							name:sub(21),
-							function(newVal)
-								local id, id2 = musicId, Isaac.GetMusicIdByName(name)
-								RepMMod.saveTable.MusicData.Music[name] = newVal and 1 or 2
-								if not newVal then
-									id, id2 = Isaac.GetMusicIdByName(name), musicId
-								end
-								if id == MusicManager():GetCurrentMusicID() then
-									MusicManager():Play(id2, Options.MusicVolume)
-									Isaac.SetCurrentFloorMusic(id2)
-								end
-								RepMMod.StoreSaveData()
-							end,
-							false
-						)
-						ig.AddCallback(MakeElementName(parentId, idx, name:sub(21)), ImGuiCallback.Render, function()
-							ig.UpdateData(
-								MakeElementName(parentId, idx, name:sub(21)),
-								ImGuiData.Value,
-								RepMMod.saveTable.MusicData.Music[name] == 1
-							)
-						end)
-					end
-				end,
-			},
-			[RepMMod.GetDSSStr("jingle_settings")] = {
-				function(parentId, idx)
-					for jingleId, name in pairs(jingle) do
-						if not RepMMod.saveTable.MusicData.Jingle[name] then
-							RepMMod.saveTable.MusicData.Jingle[name] = 1
-						end
-						ig.AddCheckbox(
-							parentId,
-							MakeElementName(parentId, idx, name:sub(21)),
-							name:sub(21),
-							function(newVal)
-								RepMMod.saveTable.MusicData.Jingle[name] = newVal and 1 or 2
-								RepMMod.StoreSaveData()
-							end,
-							true
-						)
+local function InitMusicSettings()
+	local musicWindow = {}
+	local music, jingle = Mod.GetModdedMusicTable()
 
-						ig.AddCallback(MakeElementName(parentId, idx, name:sub(21)), ImGuiCallback.Render, function()
-							ig.UpdateData(
-								MakeElementName(parentId, idx, name:sub(21)),
-								ImGuiData.Value,
-								RepMMod.saveTable.MusicData.Jingle[name] == 1
-							)
-						end)
-					end
-				end,
-			},
-		},
-	},
-	["Settings"] = {
-		[RepMMod.GetDSSStr("other_settings")] = {
-			function(parentId, id)
-				ig.AddCheckbox(
-					parentId,
-					MakeElementName(parentId, id, RepMMod.GetDSSStr("happy_start")),
-					RepMMod.GetDSSStr("happy_start"),
-					function(newVal)
-						RepMMod.saveTable.MenuData.StartThumbsUp = newVal and 1 or 2
-						RepMMod.StoreSaveData()
-					end,
-					true
-				)
-				ig.AddCallback(MakeElementName(parentId, id, RepMMod.GetDSSStr("happy_start")), ImGuiCallback.Render, function()
-					ig.UpdateData(MakeElementName(parentId, id, RepMMod.GetDSSStr("happy_start")), ImGuiData.Value, RepMMod.saveTable.MenuData.StartThumbsUp == 1)
-				end)
+	table.insert(musicWindow, function(parentId, id)
+		ig.AddButton(parentId, MakeElementName(parentId, "music_enable"), Mod.GetDSSStr("enable_all_music", false), function()
+			local musicData = Mod.GetModdedMusicData()
+			for musicId, name in pairs(music) do
+				musicData.Music[name] = 1
+				Mod.ChangeFloorMusicTo(musicId, Isaac.GetMusicIdByName(name), true)
+			end
+			for jingleId, name in pairs(jingle) do
+				musicData.Jingle[name] = 1
+			end
+			Mod:SaveGameData()
+		end, true)
+		ig.AddButton(
+			parentId,
+			MakeElementName(parentId, "music_disable"),
+			Mod.GetDSSStr("disable_all_music", false),
+			function()
+				local musicData = Mod.GetModdedMusicData()
+				for musicId, name in pairs(music) do
+					musicData.Music[name] = 2
+					Mod.ChangeFloorMusicTo(musicId, Isaac.GetMusicIdByName(name), false)
+				end
+				for jingleId, name in pairs(jingle) do
+					musicData.Jingle[name] = 2
+				end
+				Mod:SaveGameData()
 			end,
-		},
-	},
+			true
+		)
+		ig.AddTabBar(parentId, MakeElementName(parentId, id, "Tab"))
+		ig.AddTab(
+			MakeElementName(parentId, id, "Tab"),
+			MakeElementName(parentId, id, "Tab", "Music"),
+			Mod.GetDSSStr("music_settings", false)
+		)
+		ig.AddTab(
+			MakeElementName(parentId, id, "Tab"),
+			MakeElementName(parentId, id, "Tab", "Jingle"),
+			Mod.GetDSSStr("jingle_settings", false)
+		)
+		for musicId, name in pairs(music) do
+			ig.AddCheckbox(
+				MakeElementName(parentId, id, "Tab", "Music"),
+				MakeElementName(parentId, id, "Tab", "Music", name),
+				name,
+				function(checked)
+					local musicData = Mod.GetModdedMusicData()
+					musicData.Music[name] = checked and 1 or 2
+					Mod.ChangeFloorMusicTo(musicId, Isaac.GetMusicIdByName(name), checked)
+					Mod:SaveGameData()
+				end,
+				true
+			)
+			ig.AddCallback(MakeElementName(parentId, id, "Tab", "Music", name), ImGuiCallback.Render, function()
+				local musicData = Mod.GetModdedMusicData()
+				ig.UpdateData(
+					MakeElementName(parentId, id, "Tab", "Music", name),
+					ImGuiData.Value,
+					musicData.Music[name] == 1
+				)
+			end)
+		end
+		for jingleId, name in pairs(jingle) do
+			ig.AddCheckbox(
+				MakeElementName(parentId, id, "Tab", "Jingle"),
+				MakeElementName(parentId, id, "Tab", "Jingle", name),
+				name,
+				function(checked)
+					local musicData = Mod.GetModdedMusicData()
+					musicData.Jingle[name] = checked and 1 or 2
+					Mod:SaveGameData()
+				end,
+				true
+			)
+			ig.AddCallback(MakeElementName(parentId, id, "Tab", "Jingle", name), ImGuiCallback.Render, function()
+				local musicData = Mod.GetModdedMusicData()
+				ig.UpdateData(
+					MakeElementName(parentId, id, "Tab", "Jingle", name),
+					ImGuiData.Value,
+					musicData.Jingle[name] == 1
+				)
+			end)
+		end
+	end)
+
+	return musicWindow
+end
+
+local function InitOtherSettings()
+	local otherSettingsWindow = {}
+
+	table.insert(otherSettingsWindow, function(parentId, id)
+		ig.AddCheckbox(parentId, MakeElementName(parentId, "happy_start"), Mod.GetDSSStr("happy_start", false), function(checked)
+			Mod:AddDefaultFileSave("StartThumbsUp", checked and 1 or 2)
+			Mod:SaveGameData()
+		end, true)
+	end)
+
+	return otherSettingsWindow
+end
+
+local menus = {
 	["Achievements"] = InitAchievementMenu(),
-	["Debug"] = {
-		
-	},
+	["Music Manager"] = InitMusicSettings(),
+	["Other Settings"] = InitOtherSettings(),
 }
 
 local menuNames = {
-	["Settings"] = "\u{f1de} " .. RepMMod.GetDSSStr("settings"),
-	["Music"] = "Music Settings",
-	["Debug"] = "\u{f085} Debug",
-	["Achievements"] = RepMMod.GetDSSStr("unlock_manager"),
+	["Achievements"] = Mod.GetDSSStr("unlock_manager", false),
+	["Music Manager"] = Mod.GetDSSStr("music_manager", false),
+	["Other Settings"] = Mod.GetDSSStr("other_settings", false),
 }
 
-local function CheckSoundtrackMenu()
-	if SoundtrackSongList then
-		AddSoundtrackToMenu("Repentance Negative")
-	else
-		local function MusicSwitcher(_, id, volumeFade, isFade)
-			local newId = id
-			if
-				MusicTable[id]
-				and Isaac.GetMusicIdByName(MusicTable[id]) ~= -1
-				and RepMMod.saveTable.MusicData.Music[MusicTable[id]] == 1
-			then
-				newId = Isaac.GetMusicIdByName(MusicTable[id])
-			end
-			return newId
-		end
-		RepMMod:AddCallback(ModCallbacks.MC_PRE_MUSIC_PLAY, MusicSwitcher)
-
-		local function JingleSwitcher(_, id)
-			local newId = id
-			if
-				JingleTable[id]
-				and Isaac.GetMusicIdByName(JingleTable[id]) ~= -1
-				and RepMMod.saveTable.MusicData.Jingle[JingleTable[id]] == 1
-			then
-				newId = Isaac.GetMusicIdByName(JingleTable[id])
-			end
-			return newId
-		end
-		RepMMod:AddCallback(ModCallbacks.MC_PRE_MUSIC_PLAY_JINGLE, JingleSwitcher)
-	end
+local function InitDebugMenu()
+	RemoveElement(MakeElementName(root, "Debug"), ImGuiElement.Menu)
+	ig.AddElement(root, MakeElementName(root, "Debug"), ImGuiElement.MenuItem, "\u{f085} Debug")
+	RemoveElement(MakeElementName(root, "Debug", "Window"), ImGuiElement.Window)
+	ig.CreateWindow(MakeElementName(root, "Debug", "Window"), "Debug Window")
+	ig.LinkWindowToElement(MakeElementName(root, "Debug", "Window"), MakeElementName(root, "Debug"))
+	AddElements(root, MakeElementName("Debug", "Window"), InitDebugArgs())
+	ig.SetVisible(MakeElementName(root, "Debug", "Window"), true)
 end
-RepMMod:AddCallback(ModCallbacks.MC_POST_MODS_LOADED, CheckSoundtrackMenu)
 
-local root = "RepMMod"
+local function DeleteDebugMenu()
+	RemoveElement(MakeElementName(root, "Debug"))
+	RemoveElement(MakeElementName(root, "Debug", "Window"), ImGuiElement.Window)
+end
 
 RemoveElement(root, ImGuiElement.Menu)
-ig.CreateMenu(root, "Repnetance-")
+
+ig.CreateMenu(root, "Rep-")
 
 for menuName, menu in pairs(menus) do
 	RemoveElement(MakeElementName(root, menuName), ImGuiElement.Menu)
@@ -410,3 +294,21 @@ for menuName, menu in pairs(menus) do
 	ig.LinkWindowToElement(MakeElementName(root, menuName, "Window"), MakeElementName(root, menuName))
 	AddElements(root, MakeElementName(menuName, "Window"), menu)
 end
+
+local function CheckSoundtrackMenu()
+	if SoundtrackSongList then
+		RemoveElement(MakeElementName(root, "Music Manager"))
+		RemoveElement(MakeElementName(root, "Music Manager", "Window"), ImGuiElement.Window)
+	end
+end
+Mod:AddCallback(ModCallbacks.MC_POST_MODS_LOADED, CheckSoundtrackMenu)
+
+Mod:AddCallback(ModCallbacks.MC_EXECUTE_CMD, function(_, cmd, args)
+	if cmd == "RepMModDebug" then
+		if args:lower() == "enable" then
+			InitDebugMenu()
+		elseif args:lower() == "disable" then
+			DeleteDebugMenu()
+		end
+	end
+end)

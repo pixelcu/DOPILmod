@@ -1,7 +1,7 @@
-local mod = RepMMod
+local Mod = RepMMod
 
 local function onCuriousHeart(_, _, rng, player)
-	--local rng = player:GetCollectibleRNG(mod.RepmTypes.COLLECTIBLE_CURIOUS_HEART)
+	--local rng = player:GetCollectibleRNG(Mod.RepmTypes.COLLECTIBLE_CURIOUS_HEART)
 	local roll = rng:RandomInt(100)
 	local Nearby = Isaac.GetFreeNearPosition(player.Position, 10)
 	if roll < 25 then
@@ -68,4 +68,4 @@ local function onCuriousHeart(_, _, rng, player)
 	}
 end
 
-mod:AddCallback(ModCallbacks.MC_USE_ITEM, onCuriousHeart, mod.RepmTypes.COLLECTIBLE_CURIOUS_HEART) -- , mod.Anm, Items.ID_Anm
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, onCuriousHeart, Mod.RepmTypes.COLLECTIBLE_CURIOUS_HEART) -- , mod.Anm, Items.ID_Anm

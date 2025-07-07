@@ -1,23 +1,24 @@
-local mod = RepMMod
+local Mod = RepMMod
 local game = Game()
-local hiddenItemManager = require("scripts.lib.hidden_item_manager")
+local hiddenItemManager = Mod.hiddenItemManager
+local SaveManager = Mod.saveManager
 
 local function CanDropOtherTrinket(t1, t2, isMatchStick)
-	return t1 == mod.RepmTypes.TRINKET_FROZEN_POLAROID
+	return t1 == Mod.RepmTypes.TRINKET_FROZEN_POLAROID
 	and (t2 == TrinketType.TRINKET_TICK and isMatchStick or t2 ~= TrinketType.TRINKET_TICK)
-	or t2 == mod.RepmTypes.TRINKET_FROZEN_POLAROID
+	or t2 == Mod.RepmTypes.TRINKET_FROZEN_POLAROID
 	and (t1 == TrinketType.TRINKET_TICK and isMatchStick or t1 ~= TrinketType.TRINKET_TICK)
 end
 
 local function stickyTrinket(_, pickup, collider, low)
-	if not collider:ToPlayer() or not collider:ToPlayer():HasTrinket(mod.RepmTypes.TRINKET_FROZEN_POLAROID) then
+	if not collider:ToPlayer() or not collider:ToPlayer():HasTrinket(Mod.RepmTypes.TRINKET_FROZEN_POLAROID) then
 		return nil
 	end
 	local player = collider:ToPlayer()
 	---@cast player EntityPlayer
 	if
-		player:GetTrinket(0) ~= mod.RepmTypes.TRINKET_FROZEN_POLAROID
-		and player:GetTrinket(1) ~= mod.RepmTypes.TRINKET_FROZEN_POLAROID
+		player:GetTrinket(0) ~= Mod.RepmTypes.TRINKET_FROZEN_POLAROID
+		and player:GetTrinket(1) ~= Mod.RepmTypes.TRINKET_FROZEN_POLAROID
 	then
 		return nil
 	end
@@ -26,9 +27,9 @@ local function stickyTrinket(_, pickup, collider, low)
 		local t1 = player:GetTrinket(0)
 		local t2 = player:GetTrinket(1)
 		if t1 ~= 0 and t2 ~= 0 and CanDropOtherTrinket(t1, t2, pickup.SubType == TrinketType.TRINKET_MATCH_STICK)  then
-			player:TryRemoveTrinket(mod.RepmTypes.TRINKET_FROZEN_POLAROID)
+			player:TryRemoveTrinket(Mod.RepmTypes.TRINKET_FROZEN_POLAROID)
 			player:DropTrinket(player.Position, true)
-			player:AddTrinket(mod.RepmTypes.TRINKET_FROZEN_POLAROID, false)
+			player:AddTrinket(Mod.RepmTypes.TRINKET_FROZEN_POLAROID, false)
 			return nil
 		else
 			return pickup:IsShopItem()
@@ -37,7 +38,7 @@ local function stickyTrinket(_, pickup, collider, low)
 		return pickup:IsShopItem()
 	end
 end
-mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, stickyTrinket, PickupVariant.PICKUP_TRINKET)
+Mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, stickyTrinket, PickupVariant.PICKUP_TRINKET)
 
 local function tryOpenDoor_Fro_Polaroid(_, player)
 	--and player:CollidesWithGrid()
@@ -50,20 +51,20 @@ local function tryOpenDoor_Fro_Polaroid(_, player)
 		and player.Position.Y < 151
 		and player.Position:Distance(Vector(320, 150)) <= 26
 		and game:GetLevel():GetCurrentRoomIndex() == 84
-		and player:HasTrinket(mod.RepmTypes.TRINKET_FROZEN_POLAROID)
+		and player:HasTrinket(Mod.RepmTypes.TRINKET_FROZEN_POLAROID)
 	then
 		local door = game:GetRoom():GetDoor(1)
 		if not door:IsOpen() then
 			door:TryUnlock(player, true)
-			player:TryRemoveTrinket(mod.RepmTypes.TRINKET_FROZEN_POLAROID)
-			mod.saveTable.repM_FrostyUnlock = true
+			player:TryRemoveTrinket(Mod.RepmTypes.TRINKET_FROZEN_POLAROID)
+			Mod:RunSave().repM_FrostyUnlock = true
 		end
 	end
 	if
 		player:GetLastActionTriggers() & ActionTriggers.ACTIONTRIGGER_ITEMSDROPPED
 		== ActionTriggers.ACTIONTRIGGER_ITEMSDROPPED
 	then
-		local trinkets = Isaac.FindByType(5, 350, mod.RepmTypes.TRINKET_FROZEN_POLAROID)
+		local trinkets = Isaac.FindByType(5, 350, Mod.RepmTypes.TRINKET_FROZEN_POLAROID)
 		local respawnPolaroid = false
 		for i, trinket in ipairs(trinkets) do
 			if trinket.FrameCount == 0 then
@@ -73,12 +74,12 @@ local function tryOpenDoor_Fro_Polaroid(_, player)
 			end
 		end -- not a great solution but let's see
 		if respawnPolaroid then
-			player:AddTrinket(mod.RepmTypes.TRINKET_FROZEN_POLAROID)
+			player:AddTrinket(Mod.RepmTypes.TRINKET_FROZEN_POLAROID)
 		end
 	end
-    local pdata = mod:GetData(player)
-    if pdata.HoldingFrozenPolaroid ~= player:HasTrinket(mod.RepmTypes.TRINKET_FROZEN_POLAROID) then
-		if player:HasTrinket(mod.RepmTypes.TRINKET_FROZEN_POLAROID) then
+    local pdata = Mod:GetData(player)
+    if pdata.HoldingFrozenPolaroid ~= player:HasTrinket(Mod.RepmTypes.TRINKET_FROZEN_POLAROID) then
+		if player:HasTrinket(Mod.RepmTypes.TRINKET_FROZEN_POLAROID) then
 			hiddenItemManager:Add(player, CollectibleType.COLLECTIBLE_MORE_OPTIONS)
 			hiddenItemManager:Add(player, CollectibleType.COLLECTIBLE_STEAM_SALE)
 			local optionsConfig = Isaac.GetItemConfig():GetCollectible(CollectibleType.COLLECTIBLE_MORE_OPTIONS)
@@ -86,19 +87,19 @@ local function tryOpenDoor_Fro_Polaroid(_, player)
 			player:RemoveCostume(optionsConfig)
 			player:RemoveCostume(steamConfig)
 		elseif
-			pdata.HoldingFrozenPolaroid == nil and player:HasTrinket(mod.RepmTypes.TRINKET_FROZEN_POLAROID) == false
+			pdata.HoldingFrozenPolaroid == nil and player:HasTrinket(Mod.RepmTypes.TRINKET_FROZEN_POLAROID) == false
 		then
 			pdata.HoldingFrozenPolaroid = false -- redundant, i know
 		else
 			hiddenItemManager:Remove(player, CollectibleType.COLLECTIBLE_MORE_OPTIONS, hiddenItemManager.kDefaultGroup)
 			hiddenItemManager:Remove(player, CollectibleType.COLLECTIBLE_STEAM_SALE, hiddenItemManager.kDefaultGroup)
 		end
-		pdata.HoldingFrozenPolaroid = player:HasTrinket(mod.RepmTypes.TRINKET_FROZEN_POLAROID)
+		pdata.HoldingFrozenPolaroid = player:HasTrinket(Mod.RepmTypes.TRINKET_FROZEN_POLAROID)
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, tryOpenDoor_Fro_Polaroid)
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, tryOpenDoor_Fro_Polaroid)
 --5 350 195
-function mod:DebugText()
+function Mod:DebugText()
 	local player = Isaac.GetPlayer(0) --this one is OK
 	local coords = (player.Position):Distance(Vector(320, 150))
 	--local coords = player.Position
@@ -106,7 +107,7 @@ function mod:DebugText()
 	--26
 	Isaac.RenderText(debug_str, 100, 60, 1, 1, 1, 255)
 end
---mod:AddCallback(ModCallbacks.MC_POST_RENDER, mod.DebugText)
+--Mod:AddCallback(ModCallbacks.MC_POST_RENDER, Mod.DebugText)
 
 local BasegameSegmentedEnemies = {
 	[35 .. " " .. 0] = true, -- Mr. Maw (body)
@@ -147,7 +148,7 @@ local BasegameSegmentedEnemies = {
 	[918 .. " " .. 0] = true, -- Turdlet
 }
 
-function mod:isBasegameSegmented(entity)
+function Mod:isBasegameSegmented(entity)
 	return BasegameSegmentedEnemies[entity.Type]
 		or BasegameSegmentedEnemies[entity.Type .. " " .. entity.Variant]
 		or BasegameSegmentedEnemies[entity.Type .. " " .. entity.Variant .. " " .. entity.SubType]
@@ -156,30 +157,30 @@ end
 local function checkEntityForChampionizing(entity)
 	return not entity:IsChampion()
 		and not entity:IsBoss()
-		and mod.RNG:RandomInt(8) == 1
-		and not mod:isBasegameSegmented(entity)
+		and Mod.RNG:RandomInt(8) == 1
+		and not Mod:isBasegameSegmented(entity)
 		and entity.Type ~= EntityType.ENTITY_FIREPLACE
 end
 
 local function OnEntitySpawn_Polar(_, npc)
-	if PlayerManager.AnyoneHasTrinket ~= mod.RepmTypes.TRINKET_FROZEN_POLAROID then
+	if PlayerManager.AnyoneHasTrinket ~= Mod.RepmTypes.TRINKET_FROZEN_POLAROID then
 		if checkEntityForChampionizing(npc) == true then
-			npc:MakeChampion(mod.RNG:GetSeed())
+			npc:MakeChampion(Mod.RNG:GetSeed())
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, OnEntitySpawn_Polar)
+Mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, OnEntitySpawn_Polar)
 
 local function OnTakeHit_Polar(_, entity, amount, damageflags, source, countdownframes)
 	local player = entity:ToPlayer()
 	if player == nil then
 		return
 	end
-	local data = mod:repmGetPData(player)
-	if amount == 1 and player:HasTrinket(mod.RepmTypes.TRINKET_FROZEN_POLAROID) and not data.inPolaroidDamage then
+	local data = Mod:RunSave(player)
+	if amount == 1 and player:HasTrinket(Mod.RepmTypes.TRINKET_FROZEN_POLAROID) and not data.inPolaroidDamage then
 		data.inPolaroidDamage = true
 		return { Damage = amount + 1, DamageFlags = damageflags, DamageCountdown = countdownframes }
 	end
 	data.inPolaroidDamage = nil
 end
-mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, OnTakeHit_Polar, EntityType.ENTITY_PLAYER)
+Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, OnTakeHit_Polar, EntityType.ENTITY_PLAYER)

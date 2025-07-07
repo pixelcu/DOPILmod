@@ -1,6 +1,6 @@
-local mod = RepMMod
-local game = Game()
+local Mod = RepMMod
 local sfx = SFXManager()
+local SaveManager = Mod.saveManager
 ----------------------------------------------------------
 --FOUNTAIN
 ----------------------------------------------------------
@@ -13,7 +13,7 @@ local function AddCondition(funcCond, funcDo)
 end
 
 local function AddTempCondition(slot, funcCond, funcDo)
-	local data = mod:GetData(slot)
+	local data = Mod:GetData(slot)
 	data.TempCondSlot = {}
 	table.insert(data.TempCondSlot, { Condition = funcCond, Function = funcDo })
 end
@@ -51,7 +51,7 @@ end)
 local function FountainInit(_, slot)
 	slot:SetState(1)
 end
-mod:AddCallback(ModCallbacks.MC_POST_SLOT_INIT, FountainInit, mod.RepmTypes.SLOT_FOUNTAIN)
+Mod:AddCallback(ModCallbacks.MC_POST_SLOT_INIT, FountainInit, Mod.RepmTypes.SLOT_FOUNTAIN)
 
 ---@param slot EntitySlot
 local function FountainUpdate(_, slot)
@@ -60,7 +60,7 @@ local function FountainUpdate(_, slot)
 			cond.Function(slot)
 		end
 	end
-	local data = mod:GetData(slot)
+	local data = Mod:GetData(slot)
 	data.TempCondSlot = data.TempCondSlot or {}
 	for i, cond in ripairs(data.TempCondSlot) do
 		if cond.Condition(slot) then
@@ -69,12 +69,12 @@ local function FountainUpdate(_, slot)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_SLOT_UPDATE, FountainUpdate, mod.RepmTypes.SLOT_FOUNTAIN)
+Mod:AddCallback(ModCallbacks.MC_POST_SLOT_UPDATE, FountainUpdate, Mod.RepmTypes.SLOT_FOUNTAIN)
 
 local function FountainSoundUpdate()
 	local nearestFountainDist
 	local doPlay = false
-	for i, fountain in ipairs(Isaac.FindByType(6, mod.RepmTypes.SLOT_FOUNTAIN)) do
+	for i, fountain in ipairs(Isaac.FindByType(6, Mod.RepmTypes.SLOT_FOUNTAIN)) do
 		---@diagnostic disable-next-line
 		fountain = fountain:ToSlot()
 		---@cast fountain EntitySlot
@@ -92,15 +92,15 @@ local function FountainSoundUpdate()
 		end
 	end
 	if doPlay then
-		if not sfx:IsPlaying(mod.RepmTypes.SFX_FOUNTAIN) then
-			sfx:Play(mod.RepmTypes.SFX_FOUNTAIN, 1, 0, true)
+		if not sfx:IsPlaying(Mod.RepmTypes.SFX_FOUNTAIN) then
+			sfx:Play(Mod.RepmTypes.SFX_FOUNTAIN, 1, 0, true)
 		end
-		sfx:AdjustVolume(mod.RepmTypes.SFX_FOUNTAIN, math.min(1, math.max(0, 1.15 - nearestFountainDist / 100)))
-	elseif sfx:IsPlaying(mod.RepmTypes.SFX_FOUNTAIN) then
-		sfx:Stop(mod.RepmTypes.SFX_FOUNTAIN)
+		sfx:AdjustVolume(Mod.RepmTypes.SFX_FOUNTAIN, math.min(1, math.max(0, 1.15 - nearestFountainDist / 100)))
+	elseif sfx:IsPlaying(Mod.RepmTypes.SFX_FOUNTAIN) then
+		sfx:Stop(Mod.RepmTypes.SFX_FOUNTAIN)
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_RENDER, FountainSoundUpdate)
+Mod:AddCallback(ModCallbacks.MC_POST_RENDER, FountainSoundUpdate)
 
 ---@param fount EntitySlot
 ---@param ent Entity
@@ -127,14 +127,14 @@ local function donationFount(_, fount, ent)
 					local out = weight:PickOutcome(slot:GetDropRNG())
 					local outs = {
 						[1] = function()
-							local pdata = mod:repmGetPData(player)
+							local pdata = Mod:RunSave(player)
 							pdata.repMBonusLuck = (pdata.repMBonusLuck or 0) + 0.5
 							player:AddCacheFlags(CacheFlag.CACHE_LUCK, true)
 							player:AnimateHappy()
 							sfx:Play(SoundEffect.SOUND_THUMBSUP, 2)
 						end,
 						[2] = function() 
-							local pdata = mod:repmGetPData(player)
+							local pdata = Mod:RunSave(player)
 							pdata.repMBonusDamage = (pdata.repMBonusDamage or 0) + 0.5
 							player:AddCacheFlags(CacheFlag.CACHE_DAMAGE, true)
 							player:AnimateHappy()
@@ -165,24 +165,24 @@ local function donationFount(_, fount, ent)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_PRE_SLOT_COLLISION, donationFount, mod.RepmTypes.SLOT_FOUNTAIN)
+Mod:AddCallback(ModCallbacks.MC_PRE_SLOT_COLLISION, donationFount, Mod.RepmTypes.SLOT_FOUNTAIN)
 
 local function updateCache_Fountain(_, player, cacheFlag)
 	if cacheFlag == CacheFlag.CACHE_DAMAGE then
-		player.Damage = player.Damage + (mod:repmGetPData(player).repMBonusDamage or 0)
+		player.Damage = player.Damage + (Mod:RunSave(player).repMBonusDamage or 0)
 	elseif cacheFlag == CacheFlag.CACHE_LUCK then
-		player.Luck = player.Luck + (mod:repmGetPData(player).repMBonusLuck or 0)
+		player.Luck = player.Luck + (Mod:RunSave(player).repMBonusLuck or 0)
 	end
 end
-mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, updateCache_Fountain)
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, updateCache_Fountain)
 
 local function spawnFountBehavior(_, confess)
 	local rng = confess:GetDropRNG()
 	if rng:RandomInt(100) + 1 <= 50 then
 		local pos = confess.Position
 		confess:Remove()
-		local fountain = Isaac.Spawn(6, mod.RepmTypes.SLOT_FOUNTAIN, 0, pos, Vector.Zero, nil)
+		local fountain = Isaac.Spawn(6, Mod.RepmTypes.SLOT_FOUNTAIN, 0, pos, Vector.Zero, nil)
 		fountain:ClearEntityFlags(EntityFlag.FLAG_APPEAR)
 	end
 end
-mod:AddCallback("REPM_SLOT_INIT_FIRST", spawnFountBehavior, SlotVariant.CONFESSIONAL)
+Mod:AddCallback("REPM_SLOT_INIT_FIRST", spawnFountBehavior, SlotVariant.CONFESSIONAL)

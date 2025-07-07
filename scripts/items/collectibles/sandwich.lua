@@ -1,12 +1,12 @@
-local mod = RepMMod
+local Mod = RepMMod
 
 local function updateCache_Buter(_, player, cacheFlag)
-	if player:HasCollectible(mod.RepmTypes.COLLECTIBLE_SANDWICH) then
+	if player:HasCollectible(Mod.RepmTypes.COLLECTIBLE_SANDWICH) then
 		if cacheFlag == CacheFlag.CACHE_DAMAGE then
 			player.Damage = player.Damage + 0.5
 		end
 		if cacheFlag == CacheFlag.CACHE_FIREDELAY then
-			player.MaxFireDelay = mod.TearsUp(player.MaxFireDelay, 0.35)
+			player.MaxFireDelay = Mod.TearsUp(player.MaxFireDelay, 0.35)
 		end
 		if cacheFlag == CacheFlag.CACHE_TEARFLAG then
 			if math.random(1, 5) == 4 then
@@ -18,4 +18,4 @@ local function updateCache_Buter(_, player, cacheFlag)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, updateCache_Buter)
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, updateCache_Buter)

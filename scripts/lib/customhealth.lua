@@ -1,25 +1,26 @@
-local mod = RepMMod
+local Mod = RepMMod
 local game = Game()
 local sfx = SFXManager()
+local SaveManager = Mod.saveManager
 
 local HeartKey = {
-	[mod.RepmTypes.PICKUP_HEART_FROZEN] = "HEART_ICE",
-	[mod.RepmTypes.PICKUP_HEART_FROZEN_HALF] = "HEART_ICE",
+	[Mod.RepmTypes.PICKUP_HEART_FROZEN] = "HEART_ICE",
+	[Mod.RepmTypes.PICKUP_HEART_FROZEN_HALF] = "HEART_ICE",
 }
 
 local HeartHPAdd = {
-	[mod.RepmTypes.PICKUP_HEART_FROZEN] = 2,
-	[mod.RepmTypes.PICKUP_HEART_FROZEN_HALF] = 1,
+	[Mod.RepmTypes.PICKUP_HEART_FROZEN] = 2,
+	[Mod.RepmTypes.PICKUP_HEART_FROZEN_HALF] = 1,
 }
 
 local HeartPickupSound = {
-	[mod.RepmTypes.PICKUP_HEART_FROZEN] = SoundEffect.SOUND_FREEZE,
-	[mod.RepmTypes.PICKUP_HEART_FROZEN_HALF] = SoundEffect.SOUND_FREEZE,
+	[Mod.RepmTypes.PICKUP_HEART_FROZEN] = SoundEffect.SOUND_FREEZE,
+	[Mod.RepmTypes.PICKUP_HEART_FROZEN_HALF] = SoundEffect.SOUND_FREEZE,
 }
 
 local HeartNumFlies = {
-	[mod.RepmTypes.PICKUP_HEART_FROZEN] = 4,
-	[mod.RepmTypes.PICKUP_HEART_FROZEN_HALF] = 2,
+	[Mod.RepmTypes.PICKUP_HEART_FROZEN] = 4,
+	[Mod.RepmTypes.PICKUP_HEART_FROZEN_HALF] = 2,
 }
 
 --------------------
@@ -90,7 +91,7 @@ local function TryRemoveStoreCredit(player)
 		if player:HasTrinket(TrinketType.TRINKET_STORE_CREDIT) then
 			RemoveStoreCreditFromPlayer(player)
 		else
-			for _,player in ipairs(mod.Filter(mod.GetPlayers(), function(_, player) return player:HasTrinket(TrinketType.TRINKET_STORE_CREDIT) end)) do
+			for _,player in ipairs(Mod.Filter(Mod.GetPlayers(), function(_, player) return player:HasTrinket(TrinketType.TRINKET_STORE_CREDIT) end)) do
 				RemoveStoreCreditFromPlayer(player)
 				return
 			end
@@ -98,25 +99,27 @@ local function TryRemoveStoreCredit(player)
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_USE_CARD, function(_, card, _, _)
+--[[
+Mod:AddCallback(ModCallbacks.MC_USE_CARD, function(_, card, _, _)
 	if isSusCard(card) then
 		cancelTaintedMorph()
 	end
 end)
 
-mod:AddCallback(ModCallbacks.MC_USE_ITEM, function(_, _, _, _, _, _)
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function(_, _, _, _, _, _)
 	cancelTaintedMorph()
 end, CollectibleType.COLLECTIBLE_THE_JAR)
 
-mod:AddCallback(ModCallbacks.MC_USE_PILL, function(_, _)
+Mod:AddCallback(ModCallbacks.MC_USE_PILL, function(_, _)
 	cancelTaintedMorph()
 end, PillEffect.PILLEFFECT_HEMATEMESIS)
-
+]]
 ------------------------------------------------
 -- HANDLE DUPLICATING HEARTS WITH JERA, DIPLOPIA
 -- OR CROOKED PENNY, TO MAKE SURE THAT ALL
 -- ORIGINAL HEARTS ARE COPIED 1:1
 
+--[[
 local function handleHeartsDupe()
 	-- iterate through all pickups that have FrameCount of 0 (they've just spawned)
 	-- find an older pickup with the same InitSeed
@@ -134,18 +137,18 @@ local function handleHeartsDupe()
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_USE_ITEM, function(_, _, _, _, _, _)
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function(_, _, _, _, _, _)
 	handleHeartsDupe()
 end, CollectibleType.COLLECTIBLE_DIPLOPIA)
 
-mod:AddCallback(ModCallbacks.MC_USE_ITEM, function(_, _, _, _, _, _)
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function(_, _, _, _, _, _)
 	handleHeartsDupe()
 end, CollectibleType.COLLECTIBLE_CROOKED_PENNY)
 
-mod:AddCallback(ModCallbacks.MC_USE_CARD, function(_, _, _)
+Mod:AddCallback(ModCallbacks.MC_USE_CARD, function(_, _, _)
 	handleHeartsDupe()
 end, Card.RUNE_JERA)
-
+]]
 -------
 -- CORE
 
@@ -153,7 +156,7 @@ local function taintedMorph(heartPickup, taintedSubtype)
 	heartPickup:Morph(5, 10, taintedSubtype, true, true, true)
 end
 
---[[mod:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, function(_, pickup)
+--[[Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, function(_, pickup)
 	if
 		not pickup:GetData().noTaintedMorph
 		and pickup.Price == 0
@@ -164,8 +167,8 @@ end
 		and pickup.FrameCount == 1
 	then
 		local isTaintFrost = false
-		mod:AnyPlayerDo(function(player)
-			if player:GetPlayerType() == mod.RepmTypes.CHARACTER_FROSTY_B then
+		Mod:AnyPlayerDo(function(player)
+			if player:GetPlayerType() == Mod.RepmTypes.CHARACTER_FROSTY_B then
 				isTaintFrost = true
 			end
 		end)
@@ -173,10 +176,10 @@ end
 		local roll = rng:RandomFloat() * 1000
 		local subtype = pickup.SubType
 		local baseChance
-		if subtype == HeartSubType.HEART_SOUL and Isaac.GetPersistentGameData():Unlocked(mod.RepmAchivements.FROZEN_HEARTS.ID) then
+		if subtype == HeartSubType.HEART_SOUL and Isaac.GetPersistentGameData():Unlocked(Mod.RepmAchivements.FROZEN_HEARTS.ID) then
 			baseChance = 200
 			if roll < baseChance then
-				taintedMorph(pickup, mod.RepmTypes.PICKUP_HEART_FROZEN)
+				taintedMorph(pickup, Mod.RepmTypes.PICKUP_HEART_FROZEN)
 			end
 		elseif
 			(
@@ -186,12 +189,12 @@ end
 				or subtype == HeartSubType.HEART_SCARED
 				or subtype == HeartSubType.HEART_HALF
 			)
-			and Isaac.GetPersistentGameData():Unlocked(mod.RepmAchivements.FROZEN_HEARTS.ID)
+			and Isaac.GetPersistentGameData():Unlocked(Mod.RepmAchivements.FROZEN_HEARTS.ID)
 			and isTaintFrost
 		then
 			baseChance = 200
 			if roll < baseChance or subtype == HeartSubType.HEART_SOUL then
-				taintedMorph(pickup, mod.RepmTypes.PICKUP_HEART_FROZEN)
+				taintedMorph(pickup, Mod.RepmTypes.PICKUP_HEART_FROZEN)
 			end
 		end
 	end
@@ -213,8 +216,8 @@ CustomHealthAPI.Library.RegisterSoulHealth("HEART_ICE", {
 	MaxHP = 2,
 	PrioritizeHealing = true,
 	PickupEntities = {
-		{ ID = EntityType.ENTITY_PICKUP, Var = PickupVariant.PICKUP_HEART, Sub = mod.RepmTypes.PICKUP_HEART_FROZEN },
-		{ ID = EntityType.ENTITY_PICKUP, Var = PickupVariant.PICKUP_HEART, Sub = mod.RepmTypes.PICKUP_HEART_FROZEN_HALF },
+		{ ID = EntityType.ENTITY_PICKUP, Var = PickupVariant.PICKUP_HEART, Sub = Mod.RepmTypes.PICKUP_HEART_FROZEN },
+		{ ID = EntityType.ENTITY_PICKUP, Var = PickupVariant.PICKUP_HEART, Sub = Mod.RepmTypes.PICKUP_HEART_FROZEN_HALF },
 	},
 	SumptoriumSubType = 210,
 	SumptoriumSplatColor = Color(1.00, 1.00, 1.00, 1.00, 0.00, 0.00, 0.00),
@@ -235,7 +238,7 @@ CustomHealthAPI.Library.AddCallback(
 	0,
 	function(player, flags, key, hpDamaged, wasDepleted, wasLastDamaged)
 		if key == "HEART_ICE" then
-			local pdata = mod:repmGetPData(player)
+			local pdata = Mod:RunSave(player)
 			pdata.isIceheartCrept = true
 			for i = 0, 360, 45 do
 				local angle = Vector.FromAngle(i) * 8
@@ -250,7 +253,7 @@ CustomHealthAPI.Library.AddCallback(
 )
 
 local function whenSpawningCreep_IceHeart(_, player)
-	local pdata = mod:repmGetPData(player)
+	local pdata = Mod:RunSave(player)
 	if pdata.isIceheartCrept and game:GetFrameCount() % 3 == 0 then
 		local creep = Isaac.Spawn(1000, 54, 0, player.Position, Vector.Zero, player):ToEffect()
 		creep.Scale = 0.65
@@ -258,28 +261,28 @@ local function whenSpawningCreep_IceHeart(_, player)
 		creep:Update()
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, whenSpawningCreep_IceHeart)
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, whenSpawningCreep_IceHeart)
 
 local function disableCreepRoom()
-	mod:AnyPlayerDo(function(player)
-		local pdata = mod:repmGetPData(player)
+	Mod:AnyPlayerDo(function(player)
+		local pdata = Mod:RunSave(player)
 		pdata.isIceheartCrept = nil
 	end)
 end
-mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, disableCreepRoom)
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, disableCreepRoom)
 
 --------------------------------------------------------------------
 
 -------------
 -- SUMPTORIUM
 -------------
-mod:AddCallback(ModCallbacks.MC_POST_TEAR_INIT, function(_, Tear)
+Mod:AddCallback(ModCallbacks.MC_POST_TEAR_INIT, function(_, Tear)
 	if Tear.SpawnerEntity and Tear.SpawnerEntity.Type == EntityType.ENTITY_PLAYER then
 		local familiars = Isaac.FindInRadius(Tear.Position - Tear.Velocity, 0.0001, EntityPartition.FAMILIAR)
 
 		for _, familiar in ipairs(familiars) do
 			if familiar.Variant == FamiliarVariant.BLOOD_BABY then
-				--if familiar.SubType == mod.CustomFamiliars.ClotSubtype.DAUNTLESS then
+				--if familiar.SubType == Mod.CustomFamiliars.ClotSubtype.DAUNTLESS then
 				--     Tear:GetData().isDauntlessClot = true
 				--end
 			end
@@ -287,14 +290,14 @@ mod:AddCallback(ModCallbacks.MC_POST_TEAR_INIT, function(_, Tear)
 	elseif Tear.SpawnerEntity and Tear.SpawnerEntity.Type == EntityType.ENTITY_FAMILIAR then
 		local familiar = Tear.SpawnerEntity:ToFamiliar()
 		if familiar.Variant == FamiliarVariant.BLOOD_BABY then
-			--if familiar.SubType == mod.CustomFamiliars.ClotSubtype.DAUNTLESS then
+			--if familiar.SubType == Mod.CustomFamiliars.ClotSubtype.DAUNTLESS then
 			--    Tear:GetData().isDauntlessClot = true
 			--end
 		end
 	end
 end)
 
-mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, function(_, Tear)
+Mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, function(_, Tear)
 	if Tear.FrameCount ~= 1 then
 		return
 	end
@@ -304,7 +307,7 @@ end)
 -- PICKING HEARTS UP
 -- HEARTS UPDATE
 --------------------
-mod:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, function(_, pickup)
+Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, function(_, pickup)
 	if pickup.SubType < 84 or pickup.SubType > 100 then
 		return
 	end
@@ -320,20 +323,18 @@ end, PickupVariant.PICKUP_HEART)
 
 ---@param pickup EntityPickup
 ---@param collider EntityPlayer
-mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, function(_, pickup, collider)
+Mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, function(_, pickup, collider)
 	--print(pickup.SubType)
-	if pickup.SubType ~= mod.RepmTypes.PICKUP_HEART_FROZEN and pickup.SubType ~= mod.RepmTypes.PICKUP_HEART_FROZEN_HALF then
+	if pickup.SubType ~= Mod.RepmTypes.PICKUP_HEART_FROZEN and pickup.SubType ~= Mod.RepmTypes.PICKUP_HEART_FROZEN_HALF then
 		return
 	end
 	if collider.Type ~= EntityType.ENTITY_PLAYER then
 		return
 	end
-	local collider = collider:ToPlayer()
-	local bowMultiplier = collider:HasCollectible(CollectibleType.COLLECTIBLE_MAGGYS_BOW) and 2 or 1
-	local hasApple = collider:HasTrinket(TrinketType.TRINKET_APPLE_OF_SODOM)
+	local player = collider:ToPlayer()
 	local sprite = pickup:GetSprite()
 
-	if pickup:IsShopItem() and (pickup.Price > collider:GetNumCoins() or not collider:IsExtraAnimationFinished()) then
+	if pickup:IsShopItem() and (pickup.Price > player:GetNumCoins() or not player:IsExtraAnimationFinished()) then
 		return true
 	elseif sprite:IsPlaying("Collect") then
 		return true
@@ -341,19 +342,19 @@ mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, function(_, pickup, collid
 		return not sprite:IsPlaying("Idle")
 	elseif sprite:WasEventTriggered("DropSound") or sprite:IsPlaying("Idle") then
 		if pickup.Price == PickupPrice.PRICE_SPIKES then
-			local tookDamage = collider:TakeDamage(2.0, 268435584, EntityRef(nil), 30)
+			local tookDamage = player:TakeDamage(2.0, 268435584, EntityRef(nil), 30)
 			if not tookDamage then
 				return pickup:IsShopItem()
 			end
 		end
 
 		-- SOUL HEALTH
-		if CustomHealthAPI.Library.CanPickKey(collider, HeartKey[pickup.SubType]) then
-			CustomHealthAPI.Library.AddHealth(collider, HeartKey[pickup.SubType], HeartHPAdd[pickup.SubType], true)
+		if CustomHealthAPI.Library.CanPickKey(player, HeartKey[pickup.SubType]) then
+			CustomHealthAPI.Library.AddHealth(player, HeartKey[pickup.SubType], HeartHPAdd[pickup.SubType], true)
 			sfx:Play(HeartPickupSound[pickup.SubType], 1, 0, false, 1.0)
-			if collider:ToPlayer():HasCollectible(mod.RepmTypes.COLLECTIBLE_HOLY_LIGHTER) then
-				collider:ToPlayer():SetActiveCharge(
-					math.min(12, collider:ToPlayer():GetActiveCharge(ActiveSlot.SLOT_POCKET) + 2),
+			if player:HasCollectible(Mod.RepmTypes.COLLECTIBLE_HOLY_LIGHTER) then
+				player:SetActiveCharge(
+					math.min(12, player:GetActiveCharge(ActiveSlot.SLOT_POCKET) + 2),
 					ActiveSlot.SLOT_POCKET
 				)
 				sfx:Play(SoundEffect.SOUND_BATTERYCHARGE)
@@ -381,15 +382,14 @@ mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, function(_, pickup, collid
 			holdSprite:Load(pickupSprite:GetFilename(), true)
 			holdSprite:Play(pickupSprite:GetAnimation(), true)
 			holdSprite:SetFrame(pickupSprite:GetFrame())
-			collider:AnimatePickup(holdSprite)
+			player:AnimatePickup(holdSprite)
 
 			if pickup.Price > 0 then
-				collider:AddCoins(-1 * pickup.Price)
+				player:AddCoins(-1 * pickup.Price)
 			end
 
 			CustomHealthAPI.Library.TriggerRestock(pickup)
-			TryRemoveStoreCredit(collider)
-
+			TryRemoveStoreCredit(player)
 			pickup.EntityCollisionClass = EntityCollisionClass.ENTCOLL_NONE
 			pickup:Remove()
 		else
@@ -409,22 +409,61 @@ mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, function(_, pickup, collid
 end, PickupVariant.PICKUP_HEART)
 
 ---@param pickup EntityPickup
-local function FrozenHeartSpawn(_, pickup)
-	if Isaac.GetPersistentGameData():Unlocked(mod.RepmAchivements.FROZEN_HEARTS.ID) and not pickup:GetData().noTaintedMorph then
+local function FrozenHeartSpawnOld(_, pickup)
+	if Isaac.GetPersistentGameData():Unlocked(Mod.RepmAchivements.FROZEN_HEARTS.ID) and not pickup:GetData().noTaintedMorph then
 		local subtype = {
-			[HeartSubType.HEART_HALF_SOUL] = mod.RepmTypes.PICKUP_HEART_FROZEN_HALF,
-			[HeartSubType.HEART_SOUL] = mod.RepmTypes.PICKUP_HEART_FROZEN,
+			[HeartSubType.HEART_HALF_SOUL] = Mod.RepmTypes.PICKUP_HEART_FROZEN_HALF,
+			[HeartSubType.HEART_SOUL] = Mod.RepmTypes.PICKUP_HEART_FROZEN,
 		}
-		if PlayerManager.AnyoneIsPlayerType(mod.RepmTypes.CHARACTER_FROSTY_B) or PlayerManager.AnyoneIsPlayerType(mod.RepmTypes.CHARACTER_FROSTY_C) then
-			subtype[HeartSubType.HEART_FULL] = mod.RepmTypes.PICKUP_HEART_FROZEN
-			subtype[HeartSubType.HEART_DOUBLEPACK] = mod.RepmTypes.PICKUP_HEART_FROZEN
-			subtype[HeartSubType.HEART_SCARED] = mod.RepmTypes.PICKUP_HEART_FROZEN
-			subtype[HeartSubType.HEART_HALF] = mod.RepmTypes.PICKUP_HEART_FROZEN_HALF
+		if PlayerManager.AnyoneIsPlayerType(Mod.RepmTypes.CHARACTER_FROSTY_B) or PlayerManager.AnyoneIsPlayerType(Mod.RepmTypes.CHARACTER_FROSTY_C) then
+			subtype[HeartSubType.HEART_FULL] = Mod.RepmTypes.PICKUP_HEART_FROZEN
+			subtype[HeartSubType.HEART_DOUBLEPACK] = Mod.RepmTypes.PICKUP_HEART_FROZEN
+			subtype[HeartSubType.HEART_SCARED] = Mod.RepmTypes.PICKUP_HEART_FROZEN
+			subtype[HeartSubType.HEART_HALF] = Mod.RepmTypes.PICKUP_HEART_FROZEN_HALF
 		end
 		if subtype[pickup.SubType] and pickup:GetDropRNG():RandomFloat() <= 0.20 then
 			pickup:Morph(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, subtype[pickup.SubType], true, true)
 		end
 	end
 end
-mod:AddCallback("REPM_PICKUP_INIT_FIRST", FrozenHeartSpawn, PickupVariant.PICKUP_HEART)
+--Mod:AddCallback("REPM_PICKUP_INIT_FIRST", FrozenHeartSpawn, PickupVariant.PICKUP_HEART)
 
+
+---@param ptype EntityType | integer
+---@param variant number | PickupVariant
+---@param subtype number | HeartSubType
+---@param position Vector
+---@param velocity Vector
+---@param spawner Entity
+---@param seed integer
+---@return table
+local function FrozenHeartSpawn(_, ptype, variant, subtype, position, velocity, spawner, seed)
+	if Isaac.GetPersistentGameData():Unlocked(Mod.RepmAchivements.FROZEN_HEARTS.ID)
+	and ptype == EntityType.ENTITY_PICKUP and variant == PickupVariant.PICKUP_HEART
+	and (type(spawner) == "nil") then
+		local newsubtype = {
+			[HeartSubType.HEART_HALF_SOUL] = Mod.RepmTypes.PICKUP_HEART_FROZEN_HALF,
+			[HeartSubType.HEART_SOUL] = Mod.RepmTypes.PICKUP_HEART_FROZEN,
+		}
+		if PlayerManager.AnyoneIsPlayerType(Mod.RepmTypes.CHARACTER_FROSTY_B) or PlayerManager.AnyoneIsPlayerType(Mod.RepmTypes.CHARACTER_FROSTY_C) then
+			newsubtype[HeartSubType.HEART_FULL] = Mod.RepmTypes.PICKUP_HEART_FROZEN
+			newsubtype[HeartSubType.HEART_DOUBLEPACK] = Mod.RepmTypes.PICKUP_HEART_FROZEN
+			newsubtype[HeartSubType.HEART_SCARED] = Mod.RepmTypes.PICKUP_HEART_FROZEN
+			newsubtype[HeartSubType.HEART_HALF] = Mod.RepmTypes.PICKUP_HEART_FROZEN_HALF
+		end
+		local pickedSubType = newsubtype[subtype]
+		local chance = 0.2
+		local rng = RNG(seed)
+		if subtype == 0 then
+			local chooser = WeightedOutcomePicker()
+			chooser:AddOutcomeWeight(Mod.RepmTypes.PICKUP_HEART_FROZEN, 50)
+			chooser:AddOutcomeWeight(Mod.RepmTypes.PICKUP_HEART_FROZEN_HALF, 50)
+			pickedSubType = chooser:PickOutcome(rng)
+			chance = 0.1
+		end
+		if pickedSubType and rng:RandomFloat() <= chance then
+			return {ptype, variant, pickedSubType, seed}
+		end
+	end
+end
+Mod:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, FrozenHeartSpawn)

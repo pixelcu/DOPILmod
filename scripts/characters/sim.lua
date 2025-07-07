@@ -1,4 +1,5 @@
-local mod = RepMMod
+local Mod = RepMMod
+local SaveManager = Mod.saveManager
 
 local AxeHudChargeBar = include("scripts.lib.chargebar")("gfx/chargebar_axe.anm2", true)
 local framesToCharge = 235
@@ -18,7 +19,7 @@ local Sim = { -- Change Sim everywhere to match your character. No spaces!
 }
 
 local function onCache(_, player, cacheFlag) -- I do mean everywhere!
-	if player:GetPlayerType() == mod.RepmTypes.CHARACTER_SIM then -- Especially here!
+	if player:GetPlayerType() == Mod.RepmTypes.CHARACTER_SIM then -- Especially here!
 		if cacheFlag == CacheFlag.CACHE_RANGE then
 			player.TearHeight = player.TearHeight - Sim.TEARHEIGHT
 			player.TearFallingSpeed = player.TearFallingSpeed + Sim.TEARFALLINGSPEED
@@ -32,24 +33,24 @@ local function onCache(_, player, cacheFlag) -- I do mean everywhere!
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, onCache)
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, onCache)
 
 local function renderSimCharge(_, player)
-	local data = mod:GetData(player)
-	if player:GetPlayerType() == mod.RepmTypes.CHARACTER_SIM then
+	local data = Mod:GetData(player)
+	if player:GetPlayerType() == Mod.RepmTypes.CHARACTER_SIM then
 		AxeHudChargeBar:SetCharge(data.RepM_SimChargeFrames or 0, framesToCharge)
 		AxeHudChargeBar:Render(Isaac.WorldToScreen(player.Position) + axeRenderedPosition)
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_PLAYER_RENDER, renderSimCharge)
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_RENDER, renderSimCharge)
 
 local function GiveAxeOnStart(_, player)
-	if not Isaac.GetPersistentGameData():Unlocked(mod.RepmAchivements.SIM_DELIRIUM.ID) then
-		player:RemoveCollectible(mod.RepmTypes.COLLECTIBLE_AXE_ACTIVE)
+	if not Isaac.GetPersistentGameData():Unlocked(Mod.RepmAchivements.SIM_DELIRIUM.ID) then
+		player:RemoveCollectible(Mod.RepmTypes.COLLECTIBLE_AXE_ACTIVE)
 	end
 end
 
---mod:AddCallback(ModCallbacks.MC_PLAYER_INIT_POST_LEVEL_INIT_STATS, GiveAxeOnStart, mod.RepmTypes.CHARACTER_SIM)
+--Mod:AddCallback(ModCallbacks.MC_PLAYER_INIT_POST_LEVEL_INIT_STATS, GiveAxeOnStart, Mod.RepmTypes.CHARACTER_SIM)
 
 local function onUpdateAxeDrops(_, axe)
 	if axe.SubType == 1 then
@@ -58,17 +59,18 @@ local function onUpdateAxeDrops(_, axe)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, onUpdateAxeDrops, mod.RepmTypes.PICKUP_AXE)
+Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, onUpdateAxeDrops, Mod.RepmTypes.PICKUP_AXE)
 
 local function OnCollideAxe(_, entity, collider, Low)
 	if collider and collider:ToPlayer() then
 		local player = collider:ToPlayer()
 
-		if entity:GetData().Collected ~= true and player:GetPlayerType() == mod.RepmTypes.CHARACTER_SIM then
+		if entity:GetData().Collected ~= true and player:GetPlayerType() == Mod.RepmTypes.CHARACTER_SIM then
 			entity:GetData().Collected = true
 			entity:GetSprite():Play("Collect")
 			sfx:Play(SoundEffect.SOUND_SCAMPER)
-			mod.saveTable.SimAxesCollected = (mod.saveTable.SimAxesCollected or 0) + 1
+			local runData = Mod:RunSave()
+			runData.SimAxesCollected = (runData.SimAxesCollected or 0) + 1
 			entity:Remove()
 			entity.EntityCollisionClass = EntityCollisionClass.ENTCOLL_NONE
 			entity.Velocity = Vector.Zero
@@ -77,10 +79,10 @@ local function OnCollideAxe(_, entity, collider, Low)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, OnCollideAxe, mod.RepmTypes.PICKUP_AXE)
+Mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, OnCollideAxe, Mod.RepmTypes.PICKUP_AXE)
 
 local function IsDoubleTapTriggered(player)
-	local data = mod:GetData(player)
+	local data = Mod:GetData(player)
 	data.LastTimeArrowPress = data.LastTimeArrowPress or 0
 	if
 		Game():GetFrameCount() - data.LastTimeArrowPress < 6
@@ -123,16 +125,17 @@ end
 
 ---@param player EntityPlayer
 local function onSimUpdate(_, player)
-	if player:GetPlayerType() ~= mod.RepmTypes.CHARACTER_SIM then
+	if player:GetPlayerType() ~= Mod.RepmTypes.CHARACTER_SIM then
 		return
 	end
-	local data = mod:GetData(player)
+	local data = Mod:GetData(player)
 	data.RepM_SimChargeFrames = data.RepM_SimChargeFrames or 0
 	local maxThreshold = data.RepM_SimChargeFrames
 	local aim = player:GetAimDirection()
 	local isAim = aim:Length() > 0.01
+	local runData = Mod:RunSave()
 
-	if isAim and mod.saveTable.SimAxesCollected and mod.saveTable.SimAxesCollected > 0 then
+	if isAim and runData.SimAxesCollected and runData.SimAxesCollected > 0 then
 		data.RepM_SimChargeFrames = (data.RepM_SimChargeFrames or 0) + 1
 	elseif not Game():IsPaused() then
 		data.RepM_SimChargeFrames = 0
@@ -142,13 +145,13 @@ local function onSimUpdate(_, player)
 		data.repM_fireAxe = true
 	end
 	if
-		(IsDoubleTapTriggered(player) or mod:GetData(player).repM_fireAxe)
-		and mod.saveTable.SimAxesCollected
-		and mod.saveTable.SimAxesCollected > 0
+		(IsDoubleTapTriggered(player) or Mod:GetData(player).repM_fireAxe)
+		and runData.SimAxesCollected
+		and runData.SimAxesCollected > 0
 	then --
-		mod:GetData(player).repM_fireAxe = false
-		mod.saveTable.SimAxesCollected = math.max(0, mod.saveTable.SimAxesCollected - 1)
-		local direction = mod.directionToVector[player:GetHeadDirection()] * (25 * player.ShotSpeed)
+		Mod:GetData(player).repM_fireAxe = false
+		runData.SimAxesCollected = math.max(0, runData.SimAxesCollected - 1)
+		local direction = Mod.directionToVector[player:GetHeadDirection()] * (25 * player.ShotSpeed)
 		local weapon = player:GetWeapon(1)
 		local weaponType = weapon:GetWeaponType()
 		local multiShotParams = player:GetMultiShotParams(weaponType)
@@ -172,7 +175,7 @@ local function onSimUpdate(_, player)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, onSimUpdate, PlayerVariant.PLAYER)
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, onSimUpdate, PlayerVariant.PLAYER)
 
 local PriceTextFontTempesta = Font()
 PriceTextFontTempesta:Load("font/pftempestasevencondensed.fnt")
@@ -181,12 +184,13 @@ SimAxeUI:Play("Idle", true)
 SimAxeUI:SetFrame(0)
 
 local function simUIAxeRender()
-	local isSim = PlayerManager.AnyoneIsPlayerType(mod.RepmTypes.CHARACTER_SIM)
+	local isSim = PlayerManager.AnyoneIsPlayerType(Mod.RepmTypes.CHARACTER_SIM)
 	if isSim then
 		--if Game():GetHUD():IsVisible() then
+		local runData = Mod:RunSave()
 		local targetPos = Vector(30, 33) + Game().ScreenShakeOffset + (Options.HUDOffset * Vector(20, 12))
 		PriceTextFontTempesta:DrawStringScaled(
-			string.format("%02d", (mod.saveTable.SimAxesCollected or 0)),
+			string.format("%02d", (runData.SimAxesCollected or 0)),
 			targetPos.X + 15,
 			targetPos.Y,
 			1,
@@ -197,14 +201,14 @@ local function simUIAxeRender()
 		--end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_HUD_RENDER, simUIAxeRender)
+Mod:AddCallback(ModCallbacks.MC_POST_HUD_RENDER, simUIAxeRender)
 
 local function OnRoomClear_SimAxes()
 	local room = Game():GetRoom()
 	local level = Game():GetLevel()
 	if Game():IsGreedMode() then
 		if level:GetCurrentRoomDesc().GridIndex == 84 then
-			if PlayerManager.AnyoneIsPlayerType(mod.RepmTypes.CHARACTER_SIM) then
+			if PlayerManager.AnyoneIsPlayerType(Mod.RepmTypes.CHARACTER_SIM) then
 				local axeSpawnPos = {}
 				if
 					Game().Difficulty == Difficulty.DIFFICULTY_GREED and level.GreedModeWave == 10
@@ -222,10 +226,10 @@ local function OnRoomClear_SimAxes()
 					local pos = room:FindFreePickupSpawnPosition(vec)
 					Isaac.Spawn(
 						5,
-						mod.RepmTypes.PICKUP_AXE,
+						Mod.RepmTypes.PICKUP_AXE,
 						1,
 						pos,
-						EntityPickup.GetRandomPickupVelocity(pos, mod.RNG, 0),
+						EntityPickup.GetRandomPickupVelocity(pos, Mod.RNG, 0),
 						nil
 					)
 				end
@@ -233,10 +237,7 @@ local function OnRoomClear_SimAxes()
 		end
 	end
 	if room:GetType() == RoomType.ROOM_BOSS then
-		if PlayerManager.AnyoneIsPlayerType(mod.RepmTypes.CHARACTER_SIM) then
-			--mod.saveTable.SimAxesCollected = (mod.saveTable.SimAxesCollected or 0) + playerRNG:RandomInt(2) + randoMax
-			--sfx:Play(SoundEffect.SOUND_THUMBSUP)
-			--player:AnimateHappy()
+		if PlayerManager.AnyoneIsPlayerType(Mod.RepmTypes.CHARACTER_SIM) then
 			local axeSpawnPos = {
 				Vector(80, 160),
 				Vector(80, 400),
@@ -248,17 +249,17 @@ local function OnRoomClear_SimAxes()
 				local pos = room:FindFreePickupSpawnPosition(vec)
 				Isaac.Spawn(
 					5,
-					mod.RepmTypes.PICKUP_AXE,
+					Mod.RepmTypes.PICKUP_AXE,
 					1,
 					pos,
-					EntityPickup.GetRandomPickupVelocity(pos, mod.RNG, 0),
+					EntityPickup.GetRandomPickupVelocity(pos, Mod.RNG, 0),
 					nil
 				)
 			end
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, OnRoomClear_SimAxes)
+Mod:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, OnRoomClear_SimAxes)
 
 local function NewRoomAXE()
 	local room = Game():GetRoom()
@@ -268,22 +269,22 @@ local function NewRoomAXE()
 		or room:GetType() == RoomType.ROOM_SECRET
 		or room:GetType() == RoomType.ROOM_PLANETARIUM
 	then
-		if PlayerManager.AnyPlayerTypeHasBirthright(mod.RepmTypes.CHARACTER_SIM) and room:IsFirstVisit() then
+		if PlayerManager.AnyPlayerTypeHasBirthright(Mod.RepmTypes.CHARACTER_SIM) and room:IsFirstVisit() then
 			local pos = room:FindFreePickupSpawnPosition(room:GetCenterPos())
-			for i = 1, mod.RNG:RandomInt(3) + 1 do
+			for i = 1, Mod.RNG:RandomInt(3) + 1 do
 				Isaac.Spawn(
 					5,
-					mod.RepmTypes.PICKUP_AXE,
+					Mod.RepmTypes.PICKUP_AXE,
 					1,
 					pos,
-					EntityPickup.GetRandomPickupVelocity(pos, mod.RNG, 0),
+					EntityPickup.GetRandomPickupVelocity(pos, Mod.RNG, 0),
 					nil
 				)
 			end
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, NewRoomAXE)
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, NewRoomAXE)
 
 local function getTearScale13(tear)
 	local sprite = tear:GetSprite()
@@ -366,7 +367,7 @@ local function axeTearUpdate(_, tear)
 	--print(Isaac.WorldToRenderPosition(tear.Position + tear.PositionOffset) + offset)
 	data.REPM_LastRenderFrame = Game():GetFrameCount()
 end
-mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, axeTearUpdate)
+Mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, axeTearUpdate)
 
 local function axeTearRender(_, tear, offset)
 	local data = tear:GetData()
@@ -382,4 +383,4 @@ local function axeTearRender(_, tear, offset)
 		)
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_TEAR_RENDER, axeTearRender)
+Mod:AddCallback(ModCallbacks.MC_POST_TEAR_RENDER, axeTearRender)

@@ -1,8 +1,8 @@
-local mod = RepMMod
+local Mod = RepMMod
 
 ---@param Player EntityPlayer
 ---@param RNG RNG
-mod:AddCallback(ModCallbacks.MC_USE_ITEM, function(_, _, RNG, Player)
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function(_, _, RNG, Player)
 	local Flags = (1 << 29) + (1 << 8) + (1 << 37) + (1 << 59) + (1 << 19)
 	if RNG:RandomInt(2) == 1 then
 		for _ = 1, 2 do
@@ -40,4 +40,4 @@ mod:AddCallback(ModCallbacks.MC_USE_ITEM, function(_, _, RNG, Player)
 		Remove = false,
 		ShowAnim = true,
 	}
-end, mod.RepmTypes.COLLECTIBLE_BOOK_OF_NECROMANCER)
+end, Mod.RepmTypes.COLLECTIBLE_BOOK_OF_NECROMANCER)

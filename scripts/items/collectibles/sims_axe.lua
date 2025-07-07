@@ -1,4 +1,4 @@
-local mod = RepMMod
+local Mod = RepMMod
 
 local function TEARFLAG(x)
 	return x >= 64 and BitSet128(0, 1 << (x - 64)) or BitSet128(1 << x, 0)
@@ -6,8 +6,8 @@ end
 
 ---@param player EntityPlayer
 function SpawnAxe(player)
-	local axe = Isaac.Spawn(1000, mod.RepmTypes.EFFECT_SIMS_AXE, 0, player.Position, Vector.Zero, player):ToEffect()
-	local data = mod:GetData(player)
+	local axe = Isaac.Spawn(1000, Mod.RepmTypes.EFFECT_SIMS_AXE, 0, player.Position, Vector.Zero, player):ToEffect()
+	local data = Mod:GetData(player)
 	data.ExtraSpins = math.max(0, data.ExtraSpins - 1)
 	axe.Parent = player
 	axe:FollowParent(player)
@@ -31,8 +31,8 @@ function SpawnAxe(player)
 end
 
 function ReplaySpin(player, axe)
-	local data = mod:GetData(player)
-	local blackList = mod:GetData(axe)
+	local data = Mod:GetData(player)
+	local blackList = Mod:GetData(axe)
 	data.ExtraSpins = math.max(0, data.ExtraSpins - 1)
 	blackList.HitBlacklist = {}
 	local sprite = axe:GetSprite()
@@ -44,20 +44,20 @@ end
 local function PostNewRoom()
 	-- just in case it gets interrupted
 	RepMMod:AnyPlayerDo(function(player)
-		mod:GetData(player).ExtraSpins = 0
+		Mod:GetData(player).ExtraSpins = 0
 	end)
 end
-mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, PostNewRoom)
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, PostNewRoom)
 
-mod:AddCallback(ModCallbacks.MC_PLAYER_GET_ACTIVE_MAX_CHARGE, function(_, item, player, vardata, maxcharge)
+Mod:AddCallback(ModCallbacks.MC_PLAYER_GET_ACTIVE_MAX_CHARGE, function(_, item, player, vardata, maxcharge)
 	return maxcharge + vardata
-end, mod.RepmTypes.COLLECTIBLE_AXE_ACTIVE)
+end, Mod.RepmTypes.COLLECTIBLE_AXE_ACTIVE)
 
-mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
-	mod:AnyPlayerDo(function(player)
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
+	Mod:AnyPlayerDo(function(player)
 		---@cast player EntityPlayer
 		for slot = 0, 2 do
-			if player:GetActiveItem(slot) == mod.RepmTypes.COLLECTIBLE_AXE_ACTIVE then
+			if player:GetActiveItem(slot) == Mod.RepmTypes.COLLECTIBLE_AXE_ACTIVE then
 				player:SetActiveVarData(0, slot)
 			end
 		end
@@ -67,18 +67,18 @@ end)
 ---@param player EntityPlayer
 local function onUseAxe(_, collectibletype, rng, player, useflags, slot, vardata)
 	if useflags & UseFlag.USE_CARBATTERY ~= 0 then
-		mod:GetData(player).ExtraSpins = mod:GetData(player).ExtraSpins + 1
+		Mod:GetData(player).ExtraSpins = Mod:GetData(player).ExtraSpins + 1
 	end
 	local weaponType = player:GetWeapon(1):GetWeaponType()
 	if player:GetMultiShotParams(weaponType):GetNumTears() > 1 then
-		mod:GetData(player).ExtraSpins = mod:GetData(player).ExtraSpins + player:GetMultiShotParams(weaponType):GetNumTears()
+		Mod:GetData(player).ExtraSpins = Mod:GetData(player).ExtraSpins + player:GetMultiShotParams(weaponType):GetNumTears()
 	end
 	local itemDesc = player:GetActiveItemDesc(slot)
 	player:SetActiveVarData(itemDesc.VarData + 25, slot)
 	SpawnAxe(player)
 end
 
-mod:AddCallback(ModCallbacks.MC_USE_ITEM, onUseAxe, mod.RepmTypes.COLLECTIBLE_AXE_ACTIVE)
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, onUseAxe, Mod.RepmTypes.COLLECTIBLE_AXE_ACTIVE)
 
 local function AxeSpin(_, axe)
 	local player = axe.SpawnerEntity or axe.Parent
@@ -86,8 +86,8 @@ local function AxeSpin(_, axe)
 		axe:Remove()
 	end
 	player = player:ToPlayer()
-	local data = mod:GetData(player)
-	local blackList = mod:GetData(axe)
+	local data = Mod:GetData(player)
+	local blackList = Mod:GetData(axe)
 	local sprite = axe:GetSprite()
 	data.ExtraSpins = data.ExtraSpins or 0
 	-- We are going to use this table as a way to make sure enemies are only hurt once in a swing.
@@ -148,9 +148,9 @@ local function AxeSpin(_, axe)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, AxeSpin, mod.RepmTypes.EFFECT_SIMS_AXE)
+Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, AxeSpin, Mod.RepmTypes.EFFECT_SIMS_AXE)
 
-mod:AddCallback("SIM_AXE_DAMAGE_FLAGS", function(_, player)
+Mod:AddCallback("SIM_AXE_DAMAGE_FLAGS", function(_, player)
 	local flags = 0
 	if player:HasCollectible(CollectibleType.COLLECTIBLE_HEAD_OF_THE_KEEPER) then
 		flags = flags | DamageFlag.DAMAGE_SPAWN_COIN
@@ -176,7 +176,7 @@ local function ExemptHalfCircle(_, Entity, DamageAmount, DamageFlags, DamageSour
 	if
 		DamageSource.Entity
 		and DamageSource.Entity:ToEffect()
-		and DamageSource.Entity.Variant == mod.RepmTypes.EFFECT_SIMS_AXE
+		and DamageSource.Entity.Variant == Mod.RepmTypes.EFFECT_SIMS_AXE
 	then
 		local parent = DamageSource.Entity:ToEffect().SpawnerEntity or DamageSource.Entity:ToEffect().Parent
 		Isaac.RunCallback(
@@ -188,13 +188,13 @@ local function ExemptHalfCircle(_, Entity, DamageAmount, DamageFlags, DamageSour
 		)
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, ExemptHalfCircle)
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, ExemptHalfCircle)
 
 ---@param entity Entity
 ---@param flags DamageFlag | integer
 ---@param axe EntityEffect
 ---@param player EntityPlayer
-mod:AddCallback("SIM_AXE_POST_TAKE_DMG", function(_, entity, flags, axe, player)
+Mod:AddCallback("SIM_AXE_POST_TAKE_DMG", function(_, entity, flags, axe, player)
 	if player then
 		if player:HasCollectible(CollectibleType.COLLECTIBLE_IPECAC) then
 			entity:AddPoison(EntityRef(player), 60, player.Damage)

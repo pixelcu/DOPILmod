@@ -1,8 +1,8 @@
-local mod = RepMMod
+local Mod = RepMMod
 local config = Isaac.GetItemConfig()
 
 local function IsBurntColver(trinket)
-    return trinket == mod.RepmTypes.TRINKET_BURNT_CLOVER or trinket == mod.RepmTypes.TRINKET_BURNT_CLOVER | TrinketType.TRINKET_GOLDEN_FLAG
+    return trinket == Mod.RepmTypes.TRINKET_BURNT_CLOVER or trinket == Mod.RepmTypes.TRINKET_BURNT_CLOVER | TrinketType.TRINKET_GOLDEN_FLAG
 end
 
 local function RemoveClover(trinket)
@@ -43,26 +43,26 @@ local function Burn(player)
     end
 
     if not destroyed then
-        local clover = player:GetSmeltedTrinkets()[mod.RepmTypes.TRINKET_BURNT_CLOVER]
+        local clover = player:GetSmeltedTrinkets()[Mod.RepmTypes.TRINKET_BURNT_CLOVER]
         if clover.goldenTrinketAmount > 0 then
-            player:TryRemoveSmeltedTrinket(mod.RepmTypes.TRINKET_BURNT_CLOVER | TrinketType.TRINKET_GOLDEN_FLAG)
-            player:AddSmeltedTrinket(mod.RepmTypes.TRINKET_BURNT_CLOVER, false)
+            player:TryRemoveSmeltedTrinket(Mod.RepmTypes.TRINKET_BURNT_CLOVER | TrinketType.TRINKET_GOLDEN_FLAG)
+            player:AddSmeltedTrinket(Mod.RepmTypes.TRINKET_BURNT_CLOVER, false)
         else
-            player:TryRemoveSmeltedTrinket(mod.RepmTypes.TRINKET_BURNT_CLOVER)
+            player:TryRemoveSmeltedTrinket(Mod.RepmTypes.TRINKET_BURNT_CLOVER)
         end
     end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function()
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function()
 	local room = Game():GetRoom()
-    local tinketPlayers = mod.Filter(PlayerManager.GetPlayers(), function(_, player) return player:HasTrinket(mod.RepmTypes.TRINKET_BURNT_CLOVER) end)
+    local tinketPlayers = Mod.Filter(PlayerManager.GetPlayers(), function(_, player) return player:HasTrinket(Mod.RepmTypes.TRINKET_BURNT_CLOVER) end)
 	if room:IsFirstVisit() and room:GetType() == RoomType.ROOM_TREASURE and #tinketPlayers > 0 then
 		
         for _, item in ipairs(Isaac.FindByType(5, 100, -1)) do
-            if item and item.SubType > 0 and PlayerManager.AnyoneHasTrinket(mod.RepmTypes.TRINKET_BURNT_CLOVER) then
+            if item and item.SubType > 0 and PlayerManager.AnyoneHasTrinket(Mod.RepmTypes.TRINKET_BURNT_CLOVER) then
                 local data = config:GetCollectible(item.SubType)
                 if data.Quality and data.Quality ~= 4 then
-                    local result = mod.GetByQuality(4, 4, ItemPoolType.POOL_TREASURE, item.DropSeed)
+                    local result = Mod.GetByQuality(4, 4, ItemPoolType.POOL_TREASURE, item.DropSeed)
                     if result then
                         item:ToPickup():Morph(5, 100, result, true, true)
                         Burn(tinketPlayers[math.random(1, #tinketPlayers)])

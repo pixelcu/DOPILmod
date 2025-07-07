@@ -1,6 +1,6 @@
-local mod = RepMMod
+local Mod = RepMMod
 
-mod:AddCallback(ModCallbacks.MC_USE_CARD, function(_, _, player, flags)
+Mod:AddCallback(ModCallbacks.MC_USE_CARD, function(_, _, player, flags)
 	local CRI = game:GetLevel():GetCurrentRoomIndex()
 	local Dirt = player:GetMovementDirection()
 	local NewDirt
@@ -26,22 +26,22 @@ mod:AddCallback(ModCallbacks.MC_USE_CARD, function(_, _, player, flags)
 		end
 	end
 	if Dirt == -1 then
-		player:AddCard(mod.RepmTypes.CARD_HAMMER_CARD)
+		player:AddCard(Mod.RepmTypes.CARD_HAMMER_CARD)
 	else
 		print(Dirt)
 		if game:GetLevel():GetRoomByIdx(NewDirt, -1).Data ~= nil then
 			game:StartRoomTransition(NewDirt, Direction.NO_DIRECTION, RoomTransitionAnim.TELEPORT, player, -1)
 			if player:HasCollectible(451) then
 				if math.random(1, 10) <= 2 then
-					player:AddCard(mod.RepmTypes.CARD_HAMMER_CARD)
+					player:AddCard(Mod.RepmTypes.CARD_HAMMER_CARD)
 				end
 			else
 				if math.random(1, 10) == 1 then
-					player:AddCard(mod.RepmTypes.CARD_HAMMER_CARD)
+					player:AddCard(Mod.RepmTypes.CARD_HAMMER_CARD)
 				end
 			end
 		else
-			player:AddCard(mod.RepmTypes.CARD_HAMMER_CARD)
+			player:AddCard(Mod.RepmTypes.CARD_HAMMER_CARD)
 		end
 	end
-end, mod.RepmTypes.CARD_HAMMER_CARD)
+end, Mod.RepmTypes.CARD_HAMMER_CARD)

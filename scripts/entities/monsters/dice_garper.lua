@@ -1,4 +1,4 @@
-local mod = RepMMod
+local Mod = RepMMod
 
 local DICE_GARPER = {
     Type = Isaac.GetEntityTypeByName("Dice Garper"),
@@ -44,7 +44,7 @@ local function onDiceGarper(_, entity)
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, onDiceGarper, DICE_GARPER.Type)
+Mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, onDiceGarper, DICE_GARPER.Type)
 
 local BROKEN_DICE_GARPER = {
     Type = Isaac.GetEntityTypeByName("Broken Dice Garper"),
@@ -90,7 +90,7 @@ local function onBrokDiceGarper(_, entity)
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, onBrokDiceGarper, BROKEN_DICE_GARPER.Type)
+Mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, onBrokDiceGarper, BROKEN_DICE_GARPER.Type)
 
 ---@param npc EntityNPC
 ---@param tp EntityType
@@ -102,11 +102,10 @@ local function DiceGarperDeath(_, npc, tp, variant, subtype, coloridx)
 	if npc.Type == DICE_GARPER.Type and npc.Variant == DICE_GARPER.Variant and
 	npc.SubType == DICE_GARPER.SubType
 	and tp == EntityType.ENTITY_GUSHER and npc:IsDead() then
-		print(10)
 		return {BROKEN_DICE_GARPER.Type, BROKEN_DICE_GARPER.Variant, BROKEN_DICE_GARPER.SubType, coloridx}
 	end
 end
-mod:AddCallback(ModCallbacks.MC_PRE_NPC_MORPH, DiceGarperDeath)
+Mod:AddCallback(ModCallbacks.MC_PRE_NPC_MORPH, DiceGarperDeath)
 
 local function IsDoubleItemsGarperRoom()
 	local roomData = Game():GetLevel():GetCurrentRoomDesc().Data
@@ -123,7 +122,7 @@ local function IsDoubleItemsGarperRoom()
 	return false
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function()
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function()
 	if IsDoubleItemsGarperRoom() then
 		for _, pickup in ipairs(Isaac.FindByType(5,100,-1)) do
 			pickup = pickup:ToPickup()

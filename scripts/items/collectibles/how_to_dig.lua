@@ -1,7 +1,7 @@
-local mod = RepMMod
-local game = Game()
+local Mod = RepMMod
+local game = Mod.Game
 local sfx = SFXManager()
-local hiddenItemManager = require("scripts.lib.hidden_item_manager")
+local hiddenItemManager = Mod.hiddenItemManager
 
 ---@param player EntityPlayer
 ---@param button ButtonAction
@@ -9,7 +9,7 @@ local hiddenItemManager = require("scripts.lib.hidden_item_manager")
 local function DontRegisterInput(player, button)
 	if
 		button == ButtonAction.ACTION_ITEM
-			and player:GetActiveItem(ActiveSlot.SLOT_PRIMARY) ~= mod.RepmTypes.COLLECTIBLE_HOW_TO_DIG
+			and player:GetActiveItem(ActiveSlot.SLOT_PRIMARY) ~= Mod.RepmTypes.COLLECTIBLE_HOW_TO_DIG
 		or button == ButtonAction.ACTION_BOMB
 		or button == ButtonAction.ACTION_DROP
 	then
@@ -22,7 +22,7 @@ local function DontRegisterInput(player, button)
 				return true
 			elseif
 				pItem:GetType() == PocketItemType.ACTIVE_ITEM
-				and player:GetActiveItem(pItem:GetSlot() - 1) ~= mod.RepmTypes.COLLECTIBLE_HOW_TO_DIG
+				and player:GetActiveItem(pItem:GetSlot() - 1) ~= Mod.RepmTypes.COLLECTIBLE_HOW_TO_DIG
 			then
 				return true
 			end
@@ -38,14 +38,14 @@ local function useDigInput(_, ent, hook, button)
 	if ent and ent:ToPlayer() then
 		local player = ent:ToPlayer()
 		local effs = player:GetEffects()
-		if effs:HasNullEffect(mod.RepmTypes.NULL_HOW_TO_DIG) then
+		if effs:HasNullEffect(Mod.RepmTypes.NULL_HOW_TO_DIG) then
 			if DontRegisterInput(player, button) then
 				return false
 			end
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_INPUT_ACTION, useDigInput)
+Mod:AddCallback(ModCallbacks.MC_INPUT_ACTION, useDigInput)
 
 ---@param col CollectibleType | integer
 ---@param rng RNG
@@ -57,10 +57,10 @@ mod:AddCallback(ModCallbacks.MC_INPUT_ACTION, useDigInput)
 local function useDig(_, col, rng, player, flags, slot, vardata)
 	local effs = player:GetEffects()
 	if player:IsExtraAnimationFinished() then
-		if not effs:HasNullEffect(mod.RepmTypes.NULL_HOW_TO_DIG) then
+		if not effs:HasNullEffect(Mod.RepmTypes.NULL_HOW_TO_DIG) then
 			player:PlayExtraAnimation("Trapdoor")
 			Isaac.CreateTimer(function()
-				effs:AddNullEffect(mod.RepmTypes.NULL_HOW_TO_DIG)
+				effs:AddNullEffect(Mod.RepmTypes.NULL_HOW_TO_DIG)
 				player:DischargeActiveItem(slot)
 				sfx:Play(SoundEffect.SOUND_ROCK_CRUMBLE, Options.SFXVolume * 2)
 				Isaac.Spawn(
@@ -83,7 +83,7 @@ local function useDig(_, col, rng, player, flags, slot, vardata)
 				end
 			end, player:GetSprite():GetAnimationData("Trapdoor"):GetLength() - 1, 1, false)
 		else
-			effs:RemoveNullEffect(mod.RepmTypes.NULL_HOW_TO_DIG, -1)
+			effs:RemoveNullEffect(Mod.RepmTypes.NULL_HOW_TO_DIG, -1)
 		end
 	end
 	return {
@@ -92,18 +92,18 @@ local function useDig(_, col, rng, player, flags, slot, vardata)
 		ShowAnim = false,
 	}
 end
-mod:AddCallback(ModCallbacks.MC_USE_ITEM, useDig, mod.RepmTypes.COLLECTIBLE_HOW_TO_DIG)
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, useDig, Mod.RepmTypes.COLLECTIBLE_HOW_TO_DIG)
 
-mod:AddCallback(ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE, function(_, slot, player, curMinCharge)
-	if player:GetEffects():HasNullEffect(mod.RepmTypes.NULL_HOW_TO_DIG) then
+Mod:AddCallback(ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE, function(_, slot, player, curMinCharge)
+	if player:GetEffects():HasNullEffect(Mod.RepmTypes.NULL_HOW_TO_DIG) then
 		return 0
 	end
-end, mod.RepmTypes.COLLECTIBLE_HOW_TO_DIG)
+end, Mod.RepmTypes.COLLECTIBLE_HOW_TO_DIG)
 
 ---@param player EntityPlayer
 ---@param conf ItemConfigItem
-mod:AddCallback(ModCallbacks.MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED, function(_, player, conf)
-	if conf:IsNull() and conf.ID == mod.RepmTypes.NULL_HOW_TO_DIG and not player:IsDead() then
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED, function(_, player, conf)
+	if conf:IsNull() and conf.ID == Mod.RepmTypes.NULL_HOW_TO_DIG and not player:IsDead() then
 		player:PlayExtraAnimation("Jump")
 		for i = 1, 3 do
 			Isaac.Spawn(
@@ -129,7 +129,7 @@ end)
 ---@param player EntityPlayer
 ---@param cacheFlag CacheFlag | integer
 local function digCache(_, player, cacheFlag)
-	if player:GetEffects():HasNullEffect(mod.RepmTypes.NULL_HOW_TO_DIG) then
+	if player:GetEffects():HasNullEffect(Mod.RepmTypes.NULL_HOW_TO_DIG) then
 		if cacheFlag == CacheFlag.CACHE_SPEED then
 			player.MoveSpeed = player.MoveSpeed * 0.5
 		end
@@ -143,12 +143,12 @@ local function digCache(_, player, cacheFlag)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, digCache)
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, digCache)
 
 ---@param player EntityPlayer
 local function DigPlayerUpdate(_, player)
 	local effs = player:GetEffects()
-	if effs:HasNullEffect(mod.RepmTypes.NULL_HOW_TO_DIG) then
+	if effs:HasNullEffect(Mod.RepmTypes.NULL_HOW_TO_DIG) then
 		player.FireDelay = math.max(2, player.FireDelay)
 		if game:GetFrameCount() % 4 == 0 then
 			sfx:Play(SoundEffect.SOUND_ROCK_CRUMBLE, Options.SFXVolume / 3)
@@ -159,25 +159,25 @@ local function DigPlayerUpdate(_, player)
 		local activeMain = player:GetActiveItem(ActiveSlot.SLOT_PRIMARY)
 		local activeSecond = player:GetActiveItem(ActiveSlot.SLOT_SECONDARY)
 		local activePocket = player:GetActiveItem(ActiveSlot.SLOT_POCKET)
-		if activeMain > 0 and activeSecond > 0 and activeMain ~= mod.RepmTypes.COLLECTIBLE_HOW_TO_DIG then
+		if activeMain > 0 and activeSecond > 0 and activeMain ~= Mod.RepmTypes.COLLECTIBLE_HOW_TO_DIG then
 			player:SwapActiveItems()
 		end
 	end
 	hiddenItemManager:CheckStack(
 		player,
 		CollectibleType.COLLECTIBLE_LEO,
-		effs:GetNullEffectNum(mod.RepmTypes.NULL_HOW_TO_DIG),
+		effs:GetNullEffectNum(Mod.RepmTypes.NULL_HOW_TO_DIG),
 		"Repm_HowToDig"
 	)
 end
-mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, DigPlayerUpdate)
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, DigPlayerUpdate)
 
 local function OnPlayerCollide_Dig(_, player, collider)
-	if player:GetEffects():HasNullEffect(mod.RepmTypes.NULL_HOW_TO_DIG) then
+	if player:GetEffects():HasNullEffect(Mod.RepmTypes.NULL_HOW_TO_DIG) then
 		return true
 	end
 end
-mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_COLLISION, OnPlayerCollide_Dig)
+Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_COLLISION, OnPlayerCollide_Dig)
 
 local function OnPlayerDamage_Dig(_, entity, amount, damageflags, source, countdownframes)
 	local player = entity:ToPlayer()
@@ -185,11 +185,11 @@ local function OnPlayerDamage_Dig(_, entity, amount, damageflags, source, countd
 		return
 	end
 
-	if player:GetEffects():HasNullEffect(mod.RepmTypes.NULL_HOW_TO_DIG) then
+	if player:GetEffects():HasNullEffect(Mod.RepmTypes.NULL_HOW_TO_DIG) then
 		return false
 	end
 end
-mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, OnPlayerDamage_Dig, EntityType.ENTITY_PLAYER)
+Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, OnPlayerDamage_Dig, EntityType.ENTITY_PLAYER)
 
 local function DoorUpdateDig(_, door)
 	local entities = Isaac.FindInRadius(door.Position, 30)
@@ -198,7 +198,7 @@ local function DoorUpdateDig(_, door)
 			if
 				entity
 				and entity:ToPlayer() ~= nil
-				and entity:ToPlayer():GetEffects():HasNullEffect(mod.RepmTypes.NULL_HOW_TO_DIG)
+				and entity:ToPlayer():GetEffects():HasNullEffect(Mod.RepmTypes.NULL_HOW_TO_DIG)
 			then
 				door:TryBlowOpen(false, entity:ToPlayer())
 				sfx:Play(SoundEffect.SOUND_WOOD_PLANK_BREAK)
@@ -206,18 +206,18 @@ local function DoorUpdateDig(_, door)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_GRID_ENTITY_DOOR_UPDATE, DoorUpdateDig)
+Mod:AddCallback(ModCallbacks.MC_POST_GRID_ENTITY_DOOR_UPDATE, DoorUpdateDig)
 
 ---@param player EntityPlayer
 ---@param idx integer
 ---@param grid GridEntity
 ---@return boolean?
 local function PitCollisionInDig(_, player, idx, grid)
-	if player:GetEffects():GetNullEffect(mod.RepmTypes.NULL_HOW_TO_DIG) and grid then
+	if player:GetEffects():GetNullEffect(Mod.RepmTypes.NULL_HOW_TO_DIG) and grid then
 		if grid:GetType() == GridEntityType.GRID_PIT then
 			return nil
 		end
 		return true
 	end
 end
-mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_GRID_COLLISION, PitCollisionInDig, PlayerVariant.PLAYER)
+Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_GRID_COLLISION, PitCollisionInDig, PlayerVariant.PLAYER)

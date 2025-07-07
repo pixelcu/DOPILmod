@@ -1,5 +1,7 @@
-local mod = RepMMod
+local Mod = RepMMod
 
+---@param player EntityPlayer
+---@return table
 local function onBookOfTales(_, col, rng, player) -- сбив сделки при получении урона
 	local room = Game():GetRoom()
 
@@ -12,6 +14,9 @@ local function onBookOfTales(_, col, rng, player) -- сбив сделки пр�
 
 	Game():GetLevel():SetRedHeartDamage()
 	room:SetRedHeartDamage()
+	if rng:RandomFloat() <= 0.10 then
+		player:SetFullHearts()
+	end
 	local gridIndex = room:GetGridIndex(player.Position)
 	room:SpawnGridEntity(gridIndex, GridEntityType.GRID_STAIRS, 0, 0, 0)
 	SFXManager():Play(8)
@@ -22,10 +27,10 @@ local function onBookOfTales(_, col, rng, player) -- сбив сделки пр�
 	}
 end
 
-mod:AddCallback(ModCallbacks.MC_USE_ITEM, onBookOfTales, mod.RepmTypes.COLLECTIBLE_BOOK_OF_TALES)
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, onBookOfTales, Mod.RepmTypes.COLLECTIBLE_BOOK_OF_TALES)
 
 local function onRoom() -- спавн ретро-сокровещницы
-	if PlayerManager.AnyoneHasCollectible(mod.RepmTypes.COLLECTIBLE_BOOK_OF_TALES) then
+	if PlayerManager.AnyoneHasCollectible(Mod.RepmTypes.COLLECTIBLE_BOOK_OF_TALES) then
 		local room = Game():GetRoom()
 		if room:GetType() == RoomType.ROOM_DUNGEON then
 			for i = 1, room:GetGridSize() do
@@ -43,10 +48,10 @@ local function onRoom() -- спавн ретро-сокровещницы
 				level:ChangeRoom(level:GetCurrentRoomIndex())
 			end
 		elseif room:GetType() == RoomType.ROOM_DEVIL or room:GetType() == RoomType.ROOM_ANGEL then
-			mod:AnyPlayerDo(function(player)
+			Mod:AnyPlayerDo(function(player)
                 ---@cast player EntityPlayer
                 for i = 0, 2 do
-                    if player:GetActiveItem(i) == mod.RepmTypes.COLLECTIBLE_BOOK_OF_TALES then
+                    if player:GetActiveItem(i) == Mod.RepmTypes.COLLECTIBLE_BOOK_OF_TALES then
 				        player:DischargeActiveItem(i)
                     end
                 end
@@ -55,4 +60,4 @@ local function onRoom() -- спавн ретро-сокровещницы
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, onRoom)
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, onRoom)

@@ -1,23 +1,23 @@
-local mod = RepMMod
+local Mod = RepMMod
 
 local DelColor = Color(1, 1, 1, 1, 0, 0, 0, 3 , 3, 3, 1)
 
 local function TearColor_DelEye(_, player, cache)
-	if player:HasCollectible(mod.RepmTypes.COLLECTIBLE_DILIRIUM_EYE) then
+	if player:HasCollectible(Mod.RepmTypes.COLLECTIBLE_DILIRIUM_EYE) then
 		player.TearColor = DelColor
 	end
 end
-mod:AddPriorityCallback(ModCallbacks.MC_EVALUATE_CACHE, CallbackPriority.LATE, TearColor_DelEye, CacheFlag.CACHE_TEARCOLOR)
+Mod:AddPriorityCallback(ModCallbacks.MC_EVALUATE_CACHE, CallbackPriority.LATE, TearColor_DelEye, CacheFlag.CACHE_TEARCOLOR)
 
-mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, function(_, tear)
-	local player, familiarTear = mod:GetPlayerFromTear(tear)
+Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, function(_, tear)
+	local player, familiarTear = Mod:GetPlayerFromTear(tear)
 	if not player then
 		return
 	end
-	local data = mod:GetData(player)
+	local data = Mod:GetData(player)
 	data.DiliriumEyeLastActivateFrame = data.DiliriumEyeLastActivateFrame or 0
 	if
-		player:HasCollectible(mod.RepmTypes.COLLECTIBLE_DILIRIUM_EYE)
+		player:HasCollectible(Mod.RepmTypes.COLLECTIBLE_DILIRIUM_EYE)
 		and not familiarTear
 		and (Game():GetFrameCount() > data.DiliriumEyeLastActivateFrame + 1)
 	then

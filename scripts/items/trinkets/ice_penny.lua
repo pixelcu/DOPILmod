@@ -1,4 +1,4 @@
-local mod = RepMMod
+local Mod = RepMMod
 
 ---@param coin EntityPickup
 ---@param collider Entity
@@ -8,7 +8,7 @@ function PostCollisionWithIcePenny(_, coin, collider, low)
 	if collider and collider:ToPlayer() then
 		local player = collider:ToPlayer()
 		---@cast player EntityPlayer
-		if not player:HasTrinket(mod.RepmTypes.TRINKET_ICE_PENNY) then
+		if not player:HasTrinket(Mod.RepmTypes.TRINKET_ICE_PENNY) then
 			return
 		end
 		local sprite = coin:GetSprite()
@@ -26,8 +26,8 @@ function PostCollisionWithIcePenny(_, coin, collider, low)
 			local chance = rng:RandomFloat()
 			local coinChance = iceChance[coin.SubType] or iceChance.Default
 			if chance <= coinChance then
-				local heart = rng:RandomFloat() <= 0.05 and mod.RepmTypes.PICKUP_HEART_FROZEN
-					or mod.RepmTypes.PICKUP_HEART_FROZEN_HALF
+				local heart = rng:RandomFloat() <= 0.05 and Mod.RepmTypes.PICKUP_HEART_FROZEN
+					or Mod.RepmTypes.PICKUP_HEART_FROZEN_HALF
 				Isaac.Spawn(
 					EntityType.ENTITY_PICKUP,
 					PickupVariant.PICKUP_HEART,
@@ -40,4 +40,4 @@ function PostCollisionWithIcePenny(_, coin, collider, low)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_PICKUP_COLLISION, PostCollisionWithIcePenny, PickupVariant.PICKUP_COIN)
+Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_COLLISION, PostCollisionWithIcePenny, PickupVariant.PICKUP_COIN)

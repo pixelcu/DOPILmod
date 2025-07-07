@@ -1,4 +1,4 @@
-local mod = RepMMod
+local Mod = RepMMod
 
 ---@param item CollectibleType | integer
 ---@param rng RNG
@@ -31,4 +31,4 @@ local function RedButtonUse(_, item, rng, p, flags, slot, customVData)
 	}
 end
 
-mod:AddCallback(ModCallbacks.MC_USE_ITEM, RedButtonUse, mod.RepmTypes.COLLECTIBLE_ADVANCED_KAMIKAZE)
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, RedButtonUse, Mod.RepmTypes.COLLECTIBLE_ADVANCED_KAMIKAZE)

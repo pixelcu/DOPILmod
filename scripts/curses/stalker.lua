@@ -1,7 +1,8 @@
 ----------------------------------------------------------
 --Stalker's Curse
 ----------------------------------------------------------
-
+local Mod = RepMMod
+local game = Mod.Game
 local stalkerCurseId = Isaac.GetCurseIdByName("Stalker's Curse!")
 local curseSprite = Sprite("gfx/ui/stalker curse.anm2", true)
 local stalkerCurseIdBitMask = 1 << (stalkerCurseId - 1)
@@ -10,11 +11,11 @@ local function IsStalkerCurseAllowed()
 		or game:GetLevel():GetStage() <= LevelStage.STAGE3_GREED and game:IsGreedMode()
 end
 if BetterCurseAPI then
-	BetterCurseAPI:registerCurse("Stalker's Curse!", 1, function()
+	--[[BetterCurseAPI:registerCurse("Stalker's Curse!", 1, function()
 		return false
-	end, { curseSprite, "Idle", 0 })
+	end, { curseSprite, "Idle", 0 })]]
 else
-	function mod:StalkerCurseInit(curses)
+	function Mod:StalkerCurseInit(curses)
 		if curses == 0 and IsStalkerCurseAllowed() then
 			local seed = game:GetSeeds():GetStageSeed(game:GetLevel():GetStage())
 			local rng = RNG(seed)
@@ -23,7 +24,7 @@ else
 			end
 		end
 	end
-	--mod:AddCallback(ModCallbacks.MC_POST_CURSE_EVAL, mod.StalkerCurseInit)
+	--Mod:AddCallback(ModCallbacks.MC_POST_CURSE_EVAL, Mod.StalkerCurseInit)
 end
 
 MinimapAPI:AddMapFlag(stalkerCurseId, function()
@@ -33,7 +34,7 @@ end, curseSprite, "Idle", 0)
 local annoyingHaunt = Isaac.GetEntityTypeByName("Lil Stalker")
 
 ---@param npc EntityNPC
-function mod:LilStalkerAI(npc)
+function Mod:LilStalkerAI(npc)
 	local sprite = npc:GetSprite()
 	local data = npc:GetData()
 	data.Angle = data.Angle or 0
@@ -57,7 +58,7 @@ function mod:LilStalkerAI(npc)
 		if npc:GetPlayerTarget() and npc:GetPlayerTarget():ToPlayer() then
 			local player = npc:GetPlayerTarget():ToPlayer()
 			local targetPosition = player.Position + Vector.FromAngle(data.Angle):Resized(80)
-			npc.Velocity = mod.Lerp(npc.Velocity, (targetPosition - npc.Position))
+			npc.Velocity = Mod.Lerp(npc.Velocity, (targetPosition - npc.Position))
 			local anim = "Float"
 			if npc.State == NpcState.STATE_ATTACK then
 				anim = anim .. "Chase"
@@ -96,9 +97,9 @@ function mod:LilStalkerAI(npc)
 		or EntityCollisionClass.ENTCOLL_NONE
 	npc:SetInvincible(npc.State ~= NpcState.STATE_ATTACK)
 end
-mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, mod.LilStalkerAI, annoyingHaunt)
+Mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, Mod.LilStalkerAI, annoyingHaunt)
 
-function mod:LilStalkerNewRoom()
+function Mod:LilStalkerNewRoom()
 	for _, st in ipairs(Isaac.FindByType(annoyingHaunt)) do
 		st = st:ToNPC()
 		local data = st:GetData()
@@ -108,11 +109,11 @@ function mod:LilStalkerNewRoom()
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.LilStalkerNewRoom)
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, Mod.LilStalkerNewRoom)
 
-function mod:LilStalkerCollision(npc)
+function Mod:LilStalkerCollision(npc)
 	if npc.State ~= NpcState.STATE_ATTACK then
 		return false
 	end
 end
-mod:AddCallback(ModCallbacks.MC_PRE_NPC_COLLISION, mod.LilStalkerCollision, annoyingHaunt)
+Mod:AddCallback(ModCallbacks.MC_PRE_NPC_COLLISION, Mod.LilStalkerCollision, annoyingHaunt)

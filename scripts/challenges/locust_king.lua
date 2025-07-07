@@ -1,10 +1,10 @@
-local mod = RepMMod
+local Mod = RepMMod
 
 local function collideItemPedestalAbs(_, pickup, collider, low)
 	local player = collider:ToPlayer()
 	if
 		player
-		and Isaac.GetChallenge() == mod.RepmChallenges.CHALLENGE_LOCUST_KING
+		and Isaac.GetChallenge() == Mod.RepmChallenges.CHALLENGE_LOCUST_KING
 		and pickup.SubType ~= 0
 		and not Isaac.GetItemConfig():GetCollectible(pickup.SubType):HasTags(ItemConfig.TAG_QUEST)
 		and pickup.SubType ~= CollectibleType.COLLECTIBLE_MORE_OPTIONS
@@ -22,10 +22,10 @@ local function collideItemPedestalAbs(_, pickup, collider, low)
 		return true
 	end
 end
-mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, collideItemPedestalAbs, PickupVariant.PICKUP_COLLECTIBLE)
+Mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, collideItemPedestalAbs, PickupVariant.PICKUP_COLLECTIBLE)
 
 local function onLevelStart_Locust()
-	if Isaac.GetChallenge() == mod.RepmChallenges.CHALLENGE_LOCUST_KING then
+	if Isaac.GetChallenge() == Mod.RepmChallenges.CHALLENGE_LOCUST_KING then
 		local itemHere = Isaac.Spawn(
 			EntityType.ENTITY_PICKUP,
 			PickupVariant.PICKUP_HEART,
@@ -95,11 +95,11 @@ local function onLevelStart_Locust()
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, onLevelStart_Locust)
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, onLevelStart_Locust)
 
 local function ChallengeMarblesInit(_, player)
-	if player and Isaac.GetChallenge() == mod.RepmChallenges.CHALLENGE_LOCUST_KING then
+	if player and Isaac.GetChallenge() == Mod.RepmChallenges.CHALLENGE_LOCUST_KING then
 		player:AddCollectible(CollectibleType.COLLECTIBLE_MARBLES, 0, false)
 	end
 end
-mod:AddCallback(ModCallbacks.MC_PLAYER_INIT_POST_LEVEL_INIT_STATS, ChallengeMarblesInit)
+Mod:AddCallback(ModCallbacks.MC_PLAYER_INIT_POST_LEVEL_INIT_STATS, ChallengeMarblesInit)

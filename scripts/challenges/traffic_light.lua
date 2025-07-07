@@ -1,14 +1,16 @@
-local mod = RepMMod
+local Mod = RepMMod
+local SaveManager = Mod.saveManager
 
 local lightSprite = Sprite("gfx/trafficlight.anm2", true)
 lightSprite:Play("GreenLight", true)
 
 local function trafficRender()
-	if Isaac.GetChallenge() == mod.RepmChallenges.CHALLENGE_TRAFFIC_LIGHT
+	local runSave = Mod:RunSave()
+	if Isaac.GetChallenge() == Mod.RepmChallenges.CHALLENGE_TRAFFIC_LIGHT
     and Game():GetRoom():GetRenderMode() ~= RenderMode.RENDER_WATER_REFLECT
-	and mod.saveTable.RedLightSign ~= nil then
-		if lightSprite:GetAnimation() ~= mod.saveTable.RedLightSign then
-			lightSprite:Play(mod.saveTable.RedLightSign)
+	and runSave.RedLightSign ~= nil then
+		if lightSprite:GetAnimation() ~= runSave.RedLightSign then
+			lightSprite:Play(runSave.RedLightSign)
 		end
 		local horiz, vert = Isaac.GetScreenWidth() / 2, Isaac.GetScreenHeight() * 0.05
 		if not RoomTransition.IsRenderingBossIntro() then
@@ -16,7 +18,7 @@ local function trafficRender()
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_HUD_RENDER, trafficRender)
+Mod:AddCallback(ModCallbacks.MC_POST_HUD_RENDER, trafficRender)
 
 --local saveTimer
 
@@ -29,50 +31,52 @@ local function IsMoving(player)
 end
 
 local function changeLights()
-	if Isaac.GetChallenge() == mod.RepmChallenges.CHALLENGE_TRAFFIC_LIGHT  then
-		if not mod.saveTable.saveTimer then
-			mod.saveTable.saveTimer = mod.RNG:RandomInt(1350) + 300
-			mod.saveTable.RedLightSign = "GreenLight"
+	if Isaac.GetChallenge() == Mod.RepmChallenges.CHALLENGE_TRAFFIC_LIGHT  then
+		local runSave = Mod:RunSave()
+		if not runSave.saveTimer then
+			runSave.saveTimer = Mod.RNG:RandomInt(1350) + 300
+			runSave.RedLightSign = "GreenLight"
 		end
-		if mod.saveTable.saveTimer <= 0 then
-			if mod.saveTable.RedLightSign == "RedLight" then
-				mod.saveTable.saveTimer = mod.RNG:RandomInt(1350) + 300
-				mod.saveTable.RedLightSign = "GreenLight"
+		if runSave.saveTimer <= 0 then
+			if runSave.RedLightSign == "RedLight" then
+				runSave.saveTimer = Mod.RNG:RandomInt(1350) + 300
+				runSave.RedLightSign = "GreenLight"
 				SFXManager():Play(SoundEffect.SOUND_THUMBSUP, 2)
-			elseif mod.saveTable.RedLightSign == "YellowLight" then
-				mod.saveTable.saveTimer = mod.RNG:RandomInt(300) + 30
-				mod.saveTable.RedLightSign = "RedLight"
+			elseif runSave.RedLightSign == "YellowLight" then
+				runSave.saveTimer = Mod.RNG:RandomInt(300) + 30
+				runSave.RedLightSign = "RedLight"
 				SFXManager():Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ, 2)
 			else
-				mod.saveTable.saveTimer = 30
-				mod.saveTable.RedLightSign = "YellowLight" --SOUND_TOOTH_AND_NAIL_TICK
+				runSave.saveTimer = Mod.RNG:RandomInt(30, 60)
+				runSave.RedLightSign = "YellowLight" --SOUND_TOOTH_AND_NAIL_TICK
 				SFXManager():Play(SoundEffect.SOUND_BUTTON_PRESS, 2)
 			end
 		elseif Game():GetRoom():GetAliveEnemiesCount() > 0 then
-			mod.saveTable.saveTimer = mod.saveTable.saveTimer - 1
+			runSave.saveTimer = runSave.saveTimer - 1
 		else
-			if mod.saveTable.RedLightSign == "YellowLight"
-			or mod.saveTable.saveTimer < 90 and mod.saveTable.RedLightSign == "GreenLight" then
-				mod.saveTable.saveTimer = 90
-				if mod.saveTable.RedLightSign == "YellowLight" then
+			if runSave.RedLightSign == "YellowLight"
+			or runSave.saveTimer < 90 and runSave.RedLightSign == "GreenLight" then
+				runSave.saveTimer = 90
+				if runSave.RedLightSign == "YellowLight" then
 					SFXManager():Play(SoundEffect.SOUND_THUMBSUP, 2)
 				end
-				mod.saveTable.RedLightSign = "GreenLight"
-			elseif mod.saveTable.RedLightSign == "RedLight" then
-				mod.saveTable.saveTimer = mod.saveTable.saveTimer - 4
+				runSave.RedLightSign = "GreenLight"
+			elseif runSave.RedLightSign == "RedLight" then
+				runSave.saveTimer = runSave.saveTimer - 4
 			end
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_UPDATE, changeLights)
+Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, changeLights)
 
 ---@param player EntityPlayer
 local function LightPlayer(_, player)
-	if Isaac.GetChallenge() ~= mod.RepmChallenges.CHALLENGE_TRAFFIC_LIGHT then
+	if Isaac.GetChallenge() ~= Mod.RepmChallenges.CHALLENGE_TRAFFIC_LIGHT then
 		return
 	end
-    local pdata = mod:GetData(player)
-    if mod.saveTable.RedLightSign == "RedLight" then
+    local pdata = Mod:GetData(player)
+	local runData = Mod:RunSave()
+    if runData.RedLightSign == "RedLight" then
 		if IsMoving(player) 
 		and player:GetDamageCountdown() <= 0 then
 			pdata.RedLightDamage = true
@@ -82,12 +86,12 @@ local function LightPlayer(_, player)
 		pdata.RedLightDamage = nil
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, LightPlayer, PlayerVariant.PLAYER)
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, LightPlayer, PlayerVariant.PLAYER)
 
-mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, function(_, ent, damage, flags, source, cd)
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, function(_, ent, damage, flags, source, cd)
 	local player = ent:ToPlayer()
-	if mod:GetData(player).RedLightDamage and flags & DamageFlag.DAMAGE_COUNTDOWN ~= 0 then
-		mod:GetData(player).RedLightDamage = nil
+	if Mod:GetData(player).RedLightDamage and flags & DamageFlag.DAMAGE_COUNTDOWN ~= 0 then
+		Mod:GetData(player).RedLightDamage = nil
 		player:ResetDamageCooldown()
 		player:SetMinDamageCooldown(20)
 	end
