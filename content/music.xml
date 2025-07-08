@@ -103,7 +103,7 @@
 	<track name="Repentance Negative Utero" path="RepentanceNegative/Repentance/Utero.ogg" layer="RepentanceNegative/Repentance/Utero Heavy.ogg" loop="true" layermode="2" layerfadespeed="0.005" />
 	
 	<!-- Modded Music -->
-	<track name="Repentance Negative Downpour" path="RepentanceNegative/Repentance/Downpour.ogg" layer="RepentanceNegative/Repentance/Downpour Heavy.ogg" loop="true" layermode="2" layerfadespeed="0.005" />
+	<track name="Repentance Negative Downpour" intro="RepentanceNegative/Repentance/Downpour intro.ogg" layerintro="RepentanceNegative/Repentance/Downpour layer intro.ogg" path="RepentanceNegative/Repentance/Downpour loop.ogg" layer="RepentanceNegative/Repentance/Downpour layer.ogg" loop="true" layermode="2" layerfadespeed="0.005" />
 	
 	<!-- Vanilla Music -->
 	<track name="Repentance Negative Dross" path="RepentanceNegative/Repentance/Sewer.ogg" layer="RepentanceNegative/Repentance/Sewer Heavy.ogg" loop="true" layermode="2" layerfadespeed="0.005" />
