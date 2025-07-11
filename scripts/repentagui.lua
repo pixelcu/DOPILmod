@@ -198,7 +198,7 @@ local function InitMusicSettings()
 			ig.AddCheckbox(
 				MakeElementName(parentId, id, "Tab", "Music"),
 				MakeElementName(parentId, id, "Tab", "Music", name),
-				name,
+				name:gsub("Repentance Negative", ""),
 				function(checked)
 					local musicData = Mod.GetModdedMusicData()
 					musicData.Music[name] = checked and 1 or 2
@@ -220,7 +220,7 @@ local function InitMusicSettings()
 			ig.AddCheckbox(
 				MakeElementName(parentId, id, "Tab", "Jingle"),
 				MakeElementName(parentId, id, "Tab", "Jingle", name),
-				name,
+				name:gsub("Repentance Negative", ""),
 				function(checked)
 					local musicData = Mod.GetModdedMusicData()
 					musicData.Jingle[name] = checked and 1 or 2

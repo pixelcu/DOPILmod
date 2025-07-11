@@ -15,9 +15,9 @@
 	
 	<!-- Modded Music -->
 	<track name="Repentance Negative Depths" intro="RepentanceNegative/The Depths Intro.ogg" path="RepentanceNegative/The Depths.ogg" loop="true" />
-	
+	<track name="Repentance Negative Necropolis" intro="RepentanceNegative/Necropolis Intro.ogg" path="RepentanceNegative/Necropolis.ogg" layerintro="RepentanceNegative/Necropolis Layer Intro.ogg" layer="RepentanceNegative/Necropolis Layer.ogg" loop="true" layermode="2" layerfadespeed="0.005" />
+
 	<!-- Vanilla Music -->
-	<track name="Repentance Negative Necropolis" intro="RepentanceNegative/Necropolis Intro.ogg" path="RepentanceNegative/Necropolis.ogg" layerintro="RepentanceNegative/Necropolis Layer Intro.ogg" layer="RepentanceNegative/Necropolis Layer.ogg" loop="true" />
 	<track name="Repentance Negative Dank Depths" intro="RepentanceNegative/afterbirth/Pulso Profundum (dank Depths ) intro.ogg" path="RepentanceNegative/afterbirth/Pulso Profundum (dank Depths ) Loop.ogg" layerintro="RepentanceNegative/afterbirth/Pulso Profundum (dank Depths ) intro silent.ogg" layer="RepentanceNegative/afterbirth/Pulso Profundum (dank Depths ) Layer.ogg" loop="true" />
 
 	<!-- Modded Music -->

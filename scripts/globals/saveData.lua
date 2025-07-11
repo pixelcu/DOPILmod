@@ -19,6 +19,7 @@ local MusicTable = {
 	[Music.MUSIC_BURNING_BASEMENT] = prefix .. "Burning Basement",
 	[Music.MUSIC_CAVES] = prefix .. "Caves",
 	[Music.MUSIC_DEPTHS] = prefix .. "Depths",
+	[Music.MUSIC_NECROPOLIS] = prefix .. "Necropolis",
 	[Music.MUSIC_CATHEDRAL] = prefix .. "Cathedral",
 	[Music.MUSIC_WOMB_UTERO] = prefix .. "Womb/Utero",
 	[Music.MUSIC_BOSS] = prefix .. "Boss",
@@ -74,7 +75,7 @@ function Mod:GetDefaultFileSave(key)
 end
 
 function Mod:SaveGameData()
-	if SaveManager.Utility.IsDataInitialized() then
+	if SaveManager.Utility.IsDataInitialized() and SaveManager.IsLoaded() then
 		SaveManager.Save()
 	elseif Mod:HasData() then
 		local data = json.decode(Mod:LoadData())
@@ -107,7 +108,7 @@ local function LoadSettingsData()
 				StartThumbsUp = perData.file.other.StartThumbsUp
 			end
 			if type(perData.file.other.Music) == "table" then
-				MusicData = perData.file.other.Music
+				MusicData = SaveManager.Utility.PatchSaveFile(perData.file.other.Music, MusicData)
 			end
 		end
 	else
