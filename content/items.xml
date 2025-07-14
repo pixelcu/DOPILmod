@@ -12,7 +12,7 @@
 	<passive id="15" name = "Minus" description = "Don't you dare take it!" gfx="minus.png" quality="0" />
     <active id="16" name = "Pixelated Cube" description = "Where babies come from"  gfx = "pixelated cube.png" maxcharges="6" quality="1" />
     <passive id="17" name = "110V" description = "High voltage" gfx = "110V.png" quality="1" />
-    <passive id="18" name = "Deliriums Eye" description = "I'm seeing double" gfx = "Dilirium eye.png" cache="tearcolor" quality="2" />
+    <passive id="18" name = "Delirium's Eye" description = "I'm seeing double" gfx = "Dilirium eye.png" cache="tearcolor" quality="2" />
 	<passive id="19" name = "Flower Tea" description = "Is this calming?" gfx = "flower.png" quality="1" cache="all" hearts="24" />
 	<passive id="20" name="Holy Master Key" description="Eternal roulette" gfx="otmich.png" quality="2" />
 	<passive id="21" name="Sandwich" description="Tasty!" gfx="buter.png" maxhearts="2" cache="all" quality="1" />
