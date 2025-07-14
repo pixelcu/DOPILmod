@@ -315,7 +315,7 @@ local function InitializeWisp(wisp)
 	tab.Initialized = true
 	
 	if NO_COSTUME_GROUPS[tab.Group] and not wisp.Player:HasCollectible(wisp.SubType, true) then
-		wisp.Player:RemoveCostume(Isaac.GetItemConfig():GetCollectible(wisp.SubType))
+		wisp.Player:RemoveCostume(Mod.ItemConfig:GetCollectible(wisp.SubType))
 	end
 end
 
@@ -326,7 +326,7 @@ function HiddenItemManager:CheckCostumes()
 		local player = GetPlayer(data)
 		if wisp and player then
 			if NO_COSTUME_GROUPS[data.Group] and not player:HasCollectible(wisp.SubType, true) then
-				player:RemoveCostume(Isaac.GetItemConfig():GetCollectible(wisp.SubType))
+				player:RemoveCostume(Mod.ItemConfig:GetCollectible(wisp.SubType))
 			end
 		end
 	end

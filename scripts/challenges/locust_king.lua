@@ -6,7 +6,7 @@ local function collideItemPedestalAbs(_, pickup, collider, low)
 		player
 		and Isaac.GetChallenge() == Mod.RepmChallenges.CHALLENGE_LOCUST_KING
 		and pickup.SubType ~= 0
-		and not Isaac.GetItemConfig():GetCollectible(pickup.SubType):HasTags(ItemConfig.TAG_QUEST)
+		and not Mod.ItemConfig:GetCollectible(pickup.SubType):HasTags(ItemConfig.TAG_QUEST)
 		and pickup.SubType ~= CollectibleType.COLLECTIBLE_MORE_OPTIONS
 	then
 		SFXManager():Play(SoundEffect.SOUND_FART, 2)

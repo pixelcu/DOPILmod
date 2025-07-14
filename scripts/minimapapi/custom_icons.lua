@@ -75,7 +75,7 @@ MinimapAPI:AddIcon("HorsePillWhiteYellow", MinimapAPI.CustomIcons, "CustomIconHo
 MinimapAPI:AddIcon("HorsePillGold", MinimapAPI.CustomIcons, "CustomIconHorsePillGold", 0)
 
 
-local itemConfig = Isaac.GetItemConfig()
+local itemConfig = Mod.ItemConfig
 MinimapAPI:AddPickup("HeavenDoor","HeavenDoor",1000,39,0,function(p) return Game():GetLevel():IsAscent() or Isaac.GetChallenge() == Challenge.CHALLENGE_BACKASSWARDS end,"quest",15000)
 MinimapAPI:AddPickup("WhiteFireplace","WhiteFireplace",33,4,-1,nil,"quest",15000)
 MinimapAPI:AddPickup("Trophy","CheckeredFlag",5,370,-1,nil,"trophies",15000)

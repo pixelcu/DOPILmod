@@ -26,7 +26,7 @@ end
 table.insert(CustomHealthAPI.CallbacksToRemove, CustomHealthAPI.Helper.RemoveItemPedestalCollisionCallback)
 
 function CustomHealthAPI.Mod:ItemPedestalCollisionCallback(pickup, collider)
-	local collectibleConfig = Isaac.GetItemConfig():GetCollectible(pickup.SubType)
+	local collectibleConfig = Mod.ItemConfig:GetCollectible(pickup.SubType)
 	local isActive = nil
 	if collectibleConfig then
 		isActive = collectibleConfig.Type == ItemType.ITEM_ACTIVE

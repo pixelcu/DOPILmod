@@ -1,5 +1,5 @@
 local Mod = RepMMod
-local config = Isaac.GetItemConfig()
+local config = Mod.ItemConfig
 
 local function IsBurntColver(trinket)
     return trinket == Mod.RepmTypes.TRINKET_BURNT_CLOVER or trinket == Mod.RepmTypes.TRINKET_BURNT_CLOVER | TrinketType.TRINKET_GOLDEN_FLAG

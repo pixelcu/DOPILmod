@@ -82,8 +82,8 @@ local function tryOpenDoor_Fro_Polaroid(_, player)
 		if player:HasTrinket(Mod.RepmTypes.TRINKET_FROZEN_POLAROID) then
 			hiddenItemManager:Add(player, CollectibleType.COLLECTIBLE_MORE_OPTIONS)
 			hiddenItemManager:Add(player, CollectibleType.COLLECTIBLE_STEAM_SALE)
-			local optionsConfig = Isaac.GetItemConfig():GetCollectible(CollectibleType.COLLECTIBLE_MORE_OPTIONS)
-			local steamConfig = Isaac.GetItemConfig():GetCollectible(CollectibleType.COLLECTIBLE_STEAM_SALE)
+			local optionsConfig = Mod.ItemConfig:GetCollectible(CollectibleType.COLLECTIBLE_MORE_OPTIONS)
+			local steamConfig = Mod.ItemConfig:GetCollectible(CollectibleType.COLLECTIBLE_STEAM_SALE)
 			player:RemoveCostume(optionsConfig)
 			player:RemoveCostume(steamConfig)
 		elseif

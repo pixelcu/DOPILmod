@@ -15,7 +15,7 @@ local function options_Wow_Room()
 			if ItemId then
 				local obj = Isaac.Spawn(5, 100, ItemId, pos, Vector.Zero, nil):ToPickup()
 				
-				obj.Price = Isaac.GetItemConfig():GetCollectible(ItemId).ShopPrice
+				obj.Price = Mod.ItemConfig:GetCollectible(ItemId).ShopPrice
 				obj.ShopItemId = -50
 				local poof = Isaac.Spawn(1000, 16, 1, pos, Vector.Zero, nil):ToEffect()
 				poof:GetSprite().Scale = Vector(0.6, 0.6)

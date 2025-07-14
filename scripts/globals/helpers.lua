@@ -131,7 +131,7 @@ function Mod.GetByQuality(min, max, pool, rnd, descrease)
         rng:Next()
         for i = 1, 100 do
             local new = Itempool:GetCollectible(pool, false, rng:GetSeed())
-            local data = Isaac.GetItemConfig():GetCollectible(new)
+            local data = Mod.ItemConfig:GetCollectible(new)
             if data.Quality and data.Quality >= min and data.Quality <= max then
 				if descrease then
 					Itempool:RemoveCollectible(new)

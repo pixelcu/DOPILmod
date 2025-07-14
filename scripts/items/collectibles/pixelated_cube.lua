@@ -1,7 +1,7 @@
 local Mod = RepMMod
 
 local PixelatedCubeBabiesList = {}
-local config = Isaac.GetItemConfig()
+local config = Mod.ItemConfig
 
 local function PixelatedCubeUse(_, itemID, rng, player)
 	-- pixelated cube

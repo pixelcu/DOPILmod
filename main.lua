@@ -8,6 +8,7 @@ RepMMod = Mod
 Mod.Game = Game()
 Mod.Room = function() return Mod.Game:GetRoom() end
 Mod.Level = function() return Mod.Game:GetLevel() end
+Mod.ItemConfig = Isaac.GetItemConfig()
 
 local version = ": 1.3" --added by me (pedro), for making updating version number easier
 local newRoomFreeze = false

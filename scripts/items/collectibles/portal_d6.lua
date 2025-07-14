@@ -170,12 +170,12 @@ local function PortalUse(_, item, rng, player, Flags, slot, customVarData)
                     entity:Remove()
                 end
             end
-            --Isaac.GetItemConfig():GetCollectible(Mod.RepmTypes.COLLECTIBLE_PORTAL_D6).MaxCharges = 3
+            --Mod.ItemConfig:GetCollectible(Mod.RepmTypes.COLLECTIBLE_PORTAL_D6).MaxCharges = 3
             return {ShowAnim = true}
         else
             saveData["PortalD6"][varData].Use = 0
             if #saveData["PortalD6"][varData].Items == 0 or type(saveData["PortalD6"][varData].Items) == "nil" then
-                --Isaac.GetItemConfig():GetCollectible(Mod.RepmTypes.COLLECTIBLE_PORTAL_D6).MaxCharges = 6
+                --Mod.ItemConfig:GetCollectible(Mod.RepmTypes.COLLECTIBLE_PORTAL_D6).MaxCharges = 6
                 return {ShowAnim = true}
             end
             saveData["PortalD6"][varData].Use = 2
@@ -251,7 +251,7 @@ local function PortalUse(_, item, rng, player, Flags, slot, customVarData)
                 Mod:GetData(pickup).PortalD6KeepPrice = nil
             end
             saveData["PortalD6"][varData].Items = {}
-            --Isaac.GetItemConfig():GetCollectible(Mod.RepmTypes.COLLECTIBLE_PORTAL_D6).MaxCharges = 10
+            --Mod.ItemConfig:GetCollectible(Mod.RepmTypes.COLLECTIBLE_PORTAL_D6).MaxCharges = 10
             return {
                 Discharge = true,
                 Remove = false,
