@@ -29,6 +29,7 @@ end)
 Mod.hiddenItemManager = include("scripts.lib.hidden_item_manager")
 Mod.hiddenItemManager:Init(Mod)
 Mod.hiddenItemManager:HideCostumes()
+Mod.Afterimage = include("scripts.lib.afterimage")
 
 ---@type table[]
 local getData = {}
