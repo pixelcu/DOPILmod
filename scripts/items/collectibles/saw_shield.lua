@@ -441,8 +441,6 @@ end, Mod.RepmTypes.COLLECTIBLE_SAW_SHIELD)
 local function ShieldThrowDash(player, slot, direction, doDash)
 	if doDash or slot == -1 then
 		player.Velocity = player:GetAimDirection():Resized(40)
-		--player:UseActiveItem(CollectibleType.COLLECTIBLE_MARS)
-		Mod.Afterimage:DoAfterimage(player, 6)
 		player:DischargeActiveItem(slot)
 	else
 		local shl = Isaac.Spawn(
