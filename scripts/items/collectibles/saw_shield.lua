@@ -434,13 +434,32 @@ Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function(_, collectible, rng, player, 
 	return { Discharge = false, Remove = false, ShowAnim = false }
 end, Mod.RepmTypes.COLLECTIBLE_SAW_SHIELD)
 
+---@param ent Entity
+---@param hook InputHook
+---@param action ButtonAction
+Mod:AddCallback(ModCallbacks.MC_INPUT_ACTION, function(_, ent, hook, action)
+	if ent:ToPlayer() and ent:GetData().ShieldDash then
+		local val = ent:GetData().ShieldDash.Direction
+		---@cast val Vector
+		if action == ButtonAction.ACTION_RIGHT and val.X > 0
+		or action == ButtonAction.ACTION_LEFT and val.X < 0 then
+			return math.abs(val.X)
+		end
+		if action == ButtonAction.ACTION_DOWN and val.Y > 0
+		or action == ButtonAction.ACTION_UP and val.Y < 0 then
+			return math.abs(val.Y)
+		end
+	end
+end, InputHook.GET_ACTION_VALUE)
+
 ---@param player EntityPlayer
 ---@param slot ActiveSlot | integer
 ---@param direction Vector
 ---@param doDash boolean
 local function ShieldThrowDash(player, slot, direction, doDash)
 	if doDash or slot == -1 then
-		player.Velocity = player:GetAimDirection():Resized(40)
+		player.Velocity = direction:Resized(40)
+		player:GetData().ShieldDash = {Timeout = 10, Direction = direction:Normalized()}
 		player:DischargeActiveItem(slot)
 	else
 		local shl = Isaac.Spawn(
@@ -485,6 +504,12 @@ end, Mod.RepmTypes.COLLECTIBLE_SAW_SHIELD)
 ---@param player EntityPlayer
 Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function(_, player)
 	local d = player:GetData()
+	if d.ShieldDash then
+		d.ShieldDash.Timeout = d.ShieldDash.Timeout - 1
+		if d.ShieldDash.Timeout == 0 then
+			d.ShieldDash = nil
+		end
+	end
 	if not d.ShieldWaitFrames then
 		d.ShieldWaitFrames = 0
 	end
