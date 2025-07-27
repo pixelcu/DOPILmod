@@ -458,7 +458,7 @@ end, InputHook.GET_ACTION_VALUE)
 ---@param doDash boolean
 local function ShieldThrowDash(player, slot, direction, doDash)
 	if doDash or slot == -1 then
-		player.Velocity = direction:Resized(40)
+		player.Velocity = direction:Resized(30)
 		player:GetData().ShieldDash = {Timeout = 10, Direction = direction:Normalized()}
 		player:DischargeActiveItem(slot)
 	else
@@ -496,6 +496,36 @@ local function ShieldThrowDash(player, slot, direction, doDash)
 		shl.PositionOffset = Vector(0, -25 * player.SpriteScale.Y) --ent.PositionOffset
 	end
 end
+
+---@param player EntityPlayer
+---@param collider Entity
+---@param low boolean
+Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_COLLISION, function(_, player, collider, low)
+	if player:GetData().ShieldDash then
+		if collider:IsEnemy() and collider:IsActiveEnemy() and not collider:IsInvincible() then
+			collider:TakeDamage(player.Damage * 4, DamageFlag.DAMAGE_CRUSH, EntityRef(player), 30)
+			collider:AddBleeding(EntityRef(player), 10)
+			collider:AddKnockback(EntityRef(player), (player.Velocity):Resized(40), 5, true)
+			
+			collider:AddEntityFlags(EntityFlag.FLAG_EXTRA_GORE)
+			Isaac.CreateTimer(function()
+				if not collider:IsDead() then
+					collider:ClearEntityFlags(EntityFlag.FLAG_EXTRA_GORE)
+				end
+			end, 20, 1, false)
+			
+			player.Velocity = Vector.Zero
+			player:SetMinDamageCooldown(30)
+			player:GetData().ShieldDash = nil
+		end
+	end
+end, PlayerVariant.PLAYER)
+
+Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, function(_, entity, amount, flags, source, cd)
+	if entity:GetData().ShieldDash then
+		return false
+	end
+end, EntityType.ENTITY_PLAYER)
 
 Mod:AddCallback(ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE, function(_, slot, player, currentMin)
 	return 0
