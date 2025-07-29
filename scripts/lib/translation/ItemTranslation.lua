@@ -136,7 +136,7 @@ return function(ModName, Modver)
 
 	function ITrsl.TranslatePickedPickup(player, Pickup)
 		if IT.MenuData.cardpickupTranslate ~= true then
-			local PickupName = Mod.ItemConfig:GetCard(Pickup).Name
+			local PickupName = Isaac.GetItemConfig():GetCard(Pickup).Name
 
 			if PickupName and IT.CardTabl[PickupName] and CheckModEnable(IT.CardTabl[PickupName]) then
 				if IT.CardTabl[PickupName][GetLang()] then
@@ -214,7 +214,7 @@ return function(ModName, Modver)
 
 	function ITrsl.TranslateUsedPill(_, ID, p, flag)
 		if IT.MenuData.cardpickupTranslate ~= true then
-			local PillName = Mod.ItemConfig:GetPillEffect(ID).Name
+			local PillName = Isaac.GetItemConfig():GetPillEffect(ID).Name
 
 			if PillName and IT.PillsTabl[PillName] and CheckModEnable(IT.PillsTabl[PillName]) == true then
 				if IT.PillsTabl[PillName][GetLang()] then
@@ -260,7 +260,7 @@ return function(ModName, Modver)
 			local lang = GetLang()
 
 			if player:GetCard(0) ~= 0 then
-				local name = Mod.ItemConfig:GetCard(player:GetCard(0)).Name
+				local name = Isaac.GetItemConfig():GetCard(player:GetCard(0)).Name
 				if IT.CardTabl[name] and IT.CardTabl[name][lang] and CheckModEnable(IT.CardTabl[name]) then
 					local str = IT.CardTabl[name][lang][1]
 					if
@@ -273,7 +273,7 @@ return function(ModName, Modver)
 				end
 			elseif player:GetPill(0) ~= 0 and player:GetPill(0) ~= 14 then
 				local pill = game:GetItemPool():GetPillEffect(player:GetPill(0))
-				local name = Mod.ItemConfig:GetPillEffect(pill).Name
+				local name = Isaac.GetItemConfig():GetPillEffect(pill).Name
 				local check = IT.CheckedPills[name] or player:HasCollectible(CollectibleType.COLLECTIBLE_PHD, false)
 
 				if check and IT.PillsTabl[name] and CheckModEnable(IT.PillsTabl[name]) and IT.PillsTabl[name][lang] then
@@ -323,7 +323,7 @@ return function(ModName, Modver)
 
 	function ITrsl.UsedPillSave(_, ID, p, flag)
 		if p:GetPill(0) ~= 14 then
-			IT.CheckedPills[Mod.ItemConfig:GetPillEffect(ID).Name] = true
+			IT.CheckedPills[Isaac.GetItemConfig():GetPillEffect(ID).Name] = true
 		end
 	end
 
