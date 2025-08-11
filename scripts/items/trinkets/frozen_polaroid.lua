@@ -1,7 +1,6 @@
 local Mod = RepMMod
 local game = Game()
 local hiddenItemManager = Mod.hiddenItemManager
-local SaveManager = Mod.saveManager
 
 local function CanDropOtherTrinket(t1, t2, isMatchStick)
 	return t1 == Mod.RepmTypes.TRINKET_FROZEN_POLAROID
@@ -26,13 +25,15 @@ local function stickyTrinket(_, pickup, collider, low)
 	if player:GetMaxTrinkets() > 1 then
 		local t1 = player:GetTrinket(0)
 		local t2 = player:GetTrinket(1)
-		if t1 ~= 0 and t2 ~= 0 and CanDropOtherTrinket(t1, t2, pickup.SubType == TrinketType.TRINKET_MATCH_STICK)  then
+		if t1 ~= 0 and t2 ~= 0 and CanDropOtherTrinket(t1, t2, pickup.SubType == TrinketType.TRINKET_MATCH_STICK) then
 			player:TryRemoveTrinket(Mod.RepmTypes.TRINKET_FROZEN_POLAROID)
 			player:DropTrinket(player.Position, true)
 			player:AddTrinket(Mod.RepmTypes.TRINKET_FROZEN_POLAROID, false)
 			return nil
 		else
-			return pickup:IsShopItem()
+			if player:HasTrinket(Mod.RepmTypes.TRINKET_FROZEN_POLAROID) and player:HasTrinket(TrinketType.TRINKET_TICK) then
+				return pickup:IsShopItem()
+			end
 		end
 	else
 		return pickup:IsShopItem()
@@ -157,15 +158,16 @@ end
 local function checkEntityForChampionizing(entity)
 	return not entity:IsChampion()
 		and not entity:IsBoss()
-		and Mod.RNG:RandomInt(8) == 1
+		and entity:GetDropRNG():RandomInt(3) == 1
 		and not Mod:isBasegameSegmented(entity)
 		and entity.Type ~= EntityType.ENTITY_FIREPLACE
 end
 
+---@param npc EntityNPC
 local function OnEntitySpawn_Polar(_, npc)
-	if PlayerManager.AnyoneHasTrinket ~= Mod.RepmTypes.TRINKET_FROZEN_POLAROID then
+	if PlayerManager.AnyoneHasTrinket(Mod.RepmTypes.TRINKET_FROZEN_POLAROID) then
 		if checkEntityForChampionizing(npc) == true then
-			npc:MakeChampion(Mod.RNG:GetSeed())
+			npc:MakeChampion(npc.InitSeed)
 		end
 	end
 end
