@@ -35,6 +35,8 @@
 	<active id="36" name="Portal D6" description="Portal?" gfx="portald6.png" maxcharges = "6" quality="4" />
 
 	<active id="37" name="Saw Shield" craftquality="3" chargetype="special" initcharge="0" maxcharges="90" description="Tear them at distance!" tags="offensive" gfx="ShieldSaw.png" quality="3" />
+	<passive id="38" name="Lil Witness" cache="familiars" description="TODO: FILL ME" tags="offensive monstermanual summonable" gfx="lil_witness.png" quality="2" />
+
 <!-- Trinkets -->
 	<trinket name="Micro Amplifier" description="STOP!" gfx="microamplifier.png" />
 	<trinket name="Burnt Clover" description="The treasury is surprising" gfx="Clover.png" />

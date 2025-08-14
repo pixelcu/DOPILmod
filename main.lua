@@ -226,6 +226,7 @@ include("scripts.items.pick ups.pills.groovy")
 include("scripts.items.collectibles.strong_spirit")
 include("scripts.items.collectibles.portal_d6")
 include("scripts.items.pick ups.chests.eee_chest")
+include("scripts.items.collectibles.lil_witness")
 
 Mod:AddCallback(ModCallbacks.MC_MAIN_MENU_RENDER, function()
 	if TitleMenu.GetSprite():GetFilename() ~= "gfx/ui/main menu/titlemenu_repm.anm2" then
