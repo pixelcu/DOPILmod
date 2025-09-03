@@ -22,9 +22,17 @@ print("Thanks for playing the TBOI REP NEGATIVE [Community Mod] - Currently runn
 Mod.saveManager = include("scripts.lib.save_manager")
 local SaveManager = Mod.saveManager
 SaveManager.Init(Mod)
+require("scripts.minimapapi.init")
 local MinimapAPI = require("scripts.minimapapi")
+if MinimapAPI.BranchVersion == "RepentanceNegative" then
+	MinimapAPI.DisableSaving = true
+end
+local loaded = false
 Mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function()
-	SaveManager.InitMinimapAPI(MinimapAPI, "RepentanceNegative")
+	if not loaded then
+		SaveManager.InitMinimapAPI(MinimapAPI, "RepentanceNegative")
+		loaded = true
+	end
 end)
 Mod.hiddenItemManager = include("scripts.lib.hidden_item_manager")
 Mod.hiddenItemManager:Init(Mod)
