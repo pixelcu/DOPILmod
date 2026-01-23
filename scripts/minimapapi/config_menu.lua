@@ -720,19 +720,65 @@ if modconfigexists then
 		{
 			Type = MCM.OptionType.NUMBER,
 			CurrentSetting = function()
-				return MinimapAPI.Config.MinimapTransparency
+				return MinimapAPI.Config.TransparencySmallMap
 			end,
 			Minimum = 0,
 			Maximum = 1,
 			ModifyBy = 0.1,
 			Display = function()
-				return "Minimap Transparency: " .. MinimapAPI.Config.MinimapTransparency
+				return "Transparency (small map): " .. MinimapAPI.Config.TransparencySmallMap
 			end,
 			OnChange = function(currentNum)
-				MinimapAPI.Config.MinimapTransparency = currentNum
+				MinimapAPI.Config.TransparencySmallMap = currentNum
 			end,
 			Info = {
-				"Changes transparency of the map.","Values other than 1 will cause the room shadow/border to not be rendered to improve visiblity"
+				"Changes transparency of the small map with borders.","Values other than 1 will cause the room shadow/border to not be rendered to improve visiblity"
+			}
+		}
+	)
+
+-- Uses Ingame Options if available 
+if not Options then
+	MCM.AddSetting(
+		"Minimap API",
+		"Colors",
+		{
+			Type = MCM.OptionType.NUMBER,
+			CurrentSetting = function()
+				return MinimapAPI.Config.TransparencyLargeMap
+			end,
+			Minimum = 0,
+			Maximum = 1,
+			ModifyBy = 0.1,
+			Display = function()
+				return "Transparency (large map): " .. MinimapAPI.Config.TransparencyLargeMap
+			end,
+			OnChange = function(currentNum)
+				MinimapAPI.Config.TransparencyLargeMap = currentNum
+			end,
+			Info = {
+				"Changes transparency of the large map.","Values other than 1 will cause the room shadow/border to not be rendered to improve visiblity"
+			}
+		}
+	)
+end
+
+	MCM.AddSetting(
+		"Minimap API",
+		"Colors",
+		{
+			Type = MCM.OptionType.BOOLEAN,
+			CurrentSetting = function()
+				return MinimapAPI.Config.LargeMapFadeInOnHold
+			end,
+			Display = function()
+				return "Opaque Large map on Hold: " .. (MinimapAPI.Config.LargeMapFadeInOnHold and "ON" or "OFF")
+			end,
+			OnChange = function(currentBool)
+				MinimapAPI.Config.LargeMapFadeInOnHold = currentBool
+			end,
+			Info = {
+				"Enables if the map button is held down, will make the large map 100% opaque"
 			}
 		}
 	)
@@ -1024,6 +1070,69 @@ if modconfigexists then
 			end
 		}
 	)
+
+	MCM.AddSpace("Minimap API", "Colors")
+
+	MCM.AddSetting(
+		"Minimap API",
+		"Colors",
+		{
+			Type = MCM.OptionType.NUMBER,
+			CurrentSetting = function()
+				return MinimapAPI.Config.HighlightStartRoomColorR
+			end,
+			Minimum = 0,
+			Maximum = 1,
+			ModifyBy = 0.1,
+			Display = function()
+				return "Starting Room Color Red: " .. MinimapAPI.Config.HighlightStartRoomColorR
+			end,
+			OnChange = function(currentNum)
+				MinimapAPI.Config.HighlightStartRoomColorR = currentNum
+			end
+		}
+	)
+
+	MCM.AddSetting(
+		"Minimap API",
+		"Colors",
+		{
+			Type = MCM.OptionType.NUMBER,
+			CurrentSetting = function()
+				return MinimapAPI.Config.HighlightStartRoomColorG
+			end,
+			Minimum = 0,
+			Maximum = 1,
+			ModifyBy = 0.1,
+			Display = function()
+				return "Starting Room Color Green: " .. MinimapAPI.Config.HighlightStartRoomColorG
+			end,
+			OnChange = function(currentNum)
+				MinimapAPI.Config.HighlightStartRoomColorG = currentNum
+			end
+		}
+	)
+
+	MCM.AddSetting(
+		"Minimap API",
+		"Colors",
+		{
+			Type = MCM.OptionType.NUMBER,
+			CurrentSetting = function()
+				return MinimapAPI.Config.HighlightStartRoomColorB
+			end,
+			Minimum = 0,
+			Maximum = 1,
+			ModifyBy = 0.1,
+			Display = function()
+				return "Starting Room Color Blue: " .. MinimapAPI.Config.HighlightStartRoomColorB
+			end,
+			OnChange = function(currentNum)
+				MinimapAPI.Config.HighlightStartRoomColorB = currentNum
+			end
+		}
+	)
+	----------------------
 
 	MCM.AddSetting(
 		"Minimap API",

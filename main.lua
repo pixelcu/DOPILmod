@@ -8,7 +8,10 @@ RepMMod = Mod
 Mod.Game = Game()
 Mod.Room = function() return Mod.Game:GetRoom() end
 Mod.Level = function() return Mod.Game:GetLevel() end
+Mod.Music = MusicManager()
+Mod.SFX = SFXManager()
 Mod.ItemConfig = Isaac.GetItemConfig()
+Mod.PGD = Isaac.GetPersistentGameData()
 
 local version = ": 1.3" --added by me (pedro), for making updating version number easier
 local newRoomFreeze = false
@@ -21,12 +24,15 @@ print("Thanks for playing the TBOI REP NEGATIVE [Community Mod] - Currently runn
 
 Mod.saveManager = include("scripts.lib.save_manager")
 local SaveManager = Mod.saveManager
+
 SaveManager.Init(Mod)
 require("scripts.minimapapi.init")
+
 local MinimapAPI = require("scripts.minimapapi")
 if MinimapAPI.BranchVersion == "RepentanceNegative" then
 	MinimapAPI.DisableSaving = true
 end
+
 local loaded = false
 Mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function()
 	if not loaded then
@@ -34,48 +40,17 @@ Mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function()
 		loaded = true
 	end
 end)
+
 Mod.hiddenItemManager = include("scripts.lib.hidden_item_manager")
 Mod.hiddenItemManager:Init(Mod)
 Mod.hiddenItemManager:HideCostumes()
 
----@type table[]
-local getData = {}
-
----Slightly faster than calling GetData, a micromanagement at best
----
----However GetData() is wiped on POST_ENTITY_REMOVE, so this also helps retain the data until after entity removal
----@param ent Entity
----@return table
-function Mod:GetData(ent)
-	if not ent then return {} end
-	local ptrHash = GetPtrHash(ent)
-	local data = getData[ptrHash]
-	if not data then
-		local newData = {}
-		getData[ptrHash] = newData
-		data = newData
-	end
-	return data
-end
-
----@param ent Entity
----@return table?
-function Mod:TryGetData(ent)
-	local ptrHash = GetPtrHash(ent)
-	local data = getData[ptrHash]
-	return data
-end
-
-Mod:AddPriorityCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, CallbackPriority.LATE, function(_, ent)
-	getData[GetPtrHash(ent)] = nil
-end)
-
+include("scripts.lib.hud_helper")
 include("scripts.lib.customhealthapi.core")
 include("scripts.globals.saveData")
 include("scripts.globals.enums")
 include("scripts.globals.helpers")
 include("scripts.globals.achievements")
-include("scripts.lib.hellfirejuneMSHack")
 
 include("scripts.lib.translation.dsssettings")
 include("scripts.lib.customhealth")

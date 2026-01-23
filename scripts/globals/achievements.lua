@@ -1,5 +1,5 @@
 local Mod = RepMMod
-local pgd = Isaac.GetPersistentGameData()
+local pgd = Mod.PGD
 local SaveManager = Mod.saveManager
 
 local SimMarks = {

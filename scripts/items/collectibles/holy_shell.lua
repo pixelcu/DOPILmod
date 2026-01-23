@@ -1,19 +1,20 @@
 local Mod = RepMMod
 
-LASER_DURATION = 15
+local LASER_DURATION = 15
 
-local offset = Vector(20, -27)
+local offset = Vector(25, -35)
 
-local HolyShellChargeBar = include("scripts.lib.chargebar")("gfx/chargebar_axe.anm2", true)
+local HolyShellHudSprite = Sprite("gfx/chargebar.anm2", true)
 
 local function renderCharge(_, player)
-	local data = player:GetData()
+	local data = Mod:GetData(player)
 	if data.HolyshellFrame then
-		HolyShellChargeBar:SetCharge((data.HolyshellFrame / player.MaxFireDelay / 3), 1)
-		HolyShellChargeBar:Render(Isaac.WorldToScreen(player.Position) + offset + Vector(5, -10))
+		--HolyShellChargeBar:SetCharge((data.HolyshellFrame / player.MaxFireDelay / 3), 1)
+		--HolyShellChargeBar:Render(Isaac.WorldToScreen(player.Position) + offset + Vector(5, -10))
+		HudHelper.RenderChargeBar(HolyShellHudSprite, data.HolyshellFrame / player.MaxFireDelay / 3, 1, Isaac.WorldToScreen(player.Position) + offset)
 	end
 end
-Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_RENDER, renderCharge)
+--Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_RENDER, renderCharge)
 
 local function onUpdate(_, player)
 	local data = Mod:GetData(player)

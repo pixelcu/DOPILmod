@@ -8,6 +8,8 @@ local MenuProvider = {}
 
 local SaveManager = Mod.saveManager
 
+local pgd = Mod.PGD
+
 function MenuProvider.SaveSaveData()
 	Mod:SaveGameData()
 end
@@ -85,8 +87,6 @@ end
 local DSSInitializerFunction = include("scripts.lib.dssmenucore")
 local dssmod = DSSInitializerFunction(DSSModName, DSSCoreVersion, MenuProvider)
 
-local pdg = Isaac.GetPersistentGameData()
-
 local function InitMusicSettings()
 	local music, _ = Mod.GetModdedMusicTable()
 	local MM = {}
@@ -153,12 +153,12 @@ local function InitUnlockButtons()
 			variable = "RepMAchievement" .. ach.Name,
 			setting = 1,
 			load = function()
-				local val = pdg:Unlocked(ach.ID) and 2 or 1
+				local val = pgd:Unlocked(ach.ID) and 2 or 1
 				return val
 			end,
 			store = function(var)
 				if var == 2 then
-					pdg:Unlocked(ach.ID)
+					pgd:Unlocked(ach.ID)
 				else
 					Isaac.ExecuteCommand("lockachievement " .. ach.ID)
 				end
@@ -205,7 +205,7 @@ local function InitMenu()
 					strset = Mod.SplitString(Mod.GetDSSStr("unlock"), 21),
 					func = function(button, page, item)
 						for _, ach in pairs(Mod.RepmAchivements) do
-							Isaac.GetPersistentGameData():TryUnlock(ach.ID, true)
+							pgd:TryUnlock(ach.ID, true)
 						end
 						dssmod.closeMenu(item, false)
 					end,

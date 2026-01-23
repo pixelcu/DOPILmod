@@ -1,7 +1,8 @@
 local Mod = RepMMod
 local SaveManager = Mod.saveManager
+local pgd = Mod.PGD
 
-local AxeHudChargeBar = include("scripts.lib.chargebar")("gfx/chargebar_axe.anm2", true)
+local AxeHudSprite = Sprite("gfx/chargebar_axe.anm2", true)
 local framesToCharge = 235
 local axeRenderedPosition = Vector(20, -27)
 local sfx = SFXManager()
@@ -38,8 +39,9 @@ Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, onCache)
 local function renderSimCharge(_, player)
 	local data = Mod:GetData(player)
 	if player:GetPlayerType() == Mod.RepmTypes.CHARACTER_SIM then
-		AxeHudChargeBar:SetCharge(data.RepM_SimChargeFrames or 0, framesToCharge)
-		AxeHudChargeBar:Render(Isaac.WorldToScreen(player.Position) + axeRenderedPosition)
+		--AxeHudChargeBar:SetCharge(data.RepM_SimChargeFrames or 0, framesToCharge)
+		--AxeHudChargeBar:Render(Isaac.WorldToScreen(player.Position) + axeRenderedPosition)
+		HudHelper.RenderChargeBar(AxeHudSprite, data.RepM_SimChargeFrames or 0, framesToCharge, Isaac.WorldToScreen(player.Position) + axeRenderedPosition)
 	end
 end
 Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_RENDER, renderSimCharge)
@@ -137,7 +139,7 @@ local function onSimUpdate(_, player)
 
 	if isAim and runData.SimAxesCollected and runData.SimAxesCollected > 0 then
 		data.RepM_SimChargeFrames = (data.RepM_SimChargeFrames or 0) + 1
-	elseif not Game():IsPaused() then
+	else
 		data.RepM_SimChargeFrames = 0
 	end
 
@@ -161,7 +163,8 @@ local function onSimUpdate(_, player)
 			local tear
 			if player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
 				tear = player:FireTear(player.Position, new_dir, false, true, false, nil, 5)
-				if math.random(1, 3) == 1 then
+				local rng = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_BIRTHRIGHT)
+				if rng:RandomInt(1, 3) == 1 then
 					tear:AddTearFlags(TearFlags.TEAR_HP_DROP)
 				end
 			else

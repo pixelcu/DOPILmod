@@ -1,5 +1,5 @@
 local Mod = RepMMod
-local pgd = Isaac.GetPersistentGameData()
+local pgd = Mod.PGD
 local game = Mod.Game
 
 local function IsKeeper(player)

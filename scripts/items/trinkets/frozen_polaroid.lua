@@ -99,6 +99,22 @@ local function tryOpenDoor_Fro_Polaroid(_, player)
 	end
 end
 Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, tryOpenDoor_Fro_Polaroid)
+
+local function FrozenPolariodPrices(_, variant, subtype, shopItemIdx, price)
+	if price > 0 then
+		local count = 0
+		for _, player in ipairs(PlayerManager.GetPlayers()) do
+			count = count + player:GetCollectibleNum(CollectibleType.COLLECTIBLE_STEAM_SALE) + player:GetEffects():GetCollectibleEffectNum(CollectibleType.COLLECTIBLE_STEAM_SALE)
+		end
+		local div = count + 2
+		if Mod.Level():GetCurrentRoomDesc().ShopItemDiscountIdx == shopItemIdx then
+			div = math.max(1, div - 1)
+		end
+		return price * (count + 1) // div
+	end
+end
+Mod:AddCallback(ModCallbacks.MC_GET_SHOP_ITEM_PRICE, FrozenPolariodPrices, PickupVariant.PICKUP_COLLECTIBLE)
+
 --5 350 195
 function Mod:DebugText()
 	local player = Isaac.GetPlayer(0) --this one is OK

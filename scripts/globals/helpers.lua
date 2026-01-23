@@ -1,5 +1,36 @@
 local Mod = RepMMod
-local json = require("json")
+
+---@type table[]
+local getData = {}
+
+---Slightly faster than calling GetData, a micromanagement at best
+---
+---However GetData() is wiped on POST_ENTITY_REMOVE, so this also helps retain the data until after entity removal
+---@param ent Entity
+---@return table
+function Mod:GetData(ent)
+	if not ent then return {} end
+	local ptrHash = GetPtrHash(ent)
+	local data = getData[ptrHash]
+	if not data then
+		local newData = {}
+		getData[ptrHash] = newData
+		data = newData
+	end
+	return data
+end
+
+---@param ent Entity
+---@return table?
+function Mod:TryGetData(ent)
+	local ptrHash = GetPtrHash(ent)
+	local data = getData[ptrHash]
+	return data
+end
+
+Mod:AddPriorityCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, CallbackPriority.LATE, function(_, ent)
+	getData[GetPtrHash(ent)] = nil
+end)
 
 function Mod.Filter(toFilter, predicate)
 	local filtered = {}
@@ -34,7 +65,7 @@ function Mod.GetPlayers(...)
 	return players
 end
 
-function Mod.GetPlayersWithout(...)
+function Mod.GetPlayersWithoutType(...)
 	local players = {}
 	local playertypes = { ... }
 	if #playertypes > 0 then
@@ -84,6 +115,11 @@ function Mod.IsBaby(variant)
 		or variant == FamiliarVariant.CAINS_OTHER_EYE
 		or variant == FamiliarVariant.UMBILICAL_BABY
 		or variant == FamiliarVariant.SPRINKLER
+end
+
+function Mod.Round(num, dp)
+	local mult = 10 ^ (dp or 0)
+	return math.floor(num * mult + 0.5) / mult
 end
 
 function Mod:GetPlayerFromTear(tear)

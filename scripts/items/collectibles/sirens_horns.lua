@@ -2,7 +2,7 @@ local Mod = RepMMod
 local game = Game()
 local sfx = SFXManager()
 
-local SirenHud = include("scripts.lib.chargebar")("gfx/chargebar_siren.anm2", true)
+local SirenHudSprite = Sprite("gfx/chargebar_siren.anm2", true)
 local sirenframesToCharge = 141
 local sirenRenderedPosition = Vector(21, -12)
 
@@ -11,8 +11,9 @@ local function renderSirenCharge(_, player)
 	if player:HasCollectible(Mod.RepmTypes.COLLECTIBLE_SIREN_HORNS) then
 		local data = Mod:GetData(player)
 		data.RepM_SirenChargeFrames = data.RepM_SirenChargeFrames or 0
-		SirenHud:SetCharge(data.RepM_SirenChargeFrames, sirenframesToCharge)
-		SirenHud:Render(Isaac.WorldToScreen(player.Position) + sirenRenderedPosition)
+		--SirenHud:SetCharge(data.RepM_SirenChargeFrames, sirenframesToCharge)
+		--SirenHud:Render(Isaac.WorldToScreen(player.Position) + sirenRenderedPosition)
+		HudHelper.RenderChargeBar(SirenHudSprite, data.RepM_SirenChargeFrames, sirenframesToCharge, Isaac.WorldToScreen(player.Position) + sirenRenderedPosition)
 	end
 end
 Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_RENDER, renderSirenCharge)

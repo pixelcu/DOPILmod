@@ -1,6 +1,6 @@
 local Mod = RepMMod
-local pgd = Isaac.GetPersistentGameData()
-local game = Game()
+local pgd = Mod.PGD
+local game = Mod.Game
 local SaveManager = Mod.saveManager
 
 local function OnBossDefeat_Frosty(_, rng, spawn)

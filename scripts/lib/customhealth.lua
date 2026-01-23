@@ -1,7 +1,8 @@
 local Mod = RepMMod
-local game = Game()
-local sfx = SFXManager()
+local game = Mod.Game
+local sfx = Mod.SFX
 local SaveManager = Mod.saveManager
+local pgd = Mod.PGD
 
 local HeartKey = {
 	[Mod.RepmTypes.PICKUP_HEART_FROZEN] = "HEART_ICE",
@@ -438,7 +439,7 @@ end
 ---@param seed integer
 ---@return table
 local function FrozenHeartSpawn(_, ptype, variant, subtype, position, velocity, spawner, seed)
-	if Isaac.GetPersistentGameData():Unlocked(Mod.RepmAchivements.FROZEN_HEARTS.ID)
+	if pgd:Unlocked(Mod.RepmAchivements.FROZEN_HEARTS.ID)
 	and ptype == EntityType.ENTITY_PICKUP and variant == PickupVariant.PICKUP_HEART
 	and (type(spawner) == "nil") then
 		local newsubtype = {

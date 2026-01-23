@@ -1,3 +1,6 @@
+local Mod = RepMMod
+local pgd = Mod.PGD
+
 Console.RegisterCommand(
 	"unlockrepnegative",
 	'Unlock all content in mode "Repentance Negative"',
@@ -16,7 +19,7 @@ Console.RegisterCommand(
 function RepMMod.oncmd(_, command, args)
 	if command == "unlockrepnegative" then
 		for name, ach in pairs(RepMMod.RepmAchivements) do
-			Isaac.GetPersistentGameData():TryUnlock(ach.ID, false)
+			pgd:TryUnlock(ach.ID, false)
 		end
 	elseif command == "lockrepnegative" then
 		for name, ach in pairs(RepMMod.RepmAchivements) do

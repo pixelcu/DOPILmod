@@ -1,5 +1,6 @@
 local Mod = RepMMod
 local SaveManager = Mod.saveManager
+local pgd = Mod.PGD
 
 local ig = ImGui
 local root = "RepMMod"
@@ -92,7 +93,7 @@ local function InitAchievementMenu()
 	return {function(parentID, id)
 		ig.AddButton(parentID, MakeElementName(parentID, id, "unlock"), Mod.GetDSSStr("unlock", false), function()
 			for _, ach in pairs(Mod.RepmAchivements) do
-				Isaac.GetPersistentGameData():TryUnlock(ach.ID, true)
+				pgd:TryUnlock(ach.ID, true)
 			end
 		end, true)
 		ig.AddButton(parentID, MakeElementName(parentID, id, "lock"), Mod.GetDSSStr("lock", false), function()
@@ -103,7 +104,7 @@ local function InitAchievementMenu()
 		for name, ach in pairs(Mod.RepmAchivements) do
 			ig.AddCheckbox(parentID, MakeElementName(parentID, id, ach.Name), ach.Name, function(newVal)
 				if newVal then
-					Isaac.GetPersistentGameData():TryUnlock(ach.ID, false)
+					pgd:TryUnlock(ach.ID, false)
 				else
 					Isaac.ExecuteCommand("lockachievement " .. ach.ID)
 				end
@@ -112,7 +113,7 @@ local function InitAchievementMenu()
 				ig.UpdateData(
 					MakeElementName(parentID, id, ach.Name),
 					ImGuiData.Value,
-					Isaac.GetPersistentGameData():Unlocked(ach.ID)
+					pgd:Unlocked(ach.ID)
 				)
 			end)
 		end

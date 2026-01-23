@@ -1,4 +1,5 @@
 local Mod = RepMMod
+local pgd = Mod.PGD
 
 local function optionsCheck(pickup)
 	if pickup.OptionsPickupIndex and pickup.OptionsPickupIndex > 0 then
@@ -150,7 +151,7 @@ end)
 
 ---@param pickup EntityPickup
 local function chestSpawn(_, pickup)
-	if Isaac.GetPersistentGameData():Unlocked(RepMMod.RepmAchivements.SIM_LAMB.ID) then
+	if pgd:Unlocked(RepMMod.RepmAchivements.SIM_LAMB.ID) then
 		if
 			Game():GetRoom():GetType() ~= RoomType.ROOM_CHALLENGE
 			and Game():GetLevel():GetStage() ~= LevelStage.STAGE6
