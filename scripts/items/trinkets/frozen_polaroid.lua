@@ -82,18 +82,18 @@ local function tryOpenDoor_Fro_Polaroid(_, player)
     if pdata.HoldingFrozenPolaroid ~= player:HasTrinket(Mod.RepmTypes.TRINKET_FROZEN_POLAROID) then
 		if player:HasTrinket(Mod.RepmTypes.TRINKET_FROZEN_POLAROID) then
 			hiddenItemManager:Add(player, CollectibleType.COLLECTIBLE_MORE_OPTIONS)
-			hiddenItemManager:Add(player, CollectibleType.COLLECTIBLE_STEAM_SALE)
+			--hiddenItemManager:Add(player, CollectibleType.COLLECTIBLE_STEAM_SALE)
 			local optionsConfig = Mod.ItemConfig:GetCollectible(CollectibleType.COLLECTIBLE_MORE_OPTIONS)
-			local steamConfig = Mod.ItemConfig:GetCollectible(CollectibleType.COLLECTIBLE_STEAM_SALE)
+			--local steamConfig = Mod.ItemConfig:GetCollectible(CollectibleType.COLLECTIBLE_STEAM_SALE)
 			player:RemoveCostume(optionsConfig)
-			player:RemoveCostume(steamConfig)
+			--player:RemoveCostume(steamConfig)
 		elseif
 			pdata.HoldingFrozenPolaroid == nil and player:HasTrinket(Mod.RepmTypes.TRINKET_FROZEN_POLAROID) == false
 		then
 			pdata.HoldingFrozenPolaroid = false -- redundant, i know
 		else
 			hiddenItemManager:Remove(player, CollectibleType.COLLECTIBLE_MORE_OPTIONS, hiddenItemManager.kDefaultGroup)
-			hiddenItemManager:Remove(player, CollectibleType.COLLECTIBLE_STEAM_SALE, hiddenItemManager.kDefaultGroup)
+			--hiddenItemManager:Remove(player, CollectibleType.COLLECTIBLE_STEAM_SALE, hiddenItemManager.kDefaultGroup)
 		end
 		pdata.HoldingFrozenPolaroid = player:HasTrinket(Mod.RepmTypes.TRINKET_FROZEN_POLAROID)
 	end
@@ -101,16 +101,17 @@ end
 Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, tryOpenDoor_Fro_Polaroid)
 
 local function FrozenPolariodPrices(_, variant, subtype, shopItemIdx, price)
-	if price > 0 then
+	if price > 0 and PlayerManager.AnyoneHasTrinket(Mod.RepmTypes.TRINKET_FROZEN_POLAROID) then
 		local count = 0
 		for _, player in ipairs(PlayerManager.GetPlayers()) do
 			count = count + player:GetCollectibleNum(CollectibleType.COLLECTIBLE_STEAM_SALE) + player:GetEffects():GetCollectibleEffectNum(CollectibleType.COLLECTIBLE_STEAM_SALE)
 		end
+		local steamCount = count + 1
 		local div = count + 2
 		if Mod.Level():GetCurrentRoomDesc().ShopItemDiscountIdx == shopItemIdx then
 			div = math.max(1, div - 1)
 		end
-		return price * (count + 1) // div
+		return price * steamCount // div
 	end
 end
 Mod:AddCallback(ModCallbacks.MC_GET_SHOP_ITEM_PRICE, FrozenPolariodPrices, PickupVariant.PICKUP_COLLECTIBLE)
