@@ -149,8 +149,6 @@ include("scripts.entities.monsters.dice_garper")
 
 include("scripts.items.collectibles.delirious_tech")
 
-include("scripts.items.collectibles.pixelated_cube")
-
 include("scripts.items.collectibles.beeg_minus")
 
 include("scripts.items.collectibles.110v")
@@ -280,11 +278,6 @@ if EID then
 	)
 	-- EID:addCollectible(Mod.RepmTypes.COLLECTIBLE_VACUUM, "Gives 5,25 range#Have a chance to shoot a boomerang tear that deals damage to enemies.", "vacuum" )
 	EID:addCollectible(Mod.RepmTypes.COLLECTIBLE_BEEG_MINUS, "Kills player on pick up#Thats litteraly it", "Minus")
-	EID:addCollectible(
-		Mod.RepmTypes.COLLECTIBLE_PIXELATED_CUBE,
-		"On use, spawns 3 random familiers on 1 room",
-		"Pixelated cube"
-	)
 	EID:addCollectible(
 		Mod.RepmTypes.COLLECTIBLE_110V,
 		"Gives 2 charges for the active item, instead of 1#Damages the player when using the active item",
@@ -447,12 +440,6 @@ if EID then
 		Mod.RepmTypes.COLLECTIBLE_BEEG_MINUS,
 		"Убивает игрока при поднятии#Буквально",
 		"Минус",
-		"ru"
-	)
-	EID:addCollectible(
-		Mod.RepmTypes.COLLECTIBLE_PIXELATED_CUBE,
-		"При использовании создает 3 случайных фамильяров в 1 комнате",
-		"Пиксилизированый куб",
 		"ru"
 	)
 	EID:addCollectible(

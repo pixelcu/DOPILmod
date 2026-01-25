@@ -4,7 +4,6 @@
 				<Item Name="Pro Kamikaze" Weight = "1" DecreaseBy="1" RemoveOn="0.1"/>
 				<Item Name="Book of Tales" Weight = "1" DecreaseBy="1" RemoveOn="0.1"/>
 				<Item Name="Leaky Bucket" Weight = "1" DecreaseBy="1" RemoveOn="0.1"/>
-				<Item Name="Pixelated cube" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
 				<Item Name = "Deliriums Eye" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
 				<Item Name = "Delirious tech" Weight = "1" DecreaseBy="1" RemoveOn="0.1" />
 				<Item Name = "Rot" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
@@ -71,7 +70,6 @@
 				<Item Name="Pro Kamikaze" Weight = "1" DecreaseBy="1" RemoveOn="0.1"/>
 				<Item Name="Book of Tales" Weight = "1" DecreaseBy="1" RemoveOn="0.1"/>
 				<Item Name="Leaky Bucket" Weight = "1" DecreaseBy="1" RemoveOn="0.1"/>
-				<Item Name="Pixelated cube" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
 				<Item Name = "Deliriums Eye" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
 				<Item Name = "Delirious tech" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
 				<Item Name = "Rot" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
