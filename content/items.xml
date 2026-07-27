@@ -44,6 +44,7 @@
 	<trinket name="Hammer" description="Boink!" cache="tearflag" gfx="hammer.png" />
 	<trinket name="Frozen Polaroid" description="They preserved you in ice" hidden="true" gfx="frozen_polaroid.png" />
 	<trinket name="Ice Penny" description="Wealth of chill" gfx="ice penny.png" />
+	<trinket name="Grenade pin" description="oooops..." gfx="granata_pin.png" />
 
 	<null id="250" name="Siren's Singing" persistent="false" cooldown="90" />
 	<null name="Minus Shard" persistent="true" />
