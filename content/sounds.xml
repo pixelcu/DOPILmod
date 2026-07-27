@@ -30,4 +30,7 @@
 		<sample weight="1" path="shdamage1.wav" />
 		<sample weight="1" path="shdamage2.wav" />
 	</sound>
+	<sound name="Flashbang">
+		<sample weight="1" path="flashbang.wav" />
+	</sound>
 </sounds>

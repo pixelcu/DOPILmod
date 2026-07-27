@@ -77,5 +77,13 @@
 
     <entity anm2path="familiars/lil_witness.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="7" friction="1" id="3" name="Lil Witness" numGridCollisionPoints="12" shadowSize="15" stageHP="0">
         <gibs amount="0" blood="0" bone="0" eye="0" gut="0" large="0" />
-    </entity> 
+    </entity>
+
+    <entity anm2path="flash.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="5" subtype="345675" name="flashbang" numGridCollisionPoints="24" shadowSize="16" stageHP="0" variant="300" >
+        <preload-snd id="8"/>
+    </entity>
+    
+    <entity anm2path="flash.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="5654" name="flashbang2" numGridCollisionPoints="24" shadowSize="16" stageHP="0">
+        <preload-snd id="8"/>
+    </entity>
 </entities>
