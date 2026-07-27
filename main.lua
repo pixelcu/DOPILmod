@@ -8,10 +8,7 @@ RepMMod = Mod
 Mod.Game = Game()
 Mod.Room = function() return Mod.Game:GetRoom() end
 Mod.Level = function() return Mod.Game:GetLevel() end
-Mod.Music = MusicManager()
-Mod.SFX = SFXManager()
 Mod.ItemConfig = Isaac.GetItemConfig()
-Mod.PGD = Isaac.GetPersistentGameData()
 
 local version = ": 1.3" --added by me (pedro), for making updating version number easier
 local newRoomFreeze = false
@@ -24,33 +21,53 @@ print("Thanks for playing the TBOI REP NEGATIVE [Community Mod] - Currently runn
 
 Mod.saveManager = include("scripts.lib.save_manager")
 local SaveManager = Mod.saveManager
-
 SaveManager.Init(Mod)
-require("scripts.minimapapi.init")
-
 local MinimapAPI = require("scripts.minimapapi")
-if MinimapAPI.BranchVersion == "RepentanceNegative" then
-	MinimapAPI.DisableSaving = true
-end
-
-local loaded = false
 Mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function()
-	if not loaded then
-		SaveManager.InitMinimapAPI(MinimapAPI, "RepentanceNegative")
-		loaded = true
-	end
+	SaveManager.InitMinimapAPI(MinimapAPI, "RepentanceNegative")
 end)
-
 Mod.hiddenItemManager = include("scripts.lib.hidden_item_manager")
 Mod.hiddenItemManager:Init(Mod)
 Mod.hiddenItemManager:HideCostumes()
 
-include("scripts.lib.hud_helper")
+---@type table[]
+local getData = {}
+
+---Slightly faster than calling GetData, a micromanagement at best
+---
+---However GetData() is wiped on POST_ENTITY_REMOVE, so this also helps retain the data until after entity removal
+---@param ent Entity
+---@return table
+function Mod:GetData(ent)
+	if not ent then return {} end
+	local ptrHash = GetPtrHash(ent)
+	local data = getData[ptrHash]
+	if not data then
+		local newData = {}
+		getData[ptrHash] = newData
+		data = newData
+	end
+	return data
+end
+
+---@param ent Entity
+---@return table?
+function Mod:TryGetData(ent)
+	local ptrHash = GetPtrHash(ent)
+	local data = getData[ptrHash]
+	return data
+end
+
+Mod:AddPriorityCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, CallbackPriority.LATE, function(_, ent)
+	getData[GetPtrHash(ent)] = nil
+end)
+
 include("scripts.lib.customhealthapi.core")
 include("scripts.globals.saveData")
 include("scripts.globals.enums")
 include("scripts.globals.helpers")
 include("scripts.globals.achievements")
+include("scripts.lib.hellfirejuneMSHack")
 
 include("scripts.lib.translation.dsssettings")
 include("scripts.lib.customhealth")
@@ -148,6 +165,8 @@ include("scripts.items.trinkets.more_options")
 include("scripts.entities.monsters.dice_garper")
 
 include("scripts.items.collectibles.delirious_tech")
+
+include("scripts.items.collectibles.pixelated_cube")
 
 include("scripts.items.collectibles.beeg_minus")
 
@@ -279,6 +298,11 @@ if EID then
 	-- EID:addCollectible(Mod.RepmTypes.COLLECTIBLE_VACUUM, "Gives 5,25 range#Have a chance to shoot a boomerang tear that deals damage to enemies.", "vacuum" )
 	EID:addCollectible(Mod.RepmTypes.COLLECTIBLE_BEEG_MINUS, "Kills player on pick up#Thats litteraly it", "Minus")
 	EID:addCollectible(
+		Mod.RepmTypes.COLLECTIBLE_PIXELATED_CUBE,
+		"On use, spawns 3 random familiers on 1 room",
+		"Pixelated cube"
+	)
+	EID:addCollectible(
 		Mod.RepmTypes.COLLECTIBLE_110V,
 		"Gives 2 charges for the active item, instead of 1#Damages the player when using the active item",
 		"110V"
@@ -357,6 +381,13 @@ if EID then
 			.. " seconds if not picked up#{{BleedingOut}} Enemies hit by shield can get bleeding",
 		"Saw Shield"
 	)
+
+	EID:addCollectible(
+		Mod.RepmTypes.COLLECTIBLE_LIL_WITNESS,
+		"After clearing room, it will spawn 3 blue flies and 4 blue spiders.#After killing the boss, it will spawn a friendly larva.#BFF: Spawns +2 more spiders and flies",
+		"Lil Witness"
+	)
+
 	EID:addCollectible(
 		Mod.RepmTypes.COLLECTIBLE_STRONG_SPIRIT,
 		"Taking fatal damage invokes the effects of {{Collectible58}} Book of Shadows, heals {{Heart}} 2 full Red Heart containers, and adds a {{SoulHeart}} Soul Heart#Taking fatal also grants {{ArrowUp}} {{Blank}} {{Damage}} +5 flat damage which fades over the course of 20 seconds#The effect can be triggered once per floor. Its availability is indicated by a white halo high above Isaac's head",
@@ -440,6 +471,12 @@ if EID then
 		Mod.RepmTypes.COLLECTIBLE_BEEG_MINUS,
 		"Убивает игрока при поднятии#Буквально",
 		"Минус",
+		"ru"
+	)
+	EID:addCollectible(
+		Mod.RepmTypes.COLLECTIBLE_PIXELATED_CUBE,
+		"При использовании создает 3 случайных фамильяров в 1 комнате",
+		"Пиксилизированый куб",
 		"ru"
 	)
 	EID:addCollectible(
@@ -557,6 +594,13 @@ if EID then
 		"ru"
 	)
 
+	EID:addCollectible(
+		Mod.RepmTypes.COLLECTIBLE_LIL_WITNESS,
+		"После зачистки комнаты появятся 3 синие мухи и 4 синих паука. #После убийства босса появится дружелюбная личинка. #Лучший друг: Появляется на 2 паука и мухи больше.",
+		"Lil Witness",
+		"ru"
+	)
+
 	--trinkets
 	EID:addTrinket(
 		Mod.RepmTypes.TRINKET_POCKET_TECHNOLOGY,
@@ -638,3 +682,50 @@ end
 
 --example:
 --EID:addCollectible(id of the item, "description of the item", "item name", "en_us(language)")
+
+--FLASHBANG
+
+
+local whitescreen = 0
+local WHITE = Sprite()
+local flashka = Isaac.GetCardIdByName("flash")
+local pin = Isaac.GetTrinketIdByName("Grenade pin")
+WHITE:Load("gfx/white_screen.anm2", true)
+function render_or_shader()
+    if whitescreen ~= 0 then
+        WHITE:SetFrame("WS", PlayerManager.AnyoneHasTrinket(pin) and 57-whitescreen+120 or 57-whitescreen)
+        print(PlayerManager.AnyoneHasTrinket(pin) and 57-whitescreen+120 or 57-whitescreen)
+        WHITE:RenderLayer(0, Vector(0,0))
+        WHITE:Play("WS", true)
+        whitescreen=whitescreen-1
+            local entities = Isaac.GetRoomEntities()
+    for _, entity in ipairs(entities) do
+        if entity:IsActiveEnemy() then
+            entity:AddConfusion(EntityRef(player),150, false)
+        end
+    end
+    end
+end
+Mod:AddCallback(ModCallbacks.MC_POST_RENDER, render_or_shader)
+
+function Mod:throw()
+    whitescreen = 120
+    if PlayerManager.AnyoneHasTrinket(pin) then
+        whitescreen = 120*2
+    end 
+    SFXManager():Play(Isaac.GetSoundIdByName("Flashbang"), 1, 0, false, 1.5)
+end 
+Mod:AddCallback(ModCallbacks.MC_USE_CARD, Mod.throw,flashka)
+
+
+--granade pin
+function increas_chance(_,gangbang)
+    if PlayerManager.AnyoneHasTrinket(pin)
+    and gangbang.SubType ~= flashka then
+        if math.random(40,100) == 40 then
+                gangbang:Morph(5, 300, flashka, true, true, false)
+
+            end
+        end
+    end
+Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_INIT, increas_chance, 300)
