@@ -1,4 +1,5 @@
 local Mod = RepMMod
+local game = Game()
 
 Mod:AddCallback(ModCallbacks.MC_USE_CARD, function(_, _, player, flags)
 	local CRI = game:GetLevel():GetCurrentRoomIndex()
@@ -6,29 +7,28 @@ Mod:AddCallback(ModCallbacks.MC_USE_CARD, function(_, _, player, flags)
 	local NewDirt
 	if Dirt == 0 then
 		NewDirt = CRI - 2
-		if game:GetLevel():GetRoomByIdx(NewDirt, -1).Data == nil then
+		if not game:GetLevel():GetRoomByIdx(NewDirt, -1).Data then
 			NewDirt = CRI - 1
 		end
 	elseif Dirt == 1 then
 		NewDirt = CRI - 26
-		if game:GetLevel():GetRoomByIdx(NewDirt, -1).Data == nil then
+		if not game:GetLevel():GetRoomByIdx(NewDirt, -1) then
 			NewDirt = CRI - 13
 		end
 	elseif Dirt == 2 then
 		NewDirt = CRI + 2
-		if game:GetLevel():GetRoomByIdx(NewDirt, -1).Data == nil then
+		if not game:GetLevel():GetRoomByIdx(NewDirt, -1).Data then
 			NewDirt = CRI + 1
 		end
 	elseif Dirt == 3 then
 		NewDirt = CRI + 26
-		if game:GetLevel():GetRoomByIdx(NewDirt, -1).Data == nil then
+		if not game:GetLevel():GetRoomByIdx(NewDirt, -1) then
 			NewDirt = CRI + 13
 		end
 	end
 	if Dirt == -1 then
 		player:AddCard(Mod.RepmTypes.CARD_HAMMER_CARD)
 	else
-		print(Dirt)
 		if game:GetLevel():GetRoomByIdx(NewDirt, -1).Data ~= nil then
 			game:StartRoomTransition(NewDirt, Direction.NO_DIRECTION, RoomTransitionAnim.TELEPORT, player, -1)
 			if player:HasCollectible(451) then
