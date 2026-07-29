@@ -1,6 +1,5 @@
 local Mod = RepMMod
 local game = Game()
-local hiddenItemManager = Mod.hiddenItemManager
 
 local function CanDropOtherTrinket(t1, t2, isMatchStick)
 	return t1 == Mod.RepmTypes.TRINKET_FROZEN_POLAROID
@@ -41,6 +40,7 @@ local function stickyTrinket(_, pickup, collider, low)
 end
 Mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, stickyTrinket, PickupVariant.PICKUP_TRINKET)
 
+---@param player EntityPlayer
 local function tryOpenDoor_Fro_Polaroid(_, player)
 	--and player:CollidesWithGrid()
 	if
@@ -78,24 +78,12 @@ local function tryOpenDoor_Fro_Polaroid(_, player)
 			player:AddTrinket(Mod.RepmTypes.TRINKET_FROZEN_POLAROID)
 		end
 	end
-    local pdata = Mod:GetData(player)
-    if pdata.HoldingFrozenPolaroid ~= player:HasTrinket(Mod.RepmTypes.TRINKET_FROZEN_POLAROID) then
-		if player:HasTrinket(Mod.RepmTypes.TRINKET_FROZEN_POLAROID) then
-			hiddenItemManager:Add(player, CollectibleType.COLLECTIBLE_MORE_OPTIONS)
-			--hiddenItemManager:Add(player, CollectibleType.COLLECTIBLE_STEAM_SALE)
-			local optionsConfig = Mod.ItemConfig:GetCollectible(CollectibleType.COLLECTIBLE_MORE_OPTIONS)
-			--local steamConfig = Mod.ItemConfig:GetCollectible(CollectibleType.COLLECTIBLE_STEAM_SALE)
-			player:RemoveCostume(optionsConfig)
-			--player:RemoveCostume(steamConfig)
-		elseif
-			pdata.HoldingFrozenPolaroid == nil and player:HasTrinket(Mod.RepmTypes.TRINKET_FROZEN_POLAROID) == false
-		then
-			pdata.HoldingFrozenPolaroid = false -- redundant, i know
-		else
-			hiddenItemManager:Remove(player, CollectibleType.COLLECTIBLE_MORE_OPTIONS, hiddenItemManager.kDefaultGroup)
-			--hiddenItemManager:Remove(player, CollectibleType.COLLECTIBLE_STEAM_SALE, hiddenItemManager.kDefaultGroup)
-		end
-		pdata.HoldingFrozenPolaroid = player:HasTrinket(Mod.RepmTypes.TRINKET_FROZEN_POLAROID)
+    
+	local moreOptionsCount = player:GetInnateCollectibleCount(CollectibleType.COLLECTIBLE_MORE_OPTIONS, "Repm_FrozenPolaroid")
+	if player:HasTrinket(Mod.RepmTypes.TRINKET_FROZEN_POLAROID) and moreOptionsCount == 0 then
+		player:SetInnateCollectibleCount(CollectibleType.COLLECTIBLE_MORE_OPTIONS, 1, "Repm_FrozenPolaroid", false)
+	elseif not player:HasTrinket(Mod.RepmTypes.TRINKET_FROZEN_POLAROID) and moreOptionsCount > 0 then
+		player:ClearInnateItemGroup("Repm_FrozenPolaroid")
 	end
 end
 Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, tryOpenDoor_Fro_Polaroid)

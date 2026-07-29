@@ -1,5 +1,5 @@
 local MinimapAPI = require("scripts.minimapapi")
 
-MinimapAPI.BranchVersion = "RepentanceNegative"
+MinimapAPI.BranchVersion = "RepentanceNegative" --branch
 MinimapAPI.MajorVersion = 2
-MinimapAPI.MinorVersion = 58
+MinimapAPI.MinorVersion = 59

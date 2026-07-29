@@ -23,12 +23,7 @@ Mod.saveManager = include("scripts.lib.save_manager")
 local SaveManager = Mod.saveManager
 SaveManager.Init(Mod)
 local MinimapAPI = require("scripts.minimapapi")
-Mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function()
-	SaveManager.InitMinimapAPI(MinimapAPI, "RepentanceNegative")
-end)
-Mod.hiddenItemManager = include("scripts.lib.hidden_item_manager")
-Mod.hiddenItemManager:Init(Mod)
-Mod.hiddenItemManager:HideCostumes()
+SaveManager.InitMinimapAPI(MinimapAPI, "RepentanceNegative")
 
 ---@type table[]
 local getData = {}
@@ -79,6 +74,8 @@ include("scripts.lib.DSSMenu")
 include("scripts.characters.sim")
 include("scripts.characters.frosty")
 include("scripts.characters.t_frosty")
+
+SaveManager.InitCHAPI(CustomHealthAPI)
 
 --ripairs stuff from revel
 function ripairs_it(t,i)

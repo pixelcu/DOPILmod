@@ -1,7 +1,6 @@
 local Mod = RepMMod
 local game = Mod.Game
 local sfx = SFXManager()
-local hiddenItemManager = Mod.hiddenItemManager
 
 ---@param player EntityPlayer
 ---@param button ButtonAction
@@ -163,12 +162,7 @@ local function DigPlayerUpdate(_, player)
 			player:SwapActiveItems()
 		end
 	end
-	hiddenItemManager:CheckStack(
-		player,
-		CollectibleType.COLLECTIBLE_LEO,
-		effs:GetNullEffectNum(Mod.RepmTypes.NULL_HOW_TO_DIG),
-		"Repm_HowToDig"
-	)
+	player:SetInnateCollectibleCount(CollectibleType.COLLECTIBLE_LEO, effs:GetNullEffectNum(Mod.RepmTypes.NULL_HOW_TO_DIG), "Repm_HowToDig", false)
 end
 Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, DigPlayerUpdate)
 

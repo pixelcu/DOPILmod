@@ -1,6 +1,4 @@
 local Mod = RepMMod
-local hiddenItemManager = Mod.hiddenItemManager
-local SaveManager = Mod.saveManager
 
 local function LazerColor(_, player, cacheFlag)
 	if cacheFlag == CacheFlag.CACHE_TEARCOLOR then
@@ -107,9 +105,8 @@ local function deliriousTechLaserSwitch(_, player)
 		end
 	end
 	for k, v in ipairs(data.DelirousTechState) do
-		hiddenItemManager:CheckStack(player, laserTypes[k], v, "RepmDeliriousTech")
+		player:SetInnateCollectibleCount(laserTypes[k], v, "RepmDeliriousTech", false)
 	end
-	hiddenItemManager:HideCostumes("RepmDeliriousTech")
 end
 Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, deliriousTechLaserSwitch)
 

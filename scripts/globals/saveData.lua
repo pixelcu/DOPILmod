@@ -138,11 +138,6 @@ end)
 Mod:AddCallback(SaveManager.SaveCallbacks.PRE_DATA_SAVE, function(_, data)
 	local musicData = Mod.GetModdedMusicData()
 	local newData = {
-		game = {
-			run = {
-				HiddenItemManager = Mod.hiddenItemManager:GetSaveData(),
-			},
-		},
 		file = {
 			other = {
 				Music = musicData,
@@ -158,31 +153,6 @@ Mod:AddCallback(SaveManager.SaveCallbacks.PRE_DATA_LOAD, function(_, data, luaMo
 			MusicData = data.file.other.Music
 		end
 		return data
-	end
-end)
-
-Mod:AddCallback(SaveManager.SaveCallbacks.POST_DATA_LOAD, function(_, data, luaMod)
-	if not luaMod then
-		Mod.hiddenItemManager:LoadData(data.game.run.HiddenItemManager)
-	end
-end)
-
-CustomHealthAPI.Library.AddCallback(
-	"RestoredHearts",
-	CustomHealthAPI.Enums.Callbacks.ON_SAVE,
-	0,
-	function(save, isSaving)
-		if isSaving then
-			local chapiSave = Mod:RunSave()
-			chapiSave.CustomHealthAPI = save
-		end
-	end
-)
-
-CustomHealthAPI.Library.AddCallback("RestoredHearts", CustomHealthAPI.Enums.Callbacks.ON_LOAD, 0, function()
-	local chapiSave = Mod:RunSave()
-	if chapiSave.CustomHealthAPI ~= nil and chapiSave.CustomHealthAPI ~= "" then
-		return chapiSave.CustomHealthAPI
 	end
 end)
 
